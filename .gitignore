@@ -53,7 +53,8 @@ docs/codemaps/
 /*.jpeg
 /*.jpg
 /test-screenshots/
-/screenshot-*.png
+# README用スクリーンショットは許可
+!/screenshot-*.png
 
 # Claude Code
 .claude/
