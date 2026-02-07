@@ -6,6 +6,7 @@ import {
   createColumn,
   createMemo,
   createParticipant,
+  createReaction,
   createVote,
   createRemainingVotes,
 } from '../test/fixtures';
@@ -428,5 +429,83 @@ describe('boardStore', () => {
     const state = useBoardStore.getState();
     const col1 = state.board!.columns.find((c) => c.id === 'col-1');
     expect(col1!.cards[0].memos).toHaveLength(0);
+  });
+
+  // --- handleReactionAdded ---
+
+  it('handleReactionAdded adds reaction to correct card', () => {
+    const card = createCard({ id: 'card-1', columnId: 'col-1', reactions: [] });
+    const board = createBoard({
+      columns: [
+        createColumn({ id: 'col-1', cards: [card] }),
+        createColumn({ id: 'col-2' }),
+        createColumn({ id: 'col-3' }),
+      ],
+    });
+    useBoardStore.setState({ board });
+
+    const reaction = createReaction({ id: 'r-1', cardId: 'card-1', emoji: '👍', participantId: 'p-1' });
+    useBoardStore.getState().handleReactionAdded(reaction);
+
+    const state = useBoardStore.getState();
+    const col1 = state.board!.columns.find((c) => c.id === 'col-1');
+    expect(col1!.cards[0].reactions).toHaveLength(1);
+    expect(col1!.cards[0].reactions[0].emoji).toBe('👍');
+  });
+
+  it('handleReactionAdded with null board returns unchanged state', () => {
+    useBoardStore.setState({ board: null });
+    const reaction = createReaction();
+    useBoardStore.getState().handleReactionAdded(reaction);
+    expect(useBoardStore.getState().board).toBeNull();
+  });
+
+  // --- handleReactionRemoved ---
+
+  it('handleReactionRemoved removes the matching reaction', () => {
+    const reaction = createReaction({ id: 'r-1', cardId: 'card-1', emoji: '👍', participantId: 'p-1' });
+    const card = createCard({ id: 'card-1', columnId: 'col-1', reactions: [reaction] });
+    const board = createBoard({
+      columns: [
+        createColumn({ id: 'col-1', cards: [card] }),
+        createColumn({ id: 'col-2' }),
+        createColumn({ id: 'col-3' }),
+      ],
+    });
+    useBoardStore.setState({ board });
+
+    useBoardStore.getState().handleReactionRemoved({ cardId: 'card-1', participantId: 'p-1', emoji: '👍' });
+
+    const state = useBoardStore.getState();
+    const col1 = state.board!.columns.find((c) => c.id === 'col-1');
+    expect(col1!.cards[0].reactions).toHaveLength(0);
+  });
+
+  it('handleReactionRemoved only removes matching emoji+participant combo', () => {
+    const r1 = createReaction({ id: 'r-1', cardId: 'card-1', emoji: '👍', participantId: 'p-1' });
+    const r2 = createReaction({ id: 'r-2', cardId: 'card-1', emoji: '❤️', participantId: 'p-1' });
+    const r3 = createReaction({ id: 'r-3', cardId: 'card-1', emoji: '👍', participantId: 'p-2' });
+    const card = createCard({ id: 'card-1', columnId: 'col-1', reactions: [r1, r2, r3] });
+    const board = createBoard({
+      columns: [
+        createColumn({ id: 'col-1', cards: [card] }),
+        createColumn({ id: 'col-2' }),
+        createColumn({ id: 'col-3' }),
+      ],
+    });
+    useBoardStore.setState({ board });
+
+    useBoardStore.getState().handleReactionRemoved({ cardId: 'card-1', participantId: 'p-1', emoji: '👍' });
+
+    const state = useBoardStore.getState();
+    const col1 = state.board!.columns.find((c) => c.id === 'col-1');
+    expect(col1!.cards[0].reactions).toHaveLength(2);
+    expect(col1!.cards[0].reactions.map((r) => r.id)).toEqual(['r-2', 'r-3']);
+  });
+
+  it('handleReactionRemoved with null board returns unchanged state', () => {
+    useBoardStore.setState({ board: null });
+    useBoardStore.getState().handleReactionRemoved({ cardId: 'card-1', participantId: 'p-1', emoji: '👍' });
+    expect(useBoardStore.getState().board).toBeNull();
   });
 });

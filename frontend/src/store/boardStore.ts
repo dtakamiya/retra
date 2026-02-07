@@ -9,6 +9,8 @@ import type {
   Participant,
   ParticipantOnlinePayload,
   Phase,
+  Reaction,
+  ReactionRemovedPayload,
   RemainingVotes,
   TimerState,
   Vote,
@@ -42,6 +44,8 @@ interface BoardState {
   handleMemoCreated: (memo: Memo) => void;
   handleMemoUpdated: (memo: Memo) => void;
   handleMemoDeleted: (payload: MemoDeletedPayload) => void;
+  handleReactionAdded: (reaction: Reaction) => void;
+  handleReactionRemoved: (payload: ReactionRemovedPayload) => void;
 }
 
 export const useBoardStore = create<BoardState>((set) => ({
@@ -238,6 +242,39 @@ export const useBoardStore = create<BoardState>((set) => ({
         cards: col.cards.map((c) =>
           c.id === payload.cardId
             ? { ...c, memos: c.memos.filter((m) => m.id !== payload.memoId) }
+            : c
+        ),
+      }));
+      return { board: { ...state.board, columns } };
+    }),
+
+  handleReactionAdded: (reaction) =>
+    set((state) => {
+      if (!state.board) return state;
+      const columns = state.board.columns.map((col) => ({
+        ...col,
+        cards: col.cards.map((c) =>
+          c.id === reaction.cardId
+            ? { ...c, reactions: [...c.reactions, reaction] }
+            : c
+        ),
+      }));
+      return { board: { ...state.board, columns } };
+    }),
+
+  handleReactionRemoved: (payload) =>
+    set((state) => {
+      if (!state.board) return state;
+      const columns = state.board.columns.map((col) => ({
+        ...col,
+        cards: col.cards.map((c) =>
+          c.id === payload.cardId
+            ? {
+                ...c,
+                reactions: c.reactions.filter(
+                  (r) => !(r.participantId === payload.participantId && r.emoji === payload.emoji)
+                ),
+              }
             : c
         ),
       }));

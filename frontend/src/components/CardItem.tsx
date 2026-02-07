@@ -5,6 +5,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
 import { MemoList } from './MemoList';
+import { ReactionList } from './ReactionList';
+import { ReactionPicker } from './ReactionPicker';
 import type { Card } from '../types';
 
 interface Props {
@@ -100,6 +102,21 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
       // 削除失敗はWebSocket経由で最新状態が反映される
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReactionToggle = async (emoji: string) => {
+    const hasReacted = card.reactions.some(
+      (r) => r.participantId === participant?.id && r.emoji === emoji
+    );
+    try {
+      if (hasReacted) {
+        await api.removeReaction(board.slug, card.id, participant!.id, emoji);
+      } else {
+        await api.addReaction(board.slug, card.id, participant!.id, emoji);
+      }
+    } catch {
+      // リアクション失敗はWebSocket経由で最新状態が反映される
     }
   };
 
@@ -221,18 +238,35 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
           </div>
         )}
 
-        {/* Memo toggle */}
-        {showMemos && (
-          <button
-            onClick={() => setMemosExpanded(!memosExpanded)}
-            className="flex items-center gap-1 px-1.5 py-0.5 text-xs text-gray-400 hover:text-gray-600 rounded transition-colors"
-            aria-label="メモを表示"
-          >
-            <MessageSquare size={12} />
-            {card.memos.length > 0 && <span>{card.memos.length}</span>}
-          </button>
-        )}
+        <div className="flex items-center gap-1">
+          {/* Reaction picker */}
+          <ReactionPicker onSelect={handleReactionToggle} disabled={loading} />
+
+          {/* Memo toggle */}
+          {showMemos && (
+            <button
+              onClick={() => setMemosExpanded(!memosExpanded)}
+              className="flex items-center gap-1 px-1.5 py-0.5 text-xs text-gray-400 hover:text-gray-600 rounded transition-colors"
+              aria-label="メモを表示"
+            >
+              <MessageSquare size={12} />
+              {card.memos.length > 0 && <span>{card.memos.length}</span>}
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Reactions */}
+      {card.reactions.length > 0 && (
+        <div className="mt-1.5">
+          <ReactionList
+            reactions={card.reactions}
+            myParticipantId={participant?.id}
+            onToggle={handleReactionToggle}
+            disabled={loading}
+          />
+        </div>
+      )}
 
       {/* Memo list */}
       {showMemos && memosExpanded && (

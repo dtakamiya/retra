@@ -9,6 +9,8 @@ import type {
   MemoDeletedPayload,
   Participant,
   ParticipantOnlinePayload,
+  Reaction,
+  ReactionRemovedPayload,
   TimerState,
   Vote,
   VoteRemovedPayload,
@@ -33,6 +35,8 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleMemoCreated,
     handleMemoUpdated,
     handleMemoDeleted,
+    handleReactionAdded,
+    handleReactionRemoved,
   } = useBoardStore();
 
   const connect = useCallback(() => {
@@ -118,6 +122,19 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
           }
         });
 
+        // Subscribe to reaction events
+        client.subscribe(`/topic/board/${slug}/reactions`, (message) => {
+          const data: WebSocketMessage = JSON.parse(message.body);
+          switch (data.type) {
+            case 'REACTION_ADDED':
+              handleReactionAdded(data.payload as Reaction);
+              break;
+            case 'REACTION_REMOVED':
+              handleReactionRemoved(data.payload as ReactionRemovedPayload);
+              break;
+          }
+        });
+
         // Subscribe to participant events
         client.subscribe(`/topic/board/${slug}/participants`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
@@ -163,6 +180,8 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleMemoCreated,
     handleMemoUpdated,
     handleMemoDeleted,
+    handleReactionAdded,
+    handleReactionRemoved,
   ]);
 
   useEffect(() => {

@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { CardItem } from './CardItem'
 import { useBoardStore } from '../store/boardStore'
 import { api } from '../api/client'
-import { createBoard, createCard, createParticipant, createRemainingVotes } from '../test/fixtures'
+import { createBoard, createCard, createParticipant, createReaction, createRemainingVotes } from '../test/fixtures'
 
 vi.mock('../store/boardStore')
 vi.mock('../api/client', () => ({
@@ -13,6 +13,8 @@ vi.mock('../api/client', () => ({
     removeVote: vi.fn(),
     updateCard: vi.fn(),
     deleteCard: vi.fn(),
+    addReaction: vi.fn(),
+    removeReaction: vi.fn(),
   },
 }))
 vi.mock('@dnd-kit/sortable', async () => {
@@ -121,8 +123,9 @@ describe('CardItem', () => {
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
 
-    const voteButton = screen.getByRole('button')
-    expect(voteButton).toBeInTheDocument()
+    // vote button + reaction picker
+    const buttons = screen.getAllByRole('button')
+    expect(buttons.length).toBe(2)
   })
 
   it('shows vote count when > 0 in non-voting phase', () => {
@@ -149,9 +152,9 @@ describe('CardItem', () => {
     const card = createCard({ participantId: 'p-1' })
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // drag handle + edit (Pencil) + delete (Trash2) buttons
+    // drag handle + edit (Pencil) + delete (Trash2) + reaction picker buttons
     const buttons = screen.getAllByRole('button')
-    expect(buttons.length).toBe(3)
+    expect(buttons.length).toBe(4)
   })
 
   it('shows delete (not edit) button for facilitator who is not author in WRITING phase', () => {
@@ -164,10 +167,9 @@ describe('CardItem', () => {
     const card = createCard({ participantId: 'p-1' })
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // Only delete button, not edit (since facilitator is not the author)
-    // No drag handle because isAuthor is false and phase is WRITING (isDndEnabled = isWriting && isAuthor)
+    // delete button + reaction picker
     const buttons = screen.getAllByRole('button')
-    expect(buttons.length).toBe(1)
+    expect(buttons.length).toBe(2)
   })
 
   it('does NOT show edit/delete buttons for non-author non-facilitator', () => {
@@ -180,7 +182,8 @@ describe('CardItem', () => {
     const card = createCard({ participantId: 'p-1' })
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    expect(screen.queryAllByRole('button')).toHaveLength(0)
+    // Only reaction picker button
+    expect(screen.queryAllByRole('button')).toHaveLength(1)
   })
 
   it('clicking edit button shows textarea with current content', async () => {
@@ -327,8 +330,9 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    const voteButton = screen.getByRole('button')
-    await user.click(voteButton)
+    // First button is vote, second is reaction picker
+    const buttons = screen.getAllByRole('button')
+    await user.click(buttons[0])
 
     expect(api.addVote).toHaveBeenCalledWith('vote-slug', 'card-1', 'p-1')
   })
@@ -347,8 +351,9 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    const voteButton = screen.getByRole('button')
-    await user.click(voteButton)
+    // First button is vote, second is reaction picker
+    const buttons = screen.getAllByRole('button')
+    await user.click(buttons[0])
 
     expect(api.removeVote).toHaveBeenCalledWith('vote-slug', 'card-1', 'p-1')
   })
@@ -367,7 +372,7 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // For author in WRITING phase, buttons are: drag handle, edit (Pencil), delete (Trash2)
+    // For author in WRITING phase, buttons are: drag handle, edit (Pencil), delete (Trash2), reaction picker
     const buttons = screen.getAllByRole('button')
     await user.click(buttons[2]) // Delete is the third button
 
@@ -386,5 +391,83 @@ describe('CardItem', () => {
     const card = container.firstChild as HTMLElement
     expect(card.className).toContain('ring-2')
     expect(card.className).toContain('ring-indigo-300')
+  })
+
+  it('shows reaction picker button', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={defaultCard} columnColor="#22c55e" />)
+
+    expect(screen.getByLabelText('リアクションを追加')).toBeInTheDocument()
+  })
+
+  it('shows reaction list when card has reactions', () => {
+    const cardWithReactions = createCard({
+      reactions: [
+        createReaction({ emoji: '👍', participantId: 'p-1' }),
+        createReaction({ id: 'r-2', emoji: '👍', participantId: 'p-2' }),
+        createReaction({ id: 'r-3', emoji: '❤️', participantId: 'p-1' }),
+      ],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={cardWithReactions} columnColor="#22c55e" />)
+
+    expect(screen.getByText('2')).toBeInTheDocument() // 👍 count
+    expect(screen.getByText('1')).toBeInTheDocument() // ❤️ count
+  })
+
+  it('clicking reaction picker opens emoji selector and calls api.addReaction', async () => {
+    const user = userEvent.setup()
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ slug: 'react-slug', phase: 'WRITING' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    vi.mocked(api.addReaction).mockResolvedValue(createReaction())
+
+    render(<CardItem card={defaultCard} columnColor="#22c55e" />)
+
+    // Open reaction picker
+    await user.click(screen.getByLabelText('リアクションを追加'))
+
+    // Click an emoji
+    await user.click(screen.getByLabelText('リアクション 👍'))
+
+    expect(api.addReaction).toHaveBeenCalledWith('react-slug', 'card-1', 'p-1', '👍')
+  })
+
+  it('clicking existing reaction calls api.removeReaction', async () => {
+    const user = userEvent.setup()
+    const cardWithReaction = createCard({
+      reactions: [createReaction({ emoji: '👍', participantId: 'p-1' })],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ slug: 'react-slug', phase: 'WRITING' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    vi.mocked(api.removeReaction).mockResolvedValue(undefined)
+
+    render(<CardItem card={cardWithReaction} columnColor="#22c55e" />)
+
+    // Open reaction picker and click the same emoji
+    await user.click(screen.getByLabelText('リアクションを追加'))
+    await user.click(screen.getByLabelText('リアクション 👍'))
+
+    expect(api.removeReaction).toHaveBeenCalledWith('react-slug', 'card-1', 'p-1', '👍')
   })
 })

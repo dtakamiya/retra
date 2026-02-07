@@ -49,6 +49,8 @@ function mockStoreHandlers() {
     handleMemoCreated: vi.fn(),
     handleMemoUpdated: vi.fn(),
     handleMemoDeleted: vi.fn(),
+    handleReactionAdded: vi.fn(),
+    handleReactionRemoved: vi.fn(),
   }
   vi.mocked(useBoardStore).mockReturnValue(handlers as unknown as ReturnType<typeof useBoardStore>)
   return handlers
@@ -86,7 +88,7 @@ describe('useWebSocket', () => {
     expect(capturedConfig.brokerURL).toContain('/ws')
   })
 
-  it('on connect: sets connected, registers session, and subscribes to 6 topics', () => {
+  it('on connect: sets connected, registers session, and subscribes to 7 topics', () => {
     const handlers = mockStoreHandlers()
 
     renderHook(() => useWebSocket('test1234', 'p-1'))
@@ -99,7 +101,7 @@ describe('useWebSocket', () => {
       destination: '/app/board/test1234/register',
       body: JSON.stringify({ participantId: 'p-1' }),
     })
-    expect(mockSubscribe).toHaveBeenCalledTimes(6)
+    expect(mockSubscribe).toHaveBeenCalledTimes(7)
     // Verify subscription destinations
     const destinations = mockSubscribe.mock.calls.map((call) => call[0])
     expect(destinations).toContain('/topic/board/test1234/cards')
@@ -107,6 +109,7 @@ describe('useWebSocket', () => {
     expect(destinations).toContain('/topic/board/test1234/phase')
     expect(destinations).toContain('/topic/board/test1234/timer')
     expect(destinations).toContain('/topic/board/test1234/memos')
+    expect(destinations).toContain('/topic/board/test1234/reactions')
     expect(destinations).toContain('/topic/board/test1234/participants')
   })
 
@@ -212,6 +215,20 @@ describe('useWebSocket', () => {
       body: JSON.stringify({ type: 'MEMO_DELETED', payload: memoDeletedPayload }),
     })
     expect(handlers.handleMemoDeleted).toHaveBeenCalledWith(memoDeletedPayload)
+
+    // REACTION_ADDED
+    const reactionAddedPayload = { id: 'r-1', cardId: 'card-1', participantId: 'p-1', emoji: '👍', createdAt: '2024-01-01' }
+    callbackMap['/topic/board/test1234/reactions']({
+      body: JSON.stringify({ type: 'REACTION_ADDED', payload: reactionAddedPayload }),
+    })
+    expect(handlers.handleReactionAdded).toHaveBeenCalledWith(reactionAddedPayload)
+
+    // REACTION_REMOVED
+    const reactionRemovedPayload = { cardId: 'card-1', participantId: 'p-1', emoji: '👍' }
+    callbackMap['/topic/board/test1234/reactions']({
+      body: JSON.stringify({ type: 'REACTION_REMOVED', payload: reactionRemovedPayload }),
+    })
+    expect(handlers.handleReactionRemoved).toHaveBeenCalledWith(reactionRemovedPayload)
   })
 
   it('sets connected false on disconnect', () => {

@@ -3,6 +3,7 @@ package com.retra.shared.gateway.websocket
 import com.retra.board.domain.BoardEvent
 import com.retra.card.domain.CardEvent
 import com.retra.card.domain.MemoEvent
+import com.retra.card.domain.ReactionEvent
 import com.retra.card.domain.VoteEvent
 import org.springframework.context.event.EventListener
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -174,6 +175,32 @@ class DomainEventBroadcaster(
             WebSocketMessage("MEMO_DELETED", mapOf(
                 "cardId" to event.cardId,
                 "memoId" to event.memoId
+            ))
+        )
+    }
+
+    @EventListener
+    fun handleReactionAdded(event: ReactionEvent.ReactionAdded) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.slug}/reactions",
+            WebSocketMessage("REACTION_ADDED", mapOf(
+                "id" to event.reactionId,
+                "cardId" to event.cardId,
+                "participantId" to event.participantId,
+                "emoji" to event.emoji,
+                "createdAt" to event.createdAt
+            ))
+        )
+    }
+
+    @EventListener
+    fun handleReactionRemoved(event: ReactionEvent.ReactionRemoved) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.slug}/reactions",
+            WebSocketMessage("REACTION_REMOVED", mapOf(
+                "cardId" to event.cardId,
+                "participantId" to event.participantId,
+                "emoji" to event.emoji
             ))
         )
     }

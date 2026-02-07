@@ -287,6 +287,37 @@ describe('api client', () => {
     });
   });
 
+  // --- addReaction ---
+
+  it('addReaction sends POST with cardId, participantId, emoji', async () => {
+    const reaction = { id: 'r-1', cardId: 'card-1', participantId: 'p-1', emoji: '👍', createdAt: '2024-01-01' };
+    mockResponse(reaction, 201);
+
+    const result = await api.addReaction('slug1', 'card-1', 'p-1', '👍');
+
+    expect(result).toEqual(reaction);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/reactions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cardId: 'card-1', participantId: 'p-1', emoji: '👍' }),
+    });
+  });
+
+  // --- removeReaction ---
+
+  it('removeReaction sends DELETE with cardId, participantId, emoji', async () => {
+    mock204();
+
+    const result = await api.removeReaction('slug1', 'card-1', 'p-1', '👍');
+
+    expect(result).toBeUndefined();
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/reactions', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cardId: 'card-1', participantId: 'p-1', emoji: '👍' }),
+    });
+  });
+
   // --- Error handling ---
 
   it('HTTP error throws Error with message from response', async () => {

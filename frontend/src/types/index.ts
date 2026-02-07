@@ -33,6 +33,14 @@ export interface Memo {
   updatedAt: string;
 }
 
+export interface Reaction {
+  id: string;
+  cardId: string;
+  participantId: string;
+  emoji: string;
+  createdAt: string;
+}
+
 export interface Card {
   id: string;
   columnId: string;
@@ -44,6 +52,7 @@ export interface Card {
   createdAt: string;
   updatedAt: string;
   memos: Memo[];
+  reactions: Reaction[];
 }
 
 export interface Participant {
@@ -110,4 +119,10 @@ export interface CardMovedPayload {
 export interface MemoDeletedPayload {
   cardId: string;
   memoId: string;
+}
+
+export interface ReactionRemovedPayload {
+  cardId: string;
+  participantId: string;
+  emoji: string;
 }

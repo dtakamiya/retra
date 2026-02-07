@@ -41,7 +41,8 @@ data class CardResponse(
     val sortOrder: Int,
     val createdAt: String,
     val updatedAt: String,
-    val memos: List<MemoResponse> = emptyList()
+    val memos: List<MemoResponse> = emptyList(),
+    val reactions: List<ReactionResponse> = emptyList()
 )
 
 data class VoteResponse(

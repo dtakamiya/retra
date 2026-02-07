@@ -4,6 +4,7 @@ import com.retra.board.domain.Board
 import com.retra.board.domain.BoardColumn
 import com.retra.board.domain.Participant
 import com.retra.card.domain.Card
+import com.retra.card.domain.Reaction
 import com.retra.card.domain.Vote
 import com.retra.board.domain.Framework
 import com.retra.board.domain.Phase
@@ -95,6 +96,22 @@ object TestFixtures {
         id = id,
         card = card,
         participant = participant,
+        createdAt = createdAt
+    )
+
+    fun reaction(
+        id: String = UUID.randomUUID().toString(),
+        card: Card? = null,
+        board: Board? = null,
+        participant: Participant? = null,
+        emoji: String = "👍",
+        createdAt: String = Instant.now().toString()
+    ): Reaction = Reaction(
+        id = id,
+        card = card,
+        board = board,
+        participant = participant,
+        emoji = emoji,
         createdAt = createdAt
     )
 }

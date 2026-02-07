@@ -3,6 +3,7 @@ package com.retra.shared.gateway.websocket
 import com.retra.board.domain.BoardEvent
 import com.retra.card.domain.CardEvent
 import com.retra.card.domain.MemoEvent
+import com.retra.card.domain.ReactionEvent
 import com.retra.card.domain.VoteEvent
 import io.mockk.mockk
 import io.mockk.verify
@@ -205,6 +206,34 @@ class DomainEventBroadcasterTest {
             messagingTemplate.convertAndSend(
                 "/topic/board/test1234/memos",
                 match<WebSocketMessage> { it.type == "MEMO_DELETED" }
+            )
+        }
+    }
+
+    @Test
+    fun `ReactionAdded イベントで reactions トピックに送信`() {
+        val event = ReactionEvent.ReactionAdded("test1234", "r-1", "c-1", "p-1", "👍", "2024-01-01")
+
+        broadcaster.handleReactionAdded(event)
+
+        verify {
+            messagingTemplate.convertAndSend(
+                "/topic/board/test1234/reactions",
+                match<WebSocketMessage> { it.type == "REACTION_ADDED" }
+            )
+        }
+    }
+
+    @Test
+    fun `ReactionRemoved イベントで reactions トピックに送信`() {
+        val event = ReactionEvent.ReactionRemoved("test1234", "c-1", "p-1", "👍")
+
+        broadcaster.handleReactionRemoved(event)
+
+        verify {
+            messagingTemplate.convertAndSend(
+                "/topic/board/test1234/reactions",
+                match<WebSocketMessage> { it.type == "REACTION_REMOVED" }
             )
         }
     }

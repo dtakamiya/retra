@@ -16,7 +16,8 @@ object CardMapper {
             sortOrder = card.sortOrder,
             createdAt = card.createdAt,
             updatedAt = card.updatedAt,
-            memos = card.memos.map { MemoMapper.toMemoResponse(it) }
+            memos = card.memos.map { MemoMapper.toMemoResponse(it) },
+            reactions = card.reactions.map { ReactionMapper.toReactionResponse(it) }
         )
     }
 

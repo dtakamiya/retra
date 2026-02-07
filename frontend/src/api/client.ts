@@ -5,6 +5,7 @@ import type {
   Memo,
   Participant,
   Phase,
+  Reaction,
   RemainingVotes,
   TimerAction,
   TimerState,
@@ -140,6 +141,21 @@ export const api = {
     return request(`/boards/${slug}/cards/${cardId}/memos/${memoId}`, {
       method: 'DELETE',
       body: JSON.stringify({ participantId }),
+    });
+  },
+
+  // Reactions
+  addReaction(slug: string, cardId: string, participantId: string, emoji: string): Promise<Reaction> {
+    return request(`/boards/${slug}/reactions`, {
+      method: 'POST',
+      body: JSON.stringify({ cardId, participantId, emoji }),
+    });
+  },
+
+  removeReaction(slug: string, cardId: string, participantId: string, emoji: string): Promise<void> {
+    return request(`/boards/${slug}/reactions`, {
+      method: 'DELETE',
+      body: JSON.stringify({ cardId, participantId, emoji }),
     });
   },
 };
