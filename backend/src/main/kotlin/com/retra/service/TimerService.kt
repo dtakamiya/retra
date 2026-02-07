@@ -9,6 +9,7 @@ import com.retra.exception.NotFoundException
 import com.retra.websocket.WebSocketMessage
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
@@ -29,6 +30,7 @@ class TimerService(
     private val scheduledTasks = ConcurrentHashMap<String, ScheduledFuture<*>>()
     private val scheduler = Executors.newScheduledThreadPool(2)
 
+    @Transactional(readOnly = true)
     fun handleTimer(slug: String, request: TimerRequest): TimerStateResponse {
         val board = boardService.findBoardBySlug(slug)
         val participant = board.participants.find { it.id == request.participantId }
