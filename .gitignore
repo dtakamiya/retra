@@ -25,6 +25,20 @@ Thumbs.db
 .env
 .env.local
 
-#other
+# Screenshots
+*.png
+*.jpeg
+
+# Playwright MCP
+.playwright-mcp/
+
+# MCP config
+.mcp.json
+
+# Reports & generated docs
+.reports/
+docs/codemaps/
+
+# Other
 everything-claude-code
 .claude/
