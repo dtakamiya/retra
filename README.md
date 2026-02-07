@@ -2,7 +2,7 @@
 
 スクラムチームのためのリアルタイム・レトロスペクティブボード
 
-![Retra ホームページ](screenshot-01-homepage.png)
+![Retra ホームページ](docs/images/screenshot-01-homepage.png)
 
 ## 主要機能
 
@@ -71,62 +71,62 @@ cd frontend && npx tsc --noEmit
 ### ホームページ
 ボードの作成・参加ができるトップページ。フレームワークの選択や最大投票数の設定が可能。
 
-![ホームページ](screenshot-01-homepage.png)
+![ホームページ](docs/images/screenshot-01-homepage.png)
 
 ### ボード作成直後
 ボード作成後、ファシリテーターとしてボードに参加した状態。
 
-![ボード作成直後](screenshot-02-board-created.png)
+![ボード作成直後](docs/images/screenshot-02-board-created.png)
 
 ### 参加者のボード画面
 URLを共有して別の参加者がボードに参加した状態。
 
-![参加者のボード画面](screenshot-03-joined-board.png)
+![参加者のボード画面](docs/images/screenshot-03-joined-board.png)
 
 ### 記入フェーズ - カード追加
 各カラムにカードを追加した状態。カードには投稿者名が表示される。
 
-![カード追加](screenshot-04-cards-added.png)
+![カード追加](docs/images/screenshot-04-cards-added.png)
 
 ### 全参加者のカード
 複数の参加者がそれぞれカードを追加した状態。
 
-![全参加者のカード](screenshot-05-all-participants.png)
+![全参加者のカード](docs/images/screenshot-05-all-participants.png)
 
 ### 投票フェーズ
 投票フェーズに移行した状態。各カードに投票ボタンが表示される。
 
-![投票フェーズ](screenshot-06-voting-phase.png)
+![投票フェーズ](docs/images/screenshot-06-voting-phase.png)
 
 ### 投票結果
 参加者が投票を行った後の状態。投票数が表示される。
 
-![投票結果](screenshot-07-voting-results.png)
+![投票結果](docs/images/screenshot-07-voting-results.png)
 
 ### 議論フェーズ
 議論フェーズに移行した状態。投票結果を参考に議論を進める。
 
-![議論フェーズ](screenshot-08-discussion-phase.png)
+![議論フェーズ](docs/images/screenshot-08-discussion-phase.png)
 
 ### アクションアイテムフェーズ
 議論を踏まえてアクションアイテムを整理するフェーズ。
 
-![アクションアイテムフェーズ](screenshot-09-action-items-phase.png)
+![アクションアイテムフェーズ](docs/images/screenshot-09-action-items-phase.png)
 
 ### 完了フェーズ
 レトロスペクティブが完了した状態。
 
-![完了フェーズ](screenshot-10-closed-phase.png)
+![完了フェーズ](docs/images/screenshot-10-closed-phase.png)
 
 ### タイマー（実行中）
 フェーズごとの時間管理用タイマー。ファシリテーターが操作可能。
 
-![タイマー実行中](screenshot-11-timer-running.png)
+![タイマー実行中](docs/images/screenshot-11-timer-running.png)
 
 ### タイマー（一時停止）
 タイマーを一時停止した状態。
 
-![タイマー一時停止](screenshot-12-timer-paused.png)
+![タイマー一時停止](docs/images/screenshot-12-timer-paused.png)
 
 </details>
 
