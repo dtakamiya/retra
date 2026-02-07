@@ -65,17 +65,13 @@ export function BoardPage() {
 
   const handleJoin = async (nickname: string) => {
     if (!slug) return;
-    try {
-      const p = await api.joinBoard(slug, nickname);
-      setParticipant(p);
-      localStorage.setItem(`retra-participant-${slug}`, p.id);
-      setShowNicknameModal(false);
-      // Reload board to get updated participants
-      const boardData = await api.getBoard(slug);
-      setBoard(boardData);
-    } catch (err) {
-      throw err;
-    }
+    const p = await api.joinBoard(slug, nickname);
+    setParticipant(p);
+    localStorage.setItem(`retra-participant-${slug}`, p.id);
+    setShowNicknameModal(false);
+    // Reload board to get updated participants
+    const boardData = await api.getBoard(slug);
+    setBoard(boardData);
   };
 
   if (loading) {
