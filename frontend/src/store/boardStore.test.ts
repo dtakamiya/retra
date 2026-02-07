@@ -4,6 +4,7 @@ import {
   createBoard,
   createCard,
   createColumn,
+  createMemo,
   createParticipant,
   createVote,
   createRemainingVotes,
@@ -355,5 +356,77 @@ describe('boardStore', () => {
 
     const state = useBoardStore.getState();
     expect(state.board!.participants[0].isOnline).toBe(false);
+  });
+
+  // --- handleMemoCreated ---
+
+  it('handleMemoCreated adds memo to correct card', () => {
+    const card = createCard({ id: 'card-1', columnId: 'col-1', memos: [] });
+    const board = createBoard({
+      columns: [
+        createColumn({ id: 'col-1', cards: [card] }),
+        createColumn({ id: 'col-2' }),
+        createColumn({ id: 'col-3' }),
+      ],
+    });
+    useBoardStore.setState({ board });
+
+    const memo = createMemo({ id: 'memo-1', cardId: 'card-1', content: 'New memo' });
+    useBoardStore.getState().handleMemoCreated(memo);
+
+    const state = useBoardStore.getState();
+    const col1 = state.board!.columns.find((c) => c.id === 'col-1');
+    expect(col1!.cards[0].memos).toHaveLength(1);
+    expect(col1!.cards[0].memos[0].content).toBe('New memo');
+  });
+
+  it('handleMemoCreated with null board returns unchanged state', () => {
+    useBoardStore.setState({ board: null });
+    const memo = createMemo();
+    useBoardStore.getState().handleMemoCreated(memo);
+    expect(useBoardStore.getState().board).toBeNull();
+  });
+
+  // --- handleMemoUpdated ---
+
+  it('handleMemoUpdated updates the memo content', () => {
+    const memo = createMemo({ id: 'memo-1', cardId: 'card-1', content: 'Old memo' });
+    const card = createCard({ id: 'card-1', columnId: 'col-1', memos: [memo] });
+    const board = createBoard({
+      columns: [
+        createColumn({ id: 'col-1', cards: [card] }),
+        createColumn({ id: 'col-2' }),
+        createColumn({ id: 'col-3' }),
+      ],
+    });
+    useBoardStore.setState({ board });
+
+    const updatedMemo = createMemo({ id: 'memo-1', cardId: 'card-1', content: 'Updated memo' });
+    useBoardStore.getState().handleMemoUpdated(updatedMemo);
+
+    const state = useBoardStore.getState();
+    const col1 = state.board!.columns.find((c) => c.id === 'col-1');
+    expect(col1!.cards[0].memos[0].content).toBe('Updated memo');
+  });
+
+  // --- handleMemoDeleted ---
+
+  it('handleMemoDeleted removes the memo from the card', () => {
+    const memo = createMemo({ id: 'memo-1', cardId: 'card-1' });
+    const card = createCard({ id: 'card-1', columnId: 'col-1', memos: [memo] });
+    const board = createBoard({
+      columns: [
+        createColumn({ id: 'col-1', cards: [card] }),
+        createColumn({ id: 'col-2' }),
+        createColumn({ id: 'col-3' }),
+      ],
+    });
+    useBoardStore.setState({ board });
+
+    useBoardStore.getState().handleMemoDeleted({ cardId: 'card-1', memoId: 'memo-1' });
+
+    const state = useBoardStore.getState();
+    const col1 = state.board!.columns.find((c) => c.id === 'col-1');
+    expect(col1!.cards[0].memos).toHaveLength(0);
   });
 });

@@ -23,9 +23,27 @@ import { vi } from 'vitest'
  *   })
  */
 
+/** DndContext に渡されたコールバックを保持する。テストから参照用。 */
+export const capturedDndCallbacks: {
+  onDragStart?: (event: { active: { id: string } }) => void
+  onDragEnd?: (event: { active: { id: string }; over: { id: string } | null }) => void
+} = {}
+
 export function createDndCoreMock() {
   return {
-    DndContext: ({ children }: { children: React.ReactNode }) => children,
+    DndContext: ({
+      children,
+      onDragStart,
+      onDragEnd,
+    }: {
+      children: React.ReactNode
+      onDragStart?: typeof capturedDndCallbacks.onDragStart
+      onDragEnd?: typeof capturedDndCallbacks.onDragEnd
+    }) => {
+      capturedDndCallbacks.onDragStart = onDragStart
+      capturedDndCallbacks.onDragEnd = onDragEnd
+      return children
+    },
     DragOverlay: ({ children }: { children: React.ReactNode }) => children,
     closestCorners: vi.fn(),
     PointerSensor: vi.fn(),

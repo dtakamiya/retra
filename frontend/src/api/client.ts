@@ -2,6 +2,7 @@ import type {
   Board,
   Card,
   Framework,
+  Memo,
   Participant,
   Phase,
   RemainingVotes,
@@ -118,5 +119,27 @@ export const api = {
 
   getTimerState(slug: string): Promise<TimerState> {
     return request(`/boards/${slug}/timer`);
+  },
+
+  // Memos
+  createMemo(slug: string, cardId: string, content: string, participantId: string): Promise<Memo> {
+    return request(`/boards/${slug}/cards/${cardId}/memos`, {
+      method: 'POST',
+      body: JSON.stringify({ content, participantId }),
+    });
+  },
+
+  updateMemo(slug: string, cardId: string, memoId: string, content: string, participantId: string): Promise<Memo> {
+    return request(`/boards/${slug}/cards/${cardId}/memos/${memoId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ content, participantId }),
+    });
+  },
+
+  deleteMemo(slug: string, cardId: string, memoId: string, participantId: string): Promise<void> {
+    return request(`/boards/${slug}/cards/${cardId}/memos/${memoId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ participantId }),
+    });
   },
 };

@@ -2,6 +2,7 @@ package com.retra.shared.gateway.websocket
 
 import com.retra.board.domain.BoardEvent
 import com.retra.card.domain.CardEvent
+import com.retra.card.domain.MemoEvent
 import com.retra.card.domain.VoteEvent
 import io.mockk.mockk
 import io.mockk.verify
@@ -27,6 +28,41 @@ class DomainEventBroadcasterTest {
             messagingTemplate.convertAndSend(
                 "/topic/board/test1234/cards",
                 match<WebSocketMessage> { it.type == "CARD_CREATED" }
+            )
+        }
+    }
+
+    @Test
+    fun `CardUpdated イベントで cards トピックに送信`() {
+        val event = CardEvent.CardUpdated(
+            slug = "test1234", cardId = "c-1", columnId = "col-1",
+            content = "Updated content", authorNickname = "Alice", participantId = "p-1",
+            voteCount = 2, sortOrder = 1, createdAt = "2024-01-01", updatedAt = "2024-01-02"
+        )
+
+        broadcaster.handleCardUpdated(event)
+
+        verify {
+            messagingTemplate.convertAndSend(
+                "/topic/board/test1234/cards",
+                match<WebSocketMessage> { it.type == "CARD_UPDATED" }
+            )
+        }
+    }
+
+    @Test
+    fun `CardMoved イベントで cards トピックに送信`() {
+        val event = CardEvent.CardMoved(
+            slug = "test1234", cardId = "c-1",
+            sourceColumnId = "col-1", targetColumnId = "col-2", sortOrder = 0
+        )
+
+        broadcaster.handleCardMoved(event)
+
+        verify {
+            messagingTemplate.convertAndSend(
+                "/topic/board/test1234/cards",
+                match<WebSocketMessage> { it.type == "CARD_MOVED" }
             )
         }
     }
@@ -119,6 +155,56 @@ class DomainEventBroadcasterTest {
             messagingTemplate.convertAndSend(
                 "/topic/board/test1234/participants",
                 match<WebSocketMessage> { it.type == "OFFLINE" }
+            )
+        }
+    }
+
+    @Test
+    fun `MemoCreated イベントで memos トピックに送信`() {
+        val event = MemoEvent.MemoCreated(
+            slug = "test1234", cardId = "c-1", memoId = "m-1",
+            content = "Test memo", authorNickname = "Alice", participantId = "p-1",
+            createdAt = "2024-01-01", updatedAt = "2024-01-01"
+        )
+
+        broadcaster.handleMemoCreated(event)
+
+        verify {
+            messagingTemplate.convertAndSend(
+                "/topic/board/test1234/memos",
+                match<WebSocketMessage> { it.type == "MEMO_CREATED" }
+            )
+        }
+    }
+
+    @Test
+    fun `MemoUpdated イベントで memos トピックに送信`() {
+        val event = MemoEvent.MemoUpdated(
+            slug = "test1234", cardId = "c-1", memoId = "m-1",
+            content = "Updated memo", authorNickname = "Alice", participantId = "p-1",
+            createdAt = "2024-01-01", updatedAt = "2024-01-01"
+        )
+
+        broadcaster.handleMemoUpdated(event)
+
+        verify {
+            messagingTemplate.convertAndSend(
+                "/topic/board/test1234/memos",
+                match<WebSocketMessage> { it.type == "MEMO_UPDATED" }
+            )
+        }
+    }
+
+    @Test
+    fun `MemoDeleted イベントで memos トピックに送信`() {
+        val event = MemoEvent.MemoDeleted("test1234", "c-1", "m-1")
+
+        broadcaster.handleMemoDeleted(event)
+
+        verify {
+            messagingTemplate.convertAndSend(
+                "/topic/board/test1234/memos",
+                match<WebSocketMessage> { it.type == "MEMO_DELETED" }
             )
         }
     }

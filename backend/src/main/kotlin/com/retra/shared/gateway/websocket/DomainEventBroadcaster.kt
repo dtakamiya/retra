@@ -2,6 +2,7 @@ package com.retra.shared.gateway.websocket
 
 import com.retra.board.domain.BoardEvent
 import com.retra.card.domain.CardEvent
+import com.retra.card.domain.MemoEvent
 import com.retra.card.domain.VoteEvent
 import org.springframework.context.event.EventListener
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -131,6 +132,49 @@ class DomainEventBroadcaster(
                 if (event.isOnline) "ONLINE" else "OFFLINE",
                 mapOf("participantId" to event.participantId)
             )
+        )
+    }
+
+    @EventListener
+    fun handleMemoCreated(event: MemoEvent.MemoCreated) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.slug}/memos",
+            WebSocketMessage("MEMO_CREATED", mapOf(
+                "id" to event.memoId,
+                "cardId" to event.cardId,
+                "content" to event.content,
+                "authorNickname" to event.authorNickname,
+                "participantId" to event.participantId,
+                "createdAt" to event.createdAt,
+                "updatedAt" to event.updatedAt
+            ))
+        )
+    }
+
+    @EventListener
+    fun handleMemoUpdated(event: MemoEvent.MemoUpdated) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.slug}/memos",
+            WebSocketMessage("MEMO_UPDATED", mapOf(
+                "id" to event.memoId,
+                "cardId" to event.cardId,
+                "content" to event.content,
+                "authorNickname" to event.authorNickname,
+                "participantId" to event.participantId,
+                "createdAt" to event.createdAt,
+                "updatedAt" to event.updatedAt
+            ))
+        )
+    }
+
+    @EventListener
+    fun handleMemoDeleted(event: MemoEvent.MemoDeleted) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.slug}/memos",
+            WebSocketMessage("MEMO_DELETED", mapOf(
+                "cardId" to event.cardId,
+                "memoId" to event.memoId
+            ))
         )
     }
 }

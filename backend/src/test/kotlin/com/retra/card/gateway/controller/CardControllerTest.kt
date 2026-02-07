@@ -52,7 +52,8 @@ class CardControllerTest {
         voteCount = 0,
         sortOrder = 0,
         createdAt = "2024-01-01T00:00:00Z",
-        updatedAt = "2024-01-01T00:00:00Z"
+        updatedAt = "2024-01-01T00:00:00Z",
+        memos = emptyList()
     )
 
     @Test

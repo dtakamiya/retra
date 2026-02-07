@@ -1,0 +1,96 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { MemoForm } from './MemoForm'
+import { useBoardStore } from '../store/boardStore'
+import { api } from '../api/client'
+import { createBoard, createParticipant } from '../test/fixtures'
+
+vi.mock('../store/boardStore')
+vi.mock('../api/client', () => ({
+  api: {
+    createMemo: vi.fn(),
+  },
+}))
+
+describe('MemoForm', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('returns null when board or participant is null', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: null,
+      participant: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    const { container } = render(<MemoForm cardId="card-1" />)
+    expect(container.innerHTML).toBe('')
+  })
+
+  it('renders textarea and send button', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1' }),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<MemoForm cardId="card-1" />)
+
+    expect(screen.getByPlaceholderText('メモを追加...')).toBeInTheDocument()
+    expect(screen.getByLabelText('メモを送信')).toBeInTheDocument()
+  })
+
+  it('send button is disabled when content is empty', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1' }),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<MemoForm cardId="card-1" />)
+
+    expect(screen.getByLabelText('メモを送信')).toBeDisabled()
+  })
+
+  it('clicking send calls api.createMemo and clears input', async () => {
+    const user = userEvent.setup()
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ slug: 'test-slug', phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1' }),
+    } as unknown as ReturnType<typeof useBoardStore>)
+    vi.mocked(api.createMemo).mockResolvedValue({
+      id: 'memo-1', cardId: 'card-1', content: 'メモ内容',
+      authorNickname: 'TestUser', participantId: 'p-1',
+      createdAt: '', updatedAt: '',
+    })
+
+    render(<MemoForm cardId="card-1" />)
+
+    const textarea = screen.getByPlaceholderText('メモを追加...')
+    await user.type(textarea, 'メモ内容')
+    await user.click(screen.getByLabelText('メモを送信'))
+
+    expect(api.createMemo).toHaveBeenCalledWith('test-slug', 'card-1', 'メモ内容', 'p-1')
+    expect(textarea).toHaveValue('')
+  })
+
+  it('pressing Enter submits the memo', async () => {
+    const user = userEvent.setup()
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ slug: 'test-slug', phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1' }),
+    } as unknown as ReturnType<typeof useBoardStore>)
+    vi.mocked(api.createMemo).mockResolvedValue({
+      id: 'memo-1', cardId: 'card-1', content: 'Enter送信',
+      authorNickname: 'TestUser', participantId: 'p-1',
+      createdAt: '', updatedAt: '',
+    })
+
+    render(<MemoForm cardId="card-1" />)
+
+    const textarea = screen.getByPlaceholderText('メモを追加...')
+    await user.type(textarea, 'Enter送信')
+    await user.type(textarea, '{Enter}')
+
+    expect(api.createMemo).toHaveBeenCalledWith('test-slug', 'card-1', 'Enter送信', 'p-1')
+  })
+})

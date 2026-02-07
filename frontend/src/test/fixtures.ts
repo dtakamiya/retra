@@ -1,4 +1,4 @@
-import type { Board, Card, Column, Participant, RemainingVotes, TimerState, Vote } from '../types'
+import type { Board, Card, Column, Memo, Participant, RemainingVotes, TimerState, Vote } from '../types'
 
 export function createParticipant(overrides: Partial<Participant> = {}): Participant {
   return {
@@ -7,6 +7,19 @@ export function createParticipant(overrides: Partial<Participant> = {}): Partici
     isFacilitator: true,
     isOnline: true,
     createdAt: '2024-01-01T00:00:00Z',
+    ...overrides,
+  }
+}
+
+export function createMemo(overrides: Partial<Memo> = {}): Memo {
+  return {
+    id: 'memo-1',
+    cardId: 'card-1',
+    content: 'Test memo content',
+    authorNickname: 'TestUser',
+    participantId: 'p-1',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
     ...overrides,
   }
 }
@@ -22,6 +35,7 @@ export function createCard(overrides: Partial<Card> = {}): Card {
     sortOrder: 0,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
+    memos: [],
     ...overrides,
   }
 }

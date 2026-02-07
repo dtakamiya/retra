@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, act, waitFor } from '@testing-library/react'
 import { BoardView } from './BoardView'
 import { useBoardStore } from '../store/boardStore'
-import { createBoard, createColumn, createParticipant } from '../test/fixtures'
+import { api } from '../api/client'
+import { createBoard, createCard, createColumn, createParticipant } from '../test/fixtures'
+import { capturedDndCallbacks } from '../test/dnd-mocks'
 
 vi.mock('../store/boardStore')
 vi.mock('../api/client', () => ({
@@ -14,6 +16,7 @@ vi.mock('../api/client', () => ({
     deleteCard: vi.fn(),
     moveCard: vi.fn(),
     getBoard: vi.fn(),
+    createMemo: vi.fn(),
   },
 }))
 vi.mock('@dnd-kit/core', async () => {
@@ -126,5 +129,220 @@ describe('BoardView', () => {
     render(<BoardView />)
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('handleDragStart sets active card from DnD event', () => {
+    const card = createCard({ id: 'card-1', content: 'Test card' })
+    const board = createBoard({
+      phase: 'WRITING',
+      columns: [
+        createColumn({ id: 'col-1', name: 'Keep', color: '#22c55e', cards: [card] }),
+      ],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board,
+      participant: createParticipant(),
+      handleCardMoved: vi.fn(),
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<BoardView />)
+
+    act(() => {
+      capturedDndCallbacks.onDragStart?.({ active: { id: 'card-1' } })
+    })
+
+    // DragOverlay renders the card content when activeCard is set
+    const cardTexts = screen.getAllByText('Test card')
+    expect(cardTexts.length).toBeGreaterThanOrEqual(2) // original + overlay
+  })
+
+  it('handleDragEnd calls moveCard API on successful drop to another column', async () => {
+    const card = createCard({ id: 'card-1', sortOrder: 0 })
+    const board = createBoard({
+      phase: 'WRITING',
+      columns: [
+        createColumn({ id: 'col-1', name: 'Keep', cards: [card] }),
+        createColumn({ id: 'col-2', name: 'Problem', cards: [] }),
+      ],
+    })
+    const handleCardMoved = vi.fn()
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board,
+      participant: createParticipant({ id: 'p-1' }),
+      handleCardMoved,
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    vi.mocked(api.moveCard).mockResolvedValue(undefined)
+
+    render(<BoardView />)
+
+    await act(async () => {
+      capturedDndCallbacks.onDragEnd?.({ active: { id: 'card-1' }, over: { id: 'col-2' } })
+    })
+
+    expect(handleCardMoved).toHaveBeenCalledWith({
+      cardId: 'card-1',
+      sourceColumnId: 'col-1',
+      targetColumnId: 'col-2',
+      sortOrder: 0,
+    })
+    expect(api.moveCard).toHaveBeenCalledWith('test1234', 'card-1', 'col-2', 0, 'p-1')
+  })
+
+  it('handleDragEnd does nothing when over is null', async () => {
+    const card = createCard({ id: 'card-1' })
+    const board = createBoard({
+      phase: 'WRITING',
+      columns: [createColumn({ id: 'col-1', cards: [card] })],
+    })
+    const handleCardMoved = vi.fn()
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board,
+      participant: createParticipant(),
+      handleCardMoved,
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<BoardView />)
+
+    await act(async () => {
+      capturedDndCallbacks.onDragEnd?.({ active: { id: 'card-1' }, over: null })
+    })
+
+    expect(handleCardMoved).not.toHaveBeenCalled()
+  })
+
+  it('handleDragEnd shows error and refreshes board when moveCard API fails', async () => {
+    const card = createCard({ id: 'card-1', sortOrder: 0 })
+    const board = createBoard({
+      phase: 'WRITING',
+      columns: [
+        createColumn({ id: 'col-1', cards: [card] }),
+        createColumn({ id: 'col-2', cards: [] }),
+      ],
+    })
+    const refreshedBoard = createBoard({ id: 'refreshed' })
+    const setBoard = vi.fn()
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board,
+      participant: createParticipant({ id: 'p-1' }),
+      handleCardMoved: vi.fn(),
+      setBoard,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    vi.mocked(api.moveCard).mockRejectedValue(new Error('Network error'))
+    vi.mocked(api.getBoard).mockResolvedValue(refreshedBoard)
+
+    render(<BoardView />)
+
+    await act(async () => {
+      capturedDndCallbacks.onDragEnd?.({ active: { id: 'card-1' }, over: { id: 'col-2' } })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent('カードの移動に失敗しました')
+    })
+    expect(api.getBoard).toHaveBeenCalledWith('test1234')
+    expect(setBoard).toHaveBeenCalledWith(refreshedBoard)
+  })
+
+  it('handleDragEnd shows error even when board refresh fails', async () => {
+    const card = createCard({ id: 'card-1', sortOrder: 0 })
+    const board = createBoard({
+      phase: 'WRITING',
+      columns: [
+        createColumn({ id: 'col-1', cards: [card] }),
+        createColumn({ id: 'col-2', cards: [] }),
+      ],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board,
+      participant: createParticipant({ id: 'p-1' }),
+      handleCardMoved: vi.fn(),
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    vi.mocked(api.moveCard).mockRejectedValue(new Error('Network error'))
+    vi.mocked(api.getBoard).mockRejectedValue(new Error('Also failed'))
+
+    render(<BoardView />)
+
+    await act(async () => {
+      capturedDndCallbacks.onDragEnd?.({ active: { id: 'card-1' }, over: { id: 'col-2' } })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent('カードの移動に失敗しました')
+    })
+  })
+
+  it('handleDragEnd drops card onto another card (reorder within column)', async () => {
+    const card1 = createCard({ id: 'card-1', sortOrder: 0 })
+    const card2 = createCard({ id: 'card-2', sortOrder: 1 })
+    const card3 = createCard({ id: 'card-3', sortOrder: 2 })
+    const board = createBoard({
+      phase: 'WRITING',
+      columns: [
+        createColumn({ id: 'col-1', cards: [card1, card2, card3] }),
+      ],
+    })
+    const handleCardMoved = vi.fn()
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board,
+      participant: createParticipant({ id: 'p-1' }),
+      handleCardMoved,
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    vi.mocked(api.moveCard).mockResolvedValue(undefined)
+
+    render(<BoardView />)
+
+    // card-1(sortOrder=0) を card-3(sortOrder=2) の位置にドロップ
+    await act(async () => {
+      capturedDndCallbacks.onDragEnd?.({ active: { id: 'card-1' }, over: { id: 'card-3' } })
+    })
+
+    // card-1を除外した配列 [card-2, card-3] で card-3 は index 1
+    expect(handleCardMoved).toHaveBeenCalledWith({
+      cardId: 'card-1',
+      sourceColumnId: 'col-1',
+      targetColumnId: 'col-1',
+      sortOrder: 1,
+    })
+  })
+
+  it('handleDragEnd skips when card is dropped at same position', async () => {
+    const card = createCard({ id: 'card-1', sortOrder: 0 })
+    const board = createBoard({
+      phase: 'WRITING',
+      columns: [
+        createColumn({ id: 'col-1', cards: [card] }),
+      ],
+    })
+    const handleCardMoved = vi.fn()
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board,
+      participant: createParticipant({ id: 'p-1' }),
+      handleCardMoved,
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<BoardView />)
+
+    await act(async () => {
+      capturedDndCallbacks.onDragEnd?.({ active: { id: 'card-1' }, over: { id: 'col-1' } })
+    })
+
+    expect(handleCardMoved).not.toHaveBeenCalled()
   })
 })

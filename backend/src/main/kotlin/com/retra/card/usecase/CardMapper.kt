@@ -15,7 +15,8 @@ object CardMapper {
             voteCount = card.votes.size,
             sortOrder = card.sortOrder,
             createdAt = card.createdAt,
-            updatedAt = card.updatedAt
+            updatedAt = card.updatedAt,
+            memos = card.memos.map { MemoMapper.toMemoResponse(it) }
         )
     }
 

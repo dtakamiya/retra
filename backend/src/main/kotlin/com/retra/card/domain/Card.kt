@@ -45,7 +45,10 @@ open class Card(
     open var updatedAt: String = Instant.now().toString(),
 
     @OneToMany(mappedBy = "card", cascade = [CascadeType.ALL], orphanRemoval = true)
-    open var votes: MutableList<Vote> = mutableListOf()
+    open var votes: MutableList<Vote> = mutableListOf(),
+
+    @OneToMany(mappedBy = "card", cascade = [CascadeType.ALL], orphanRemoval = true)
+    open var memos: MutableList<Memo> = mutableListOf()
 ) {
     @Transient
     private val _domainEvents: MutableList<DomainEvent> = mutableListOf()

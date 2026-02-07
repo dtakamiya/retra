@@ -34,6 +34,8 @@ enum class Phase {
 
     fun requiresFacilitatorForMove(): Boolean = this in listOf(DISCUSSION, ACTION_ITEMS)
 
+    fun canCreateMemo(): Boolean = this in listOf(DISCUSSION, ACTION_ITEMS)
+
     companion object {
         private val validTransitions = mapOf(
             WRITING to VOTING,

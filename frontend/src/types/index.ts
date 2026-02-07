@@ -23,6 +23,16 @@ export interface Column {
   cards: Card[];
 }
 
+export interface Memo {
+  id: string;
+  cardId: string;
+  content: string;
+  authorNickname: string | null;
+  participantId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Card {
   id: string;
   columnId: string;
@@ -33,6 +43,7 @@ export interface Card {
   sortOrder: number;
   createdAt: string;
   updatedAt: string;
+  memos: Memo[];
 }
 
 export interface Participant {
@@ -94,4 +105,9 @@ export interface CardMovedPayload {
   sourceColumnId: string;
   targetColumnId: string;
   sortOrder: number;
+}
+
+export interface MemoDeletedPayload {
+  cardId: string;
+  memoId: string;
 }

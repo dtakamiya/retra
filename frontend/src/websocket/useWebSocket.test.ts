@@ -46,6 +46,9 @@ function mockStoreHandlers() {
     handleParticipantJoined: vi.fn(),
     handleParticipantOnline: vi.fn(),
     handleParticipantOffline: vi.fn(),
+    handleMemoCreated: vi.fn(),
+    handleMemoUpdated: vi.fn(),
+    handleMemoDeleted: vi.fn(),
   }
   vi.mocked(useBoardStore).mockReturnValue(handlers as unknown as ReturnType<typeof useBoardStore>)
   return handlers
@@ -83,7 +86,7 @@ describe('useWebSocket', () => {
     expect(capturedConfig.brokerURL).toContain('/ws')
   })
 
-  it('on connect: sets connected, registers session, and subscribes to 5 topics', () => {
+  it('on connect: sets connected, registers session, and subscribes to 6 topics', () => {
     const handlers = mockStoreHandlers()
 
     renderHook(() => useWebSocket('test1234', 'p-1'))
@@ -96,13 +99,14 @@ describe('useWebSocket', () => {
       destination: '/app/board/test1234/register',
       body: JSON.stringify({ participantId: 'p-1' }),
     })
-    expect(mockSubscribe).toHaveBeenCalledTimes(5)
+    expect(mockSubscribe).toHaveBeenCalledTimes(6)
     // Verify subscription destinations
     const destinations = mockSubscribe.mock.calls.map((call) => call[0])
     expect(destinations).toContain('/topic/board/test1234/cards')
     expect(destinations).toContain('/topic/board/test1234/votes')
     expect(destinations).toContain('/topic/board/test1234/phase')
     expect(destinations).toContain('/topic/board/test1234/timer')
+    expect(destinations).toContain('/topic/board/test1234/memos')
     expect(destinations).toContain('/topic/board/test1234/participants')
   })
 
@@ -187,6 +191,27 @@ describe('useWebSocket', () => {
       body: JSON.stringify({ type: 'OFFLINE', payload: offlinePayload }),
     })
     expect(handlers.handleParticipantOffline).toHaveBeenCalledWith(offlinePayload)
+
+    // MEMO_CREATED
+    const memoCreatedPayload = { id: 'memo-1', cardId: 'card-1', content: 'New memo' }
+    callbackMap['/topic/board/test1234/memos']({
+      body: JSON.stringify({ type: 'MEMO_CREATED', payload: memoCreatedPayload }),
+    })
+    expect(handlers.handleMemoCreated).toHaveBeenCalledWith(memoCreatedPayload)
+
+    // MEMO_UPDATED
+    const memoUpdatedPayload = { id: 'memo-1', cardId: 'card-1', content: 'Updated memo' }
+    callbackMap['/topic/board/test1234/memos']({
+      body: JSON.stringify({ type: 'MEMO_UPDATED', payload: memoUpdatedPayload }),
+    })
+    expect(handlers.handleMemoUpdated).toHaveBeenCalledWith(memoUpdatedPayload)
+
+    // MEMO_DELETED
+    const memoDeletedPayload = { cardId: 'card-1', memoId: 'memo-1' }
+    callbackMap['/topic/board/test1234/memos']({
+      body: JSON.stringify({ type: 'MEMO_DELETED', payload: memoDeletedPayload }),
+    })
+    expect(handlers.handleMemoDeleted).toHaveBeenCalledWith(memoDeletedPayload)
   })
 
   it('sets connected false on disconnect', () => {

@@ -40,7 +40,8 @@ data class CardResponse(
     val voteCount: Int,
     val sortOrder: Int,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
+    val memos: List<MemoResponse> = emptyList()
 )
 
 data class VoteResponse(

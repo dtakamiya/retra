@@ -69,4 +69,13 @@ class PhaseTest {
         assertTrue(Phase.ACTION_ITEMS.canMoveCard())
         assertFalse(Phase.CLOSED.canMoveCard())
     }
+
+    @Test
+    fun `canCreateMemo は DISCUSSION と ACTION_ITEMS で true`() {
+        assertFalse(Phase.WRITING.canCreateMemo())
+        assertFalse(Phase.VOTING.canCreateMemo())
+        assertTrue(Phase.DISCUSSION.canCreateMemo())
+        assertTrue(Phase.ACTION_ITEMS.canCreateMemo())
+        assertFalse(Phase.CLOSED.canCreateMemo())
+    }
 }

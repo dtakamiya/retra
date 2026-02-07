@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { ThumbsUp, Pencil, Trash2, GripVertical } from 'lucide-react';
+import { ThumbsUp, Pencil, Trash2, GripVertical, MessageSquare } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
+import { MemoList } from './MemoList';
 import type { Card } from '../types';
 
 interface Props {
@@ -17,6 +18,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(card.content);
   const [loading, setLoading] = useState(false);
+  const [memosExpanded, setMemosExpanded] = useState(false);
 
   const isAuthor = board && participant ? card.participantId === participant.id : false;
   const isFacilitator = participant?.isFacilitator ?? false;
@@ -24,6 +26,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
   const isVoting = phase === 'VOTING';
   const isWriting = phase === 'WRITING';
   const isDiscussionLike = phase === 'DISCUSSION' || phase === 'ACTION_ITEMS';
+  const showMemos = isDiscussionLike || phase === 'CLOSED';
 
   const isDndEnabled =
     (isWriting && isAuthor) || (isDiscussionLike && isFacilitator);
@@ -217,7 +220,24 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
             </button>
           </div>
         )}
+
+        {/* Memo toggle */}
+        {showMemos && (
+          <button
+            onClick={() => setMemosExpanded(!memosExpanded)}
+            className="flex items-center gap-1 px-1.5 py-0.5 text-xs text-gray-400 hover:text-gray-600 rounded transition-colors"
+            aria-label="メモを表示"
+          >
+            <MessageSquare size={12} />
+            {card.memos.length > 0 && <span>{card.memos.length}</span>}
+          </button>
+        )}
       </div>
+
+      {/* Memo list */}
+      {showMemos && memosExpanded && (
+        <MemoList cardId={card.id} memos={card.memos} />
+      )}
     </div>
   );
 }

@@ -5,6 +5,8 @@ import type {
   Card,
   CardDeletedPayload,
   CardMovedPayload,
+  Memo,
+  MemoDeletedPayload,
   Participant,
   ParticipantOnlinePayload,
   TimerState,
@@ -28,6 +30,9 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleParticipantJoined,
     handleParticipantOnline,
     handleParticipantOffline,
+    handleMemoCreated,
+    handleMemoUpdated,
+    handleMemoDeleted,
   } = useBoardStore();
 
   const connect = useCallback(() => {
@@ -97,6 +102,22 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
           }
         });
 
+        // Subscribe to memo events
+        client.subscribe(`/topic/board/${slug}/memos`, (message) => {
+          const data: WebSocketMessage = JSON.parse(message.body);
+          switch (data.type) {
+            case 'MEMO_CREATED':
+              handleMemoCreated(data.payload as Memo);
+              break;
+            case 'MEMO_UPDATED':
+              handleMemoUpdated(data.payload as Memo);
+              break;
+            case 'MEMO_DELETED':
+              handleMemoDeleted(data.payload as MemoDeletedPayload);
+              break;
+          }
+        });
+
         // Subscribe to participant events
         client.subscribe(`/topic/board/${slug}/participants`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
@@ -139,6 +160,9 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleParticipantJoined,
     handleParticipantOnline,
     handleParticipantOffline,
+    handleMemoCreated,
+    handleMemoUpdated,
+    handleMemoDeleted,
   ]);
 
   useEffect(() => {

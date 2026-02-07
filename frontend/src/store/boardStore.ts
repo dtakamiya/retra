@@ -4,6 +4,8 @@ import type {
   Card,
   CardDeletedPayload,
   CardMovedPayload,
+  Memo,
+  MemoDeletedPayload,
   Participant,
   ParticipantOnlinePayload,
   Phase,
@@ -37,6 +39,9 @@ interface BoardState {
   handleParticipantJoined: (participant: Participant) => void;
   handleParticipantOnline: (payload: ParticipantOnlinePayload) => void;
   handleParticipantOffline: (payload: ParticipantOnlinePayload) => void;
+  handleMemoCreated: (memo: Memo) => void;
+  handleMemoUpdated: (memo: Memo) => void;
+  handleMemoDeleted: (payload: MemoDeletedPayload) => void;
 }
 
 export const useBoardStore = create<BoardState>((set) => ({
@@ -197,5 +202,45 @@ export const useBoardStore = create<BoardState>((set) => ({
           ),
         },
       };
+    }),
+
+  handleMemoCreated: (memo) =>
+    set((state) => {
+      if (!state.board) return state;
+      const columns = state.board.columns.map((col) => ({
+        ...col,
+        cards: col.cards.map((c) =>
+          c.id === memo.cardId ? { ...c, memos: [...c.memos, memo] } : c
+        ),
+      }));
+      return { board: { ...state.board, columns } };
+    }),
+
+  handleMemoUpdated: (memo) =>
+    set((state) => {
+      if (!state.board) return state;
+      const columns = state.board.columns.map((col) => ({
+        ...col,
+        cards: col.cards.map((c) =>
+          c.id === memo.cardId
+            ? { ...c, memos: c.memos.map((m) => (m.id === memo.id ? memo : m)) }
+            : c
+        ),
+      }));
+      return { board: { ...state.board, columns } };
+    }),
+
+  handleMemoDeleted: (payload) =>
+    set((state) => {
+      if (!state.board) return state;
+      const columns = state.board.columns.map((col) => ({
+        ...col,
+        cards: col.cards.map((c) =>
+          c.id === payload.cardId
+            ? { ...c, memos: c.memos.filter((m) => m.id !== payload.memoId) }
+            : c
+        ),
+      }));
+      return { board: { ...state.board, columns } };
     }),
 }));

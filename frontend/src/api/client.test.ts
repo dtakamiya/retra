@@ -240,6 +240,53 @@ describe('api client', () => {
     });
   });
 
+  // --- createMemo ---
+
+  it('createMemo sends POST with content and participantId', async () => {
+    const memo = { id: 'memo-1', cardId: 'card-1', content: 'New memo' };
+    mockResponse(memo, 201);
+
+    const result = await api.createMemo('slug1', 'card-1', 'New memo', 'p-1');
+
+    expect(result).toEqual(memo);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/cards/card-1/memos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: 'New memo', participantId: 'p-1' }),
+    });
+  });
+
+  // --- updateMemo ---
+
+  it('updateMemo sends PUT with content and participantId', async () => {
+    const memo = { id: 'memo-1', cardId: 'card-1', content: 'Updated memo' };
+    mockResponse(memo);
+
+    const result = await api.updateMemo('slug1', 'card-1', 'memo-1', 'Updated memo', 'p-1');
+
+    expect(result).toEqual(memo);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/cards/card-1/memos/memo-1', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: 'Updated memo', participantId: 'p-1' }),
+    });
+  });
+
+  // --- deleteMemo ---
+
+  it('deleteMemo sends DELETE with participantId', async () => {
+    mock204();
+
+    const result = await api.deleteMemo('slug1', 'card-1', 'memo-1', 'p-1');
+
+    expect(result).toBeUndefined();
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/cards/card-1/memos/memo-1', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participantId: 'p-1' }),
+    });
+  });
+
   // --- Error handling ---
 
   it('HTTP error throws Error with message from response', async () => {
