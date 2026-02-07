@@ -77,6 +77,7 @@ class BoardService(
         return toResponse(board)
     }
 
+    @Transactional(readOnly = true)
     fun findBoardBySlug(slug: String): Board {
         return boardRepository.findBySlug(slug)
             .orElseThrow { NotFoundException("Board not found: $slug") }

@@ -7,6 +7,8 @@ import com.retra.exception.BadRequestException
 import com.retra.exception.ForbiddenException
 import com.retra.exception.NotFoundException
 import com.retra.websocket.WebSocketMessage
+import jakarta.annotation.PreDestroy
+import org.slf4j.LoggerFactory
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,20 +17,36 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
-data class TimerState(
-    var remainingSeconds: Int = 0,
-    var totalSeconds: Int = 0,
-    var isRunning: Boolean = false
-)
-
 @Service
 class TimerService(
     private val boardService: BoardService,
     private val messagingTemplate: SimpMessagingTemplate
 ) {
+    private val logger = LoggerFactory.getLogger(TimerService::class.java)
+
+    private data class TimerState(
+        var remainingSeconds: Int = 0,
+        var totalSeconds: Int = 0,
+        var isRunning: Boolean = false
+    )
+
+    companion object {
+        private const val DEFAULT_TIMER_DURATION_SECONDS = 300
+        private const val MAX_TIMER_DURATION_SECONDS = 3600
+    }
+
     private val timers = ConcurrentHashMap<String, TimerState>()
     private val scheduledTasks = ConcurrentHashMap<String, ScheduledFuture<*>>()
     private val scheduler = Executors.newScheduledThreadPool(2)
+
+    @PreDestroy
+    fun shutdown() {
+        scheduledTasks.values.forEach { it.cancel(false) }
+        scheduler.shutdown()
+        if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+            scheduler.shutdownNow()
+        }
+    }
 
     @Transactional(readOnly = true)
     fun handleTimer(slug: String, request: TimerRequest): TimerStateResponse {
@@ -42,63 +60,80 @@ class TimerService(
 
         val state = timers.getOrPut(slug) { TimerState() }
 
-        when (request.action) {
-            TimerAction.START -> {
-                val duration = request.durationSeconds ?: 300
-                state.totalSeconds = duration
-                state.remainingSeconds = duration
-                state.isRunning = true
-                startBroadcasting(slug)
-            }
-            TimerAction.PAUSE -> {
-                state.isRunning = false
-                stopBroadcasting(slug)
-                broadcastTimerState(slug, state)
-            }
-            TimerAction.RESUME -> {
-                if (state.remainingSeconds > 0) {
+        synchronized(state) {
+            when (request.action) {
+                TimerAction.START -> {
+                    val duration = request.durationSeconds ?: DEFAULT_TIMER_DURATION_SECONDS
+                    if (duration !in 1..MAX_TIMER_DURATION_SECONDS) {
+                        throw BadRequestException("Duration must be between 1 and $MAX_TIMER_DURATION_SECONDS seconds")
+                    }
+                    state.totalSeconds = duration
+                    state.remainingSeconds = duration
                     state.isRunning = true
                     startBroadcasting(slug)
                 }
+                TimerAction.PAUSE -> {
+                    state.isRunning = false
+                    stopBroadcasting(slug)
+                    broadcastTimerState(slug, state)
+                }
+                TimerAction.RESUME -> {
+                    if (state.remainingSeconds > 0) {
+                        state.isRunning = true
+                        startBroadcasting(slug)
+                    }
+                }
+                TimerAction.RESET -> {
+                    state.isRunning = false
+                    state.remainingSeconds = 0
+                    state.totalSeconds = 0
+                    stopBroadcasting(slug)
+                    broadcastTimerState(slug, state)
+                }
             }
-            TimerAction.RESET -> {
-                state.isRunning = false
-                state.remainingSeconds = 0
-                state.totalSeconds = 0
-                stopBroadcasting(slug)
-                broadcastTimerState(slug, state)
-            }
-        }
 
-        return TimerStateResponse(
-            isRunning = state.isRunning,
-            remainingSeconds = state.remainingSeconds,
-            totalSeconds = state.totalSeconds
-        )
+            return TimerStateResponse(
+                isRunning = state.isRunning,
+                remainingSeconds = state.remainingSeconds,
+                totalSeconds = state.totalSeconds
+            )
+        }
     }
 
     fun getTimerState(slug: String): TimerStateResponse {
-        val state = timers[slug] ?: TimerState()
-        return TimerStateResponse(
-            isRunning = state.isRunning,
-            remainingSeconds = state.remainingSeconds,
-            totalSeconds = state.totalSeconds
+        val state = timers[slug] ?: return TimerStateResponse(
+            isRunning = false,
+            remainingSeconds = 0,
+            totalSeconds = 0
         )
+        synchronized(state) {
+            return TimerStateResponse(
+                isRunning = state.isRunning,
+                remainingSeconds = state.remainingSeconds,
+                totalSeconds = state.totalSeconds
+            )
+        }
     }
 
     private fun startBroadcasting(slug: String) {
         stopBroadcasting(slug)
 
         val future = scheduler.scheduleAtFixedRate({
-            val state = timers[slug] ?: return@scheduleAtFixedRate
-            if (state.isRunning && state.remainingSeconds > 0) {
-                state.remainingSeconds--
-                broadcastTimerState(slug, state)
+            try {
+                val state = timers[slug] ?: return@scheduleAtFixedRate
+                synchronized(state) {
+                    if (state.isRunning && state.remainingSeconds > 0) {
+                        state.remainingSeconds--
+                        broadcastTimerState(slug, state)
 
-                if (state.remainingSeconds <= 0) {
-                    state.isRunning = false
-                    stopBroadcasting(slug)
+                        if (state.remainingSeconds <= 0) {
+                            state.isRunning = false
+                            stopBroadcasting(slug)
+                        }
+                    }
                 }
+            } catch (e: Exception) {
+                logger.error("Timer broadcast failed for board $slug", e)
             }
         }, 1, 1, TimeUnit.SECONDS)
 
