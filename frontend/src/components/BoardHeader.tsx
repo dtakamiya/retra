@@ -35,12 +35,12 @@ export function BoardHeader() {
             {copied ? (
               <>
                 <Check size={16} className="text-green-500" />
-                <span className="text-green-600">Copied!</span>
+                <span className="text-green-600">コピーしました！</span>
               </>
             ) : (
               <>
                 <Copy size={16} />
-                <span>Share</span>
+                <span>共有</span>
               </>
             )}
           </button>

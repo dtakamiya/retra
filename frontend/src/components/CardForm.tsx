@@ -42,7 +42,7 @@ export function CardForm({ columnId, onClose }: Props) {
         value={content}
         onChange={(e) => setContent(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Type your thought... (Enter to submit, Shift+Enter for newline)"
+        placeholder="意見を入力...（Enterで送信、Shift+Enterで改行）"
         className="w-full resize-none border-0 focus:ring-0 outline-none text-sm text-gray-800 placeholder:text-gray-400 min-h-[60px]"
         autoFocus
         rows={3}
@@ -52,14 +52,14 @@ export function CardForm({ columnId, onClose }: Props) {
           onClick={onClose}
           className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 transition-colors"
         >
-          Cancel
+          キャンセル
         </button>
         <button
           onClick={handleSubmit}
           disabled={loading || !content.trim()}
           className="px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50 transition-colors"
         >
-          {loading ? '...' : 'Add'}
+          {loading ? '...' : '追加'}
         </button>
       </div>
     </div>

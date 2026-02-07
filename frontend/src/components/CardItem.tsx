@@ -101,14 +101,14 @@ export function CardItem({ card, columnColor }: Props) {
             }}
             className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700"
           >
-            Cancel
+            キャンセル
           </button>
           <button
             onClick={handleUpdate}
             disabled={loading || !editContent.trim()}
             className="px-3 py-1 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50"
           >
-            Save
+            保存
           </button>
         </div>
       </div>

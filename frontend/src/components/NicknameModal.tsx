@@ -18,7 +18,7 @@ export function NicknameModal({ onJoin, boardTitle }: Props) {
     try {
       await onJoin(nickname.trim());
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to join');
+      setError(err instanceof Error ? err.message : '参加に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -27,7 +27,7 @@ export function NicknameModal({ onJoin, boardTitle }: Props) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Join Board</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">ボードに参加</h2>
         <p className="text-gray-600 mb-6">{boardTitle}</p>
 
         {error && (
@@ -38,13 +38,13 @@ export function NicknameModal({ onJoin, boardTitle }: Props) {
 
         <form onSubmit={handleSubmit}>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Your Nickname
+            ニックネーム
           </label>
           <input
             type="text"
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
-            placeholder="Enter your nickname"
+            placeholder="ニックネームを入力"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition mb-4"
             autoFocus
             required
@@ -55,7 +55,7 @@ export function NicknameModal({ onJoin, boardTitle }: Props) {
             disabled={loading || !nickname.trim()}
             className="w-full py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {loading ? 'Joining...' : 'Join'}
+            {loading ? '参加中...' : '参加'}
           </button>
         </form>
       </div>

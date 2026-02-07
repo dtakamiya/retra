@@ -21,7 +21,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Unknown error' }));
+    const error = await response.json().catch(() => ({ message: '不明なエラー' }));
     throw new Error(error.message || `HTTP ${response.status}`);
   }
 

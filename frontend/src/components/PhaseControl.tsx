@@ -5,11 +5,11 @@ import { useBoardStore } from '../store/boardStore';
 import type { Phase } from '../types';
 
 const PHASES: { key: Phase; label: string }[] = [
-  { key: 'WRITING', label: 'Writing' },
-  { key: 'VOTING', label: 'Voting' },
-  { key: 'DISCUSSION', label: 'Discussion' },
-  { key: 'ACTION_ITEMS', label: 'Actions' },
-  { key: 'CLOSED', label: 'Closed' },
+  { key: 'WRITING', label: '記入' },
+  { key: 'VOTING', label: '投票' },
+  { key: 'DISCUSSION', label: '議論' },
+  { key: 'ACTION_ITEMS', label: 'アクション' },
+  { key: 'CLOSED', label: '完了' },
 ];
 
 const NEXT_PHASE: Record<Phase, Phase | null> = {
@@ -79,7 +79,7 @@ export function PhaseControl() {
           disabled={loading}
           className="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
         >
-          {loading ? '...' : `Next: ${PHASES.find((p) => p.key === nextPhase)?.label}`}
+          {loading ? '...' : `次へ: ${PHASES.find((p) => p.key === nextPhase)?.label}`}
         </button>
       )}
     </div>

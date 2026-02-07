@@ -39,7 +39,7 @@ export function ColumnView({ column }: Props) {
           <button
             onClick={() => setShowForm(true)}
             className="p-1 rounded hover:bg-white/50 transition-colors"
-            title="Add card"
+            title="カードを追加"
           >
             <Plus size={18} style={{ color: column.color }} />
           </button>
@@ -55,7 +55,7 @@ export function ColumnView({ column }: Props) {
         ))}
         {column.cards.length === 0 && !showForm && (
           <div className="text-center py-8 text-gray-400 text-sm">
-            {isWriting ? 'Click + to add a card' : 'No cards'}
+            {isWriting ? '＋ボタンでカードを追加' : 'カードはありません'}
           </div>
         )}
       </div>

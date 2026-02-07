@@ -23,7 +23,7 @@ export function ParticipantList({ compact = false }: Props) {
               className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium text-white border-2 border-white ${
                 p.isOnline ? 'bg-indigo-500' : 'bg-gray-300'
               }`}
-              title={`${p.nickname}${p.isFacilitator ? ' (Facilitator)' : ''}`}
+              title={`${p.nickname}${p.isFacilitator ? ' (ファシリテーター)' : ''}`}
             >
               {p.nickname.charAt(0).toUpperCase()}
             </div>
@@ -36,7 +36,7 @@ export function ParticipantList({ compact = false }: Props) {
         </div>
         {remainingVotes && board.phase === 'VOTING' && (
           <span className="text-xs text-indigo-600 font-medium ml-2">
-            {remainingVotes.remaining}/{remainingVotes.max} votes
+            残り{remainingVotes.remaining}/{remainingVotes.max}票
           </span>
         )}
       </div>
@@ -47,16 +47,16 @@ export function ParticipantList({ compact = false }: Props) {
     <div>
       <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
         <Users size={16} />
-        Participants ({onlineCount}/{board.participants.length})
+        参加者 ({onlineCount}/{board.participants.length})
       </h3>
 
       {remainingVotes && board.phase === 'VOTING' && (
         <div className="mb-3 px-3 py-2 bg-indigo-50 rounded-lg">
           <div className="text-sm text-indigo-700 font-medium">
-            Votes: {remainingVotes.used}/{remainingVotes.max}
+            投票: {remainingVotes.used}/{remainingVotes.max}
           </div>
           <div className="text-xs text-indigo-500">
-            {remainingVotes.remaining} remaining
+            残り {remainingVotes.remaining}票
           </div>
         </div>
       )}
@@ -83,7 +83,7 @@ export function ParticipantList({ compact = false }: Props) {
                 {p.nickname}
               </div>
               {p.isFacilitator && (
-                <div className="text-xs text-indigo-500">Facilitator</div>
+                <div className="text-xs text-indigo-500">ファシリテーター</div>
               )}
             </div>
           </div>

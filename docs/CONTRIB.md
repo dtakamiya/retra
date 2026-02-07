@@ -49,7 +49,7 @@ npm install
 |---------|-------|-------------|
 | `spring.datasource.url` | `jdbc:sqlite:retra.db` | SQLite データベースファイルパス |
 | `spring.datasource.hikari.maximum-pool-size` | `1` | SQLite は単一書き込みのため |
-| `spring.jpa.hibernate.ddl-auto` | `validate` | Flyway でマイグレーション管理 |
+| `spring.jpa.hibernate.ddl-auto` | `none` | Flyway でスキーマ管理 (Hibernate の DDL 自動生成は無効) |
 | `server.port` | `8080` | バックエンドのポート |
 
 ## Development Workflow
@@ -188,11 +188,11 @@ Conventional Commits 形式を使用:
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| React | 19 | UI ライブラリ |
+| React | ^19.2.0 | UI ライブラリ |
 | TypeScript | ~5.9.3 | 型安全 |
-| Vite | 7 | ビルドツール |
-| Zustand | 5 | 状態管理 |
-| TailwindCSS | v4 | CSS フレームワーク |
-| @stomp/stompjs | 7 | WebSocket (STOMP) クライアント |
-| React Router | 7 | ルーティング |
-| Lucide React | - | アイコン |
+| Vite | ^7.2.4 | ビルドツール |
+| Zustand | ^5.0.11 | 状態管理 |
+| TailwindCSS | ^4.1.18 | CSS フレームワーク |
+| @stomp/stompjs | ^7.3.0 | WebSocket (STOMP) クライアント |
+| React Router | ^7.13.0 | ルーティング |
+| Lucide React | ^0.563.0 | アイコン |

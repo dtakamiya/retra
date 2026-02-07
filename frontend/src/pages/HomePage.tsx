@@ -30,7 +30,7 @@ export function HomePage() {
       const board = await api.createBoard(title.trim(), framework, maxVotes);
       navigate(`/board/${board.slug}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create board');
+      setError(err instanceof Error ? err.message : 'ボードの作成に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -49,7 +49,7 @@ export function HomePage() {
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-gray-900 mb-3">Retra</h1>
           <p className="text-lg text-gray-600">
-            Lightweight retrospective board for scrum teams
+            スクラムチームのためのレトロスペクティブボード
           </p>
         </div>
 
@@ -65,7 +65,7 @@ export function HomePage() {
               }`}
             >
               <LayoutGrid size={18} />
-              Create Board
+              ボードを作成
             </button>
             <button
               onClick={() => setMode('join')}
@@ -76,7 +76,7 @@ export function HomePage() {
               }`}
             >
               <Users size={18} />
-              Join Board
+              ボードに参加
             </button>
           </div>
 
@@ -90,13 +90,13 @@ export function HomePage() {
             <form onSubmit={handleCreate} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Board Title
+                  ボードタイトル
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Sprint 42 Retrospective"
+                  placeholder="スプリント42 ふりかえり"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
                   required
                 />
@@ -104,7 +104,7 @@ export function HomePage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Framework
+                  フレームワーク
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {FRAMEWORKS.map((fw) => (
@@ -127,7 +127,7 @@ export function HomePage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Max Votes Per Person
+                  1人あたりの最大投票数
                 </label>
                 <input
                   type="number"
@@ -144,20 +144,20 @@ export function HomePage() {
                 disabled={loading || !title.trim()}
                 className="w-full py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Creating...' : 'Create Board'}
+                {loading ? '作成中...' : 'ボードを作成'}
               </button>
             </form>
           ) : (
             <form onSubmit={handleJoin} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Board URL or Code
+                  ボードURLまたはコード
                 </label>
                 <input
                   type="text"
                   value={joinSlug}
                   onChange={(e) => setJoinSlug(e.target.value)}
-                  placeholder="Enter board code or paste URL"
+                  placeholder="ボードコードを入力またはURLを貼り付け"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
                   required
                 />
@@ -168,7 +168,7 @@ export function HomePage() {
                 disabled={!joinSlug.trim()}
                 className="w-full py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Join Board
+                ボードに参加
               </button>
             </form>
           )}

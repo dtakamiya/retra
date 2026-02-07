@@ -46,7 +46,7 @@ export function BoardPage() {
       const timerState = await api.getTimerState(slug);
       setTimer(timerState);
     } catch {
-      setError('Board not found');
+      setError('ボードが見つかりません');
     } finally {
       setLoading(false);
     }
@@ -79,7 +79,7 @@ export function BoardPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading board...</p>
+          <p className="text-gray-600">ボードを読み込み中...</p>
         </div>
       </div>
     );
@@ -89,12 +89,12 @@ export function BoardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <p className="text-xl text-gray-600 mb-4">{error || 'Board not found'}</p>
+          <p className="text-xl text-gray-600 mb-4">{error || 'ボードが見つかりません'}</p>
           <button
             onClick={() => navigate('/')}
             className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
           >
-            Back to Home
+            ホームに戻る
           </button>
         </div>
       </div>

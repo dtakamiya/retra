@@ -33,7 +33,7 @@ java -jar build/libs/retra-0.0.1-SNAPSHOT.jar
 |---------|-------|-------------|
 | Port | 8080 | `application.yml` の `server.port` |
 | Database | `retra.db` (相対パス) | JAR 実行ディレクトリに作成される |
-| JPA DDL | `validate` | Flyway でスキーマ管理 |
+| JPA DDL | `none` | Flyway でスキーマ管理 (Hibernate DDL 自動生成無効) |
 
 ### 環境変数によるオーバーライド
 

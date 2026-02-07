@@ -73,7 +73,7 @@ export function TimerDisplay({ compact = false }: Props) {
     <div className="mb-6">
       <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
         <Timer size={16} />
-        Timer
+        タイマー
       </h3>
 
       <div
@@ -92,7 +92,7 @@ export function TimerDisplay({ compact = false }: Props) {
 
       {isExpired && (
         <div className="text-center text-sm text-red-500 mb-3 font-medium">
-          Time's up!
+          時間切れ！
         </div>
       )}
 
@@ -108,18 +108,18 @@ export function TimerDisplay({ compact = false }: Props) {
                 max={60}
                 className="w-16 px-2 py-1 border border-gray-300 rounded text-sm text-center"
               />
-              <span className="text-sm text-gray-500">min</span>
+              <span className="text-sm text-gray-500">分</span>
               <button
                 onClick={handleStart}
                 className="flex-1 px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
               >
-                Start
+                開始
               </button>
               <button
                 onClick={() => setShowDuration(false)}
                 className="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700"
               >
-                Cancel
+                キャンセル
               </button>
             </div>
           ) : (
@@ -130,7 +130,7 @@ export function TimerDisplay({ compact = false }: Props) {
                   className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
                 >
                   <Play size={14} />
-                  Start
+                  開始
                 </button>
               )}
               {timer.isRunning && (
@@ -139,7 +139,7 @@ export function TimerDisplay({ compact = false }: Props) {
                   className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600 transition-colors"
                 >
                   <Pause size={14} />
-                  Pause
+                  一時停止
                 </button>
               )}
               {!timer.isRunning && timer.remainingSeconds > 0 && (
@@ -148,7 +148,7 @@ export function TimerDisplay({ compact = false }: Props) {
                   className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
                 >
                   <Play size={14} />
-                  Resume
+                  再開
                 </button>
               )}
               {timer.totalSeconds > 0 && (
