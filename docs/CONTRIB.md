@@ -78,6 +78,11 @@ cd frontend && npm run dev
 | `build` | `tsc -b && vite build` | TypeScript チェック + プロダクションビルド |
 | `lint` | `eslint .` | ESLint によるコード検査 |
 | `preview` | `vite preview` | ビルド後のプレビューサーバー |
+| `test` | `vitest run` | ユニットテスト実行 |
+| `test:watch` | `vitest` | テスト監視モード |
+| `test:coverage` | `vitest run --coverage` | テスト + カバレッジレポート (V8) |
+| `test:e2e` | `playwright test` | E2E テスト実行 |
+| `test:e2e:ui` | `playwright test --ui` | E2E テスト (UI モード) |
 
 #### Backend (Gradle Tasks)
 
@@ -85,8 +90,10 @@ cd frontend && npm run dev
 |------|-------------|
 | `./gradlew bootRun` | 開発サーバー起動 |
 | `./gradlew build` | アプリケーションビルド (JAR 生成) |
-| `./gradlew test` | テスト実行 |
+| `./gradlew test` | テスト実行 (JaCoCo レポート自動生成) |
 | `./gradlew copyFrontend` | フロントエンドビルド成果物を `resources/static` にコピー |
+| `./gradlew jacocoTestReport` | コードカバレッジレポート生成 (HTML + XML) |
+| `./gradlew jacocoTestCoverageVerification` | カバレッジ検証 (80% 閾値) |
 
 ## Testing
 
@@ -96,8 +103,30 @@ cd frontend && npm run dev
 cd backend && ./gradlew test
 ```
 
-- JUnit 5 + Spring Boot Test
+- JUnit 5 + MockK + Mockito-Kotlin
 - テストは `backend/src/test/` 配下
+- JaCoCo カバレッジ 80% 閾値
+- テスト用 DB: インメモリ SQLite (`jdbc:sqlite::memory:`)
+
+### フロントエンドテスト
+
+```bash
+# ユニットテスト
+cd frontend && npm run test
+
+# テスト (監視モード)
+cd frontend && npm run test:watch
+
+# カバレッジレポート
+cd frontend && npm run test:coverage
+
+# E2E テスト
+cd frontend && npm run test:e2e
+```
+
+- Vitest + React Testing Library + jsdom
+- V8 カバレッジ 80% 閾値
+- 全コンポーネントにコロケーションテストファイル (`.test.ts(x)`)
 
 ### フロントエンドの検査
 
@@ -122,8 +151,10 @@ Flyway で管理。マイグレーションファイルは `backend/src/main/res
 | `V3__create_participants.sql` | 参加者テーブル作成 |
 | `V4__create_cards.sql` | カードテーブル作成 |
 | `V5__create_votes.sql` | 投票テーブル作成 |
+| `V6__add_card_sort_order.sql` | カードの並べ替え用 sort_order カラム追加 |
+| `V7__create_memos.sql` | メモテーブル作成 |
 
-新しいマイグレーションを追加する場合は `V6__description.sql` のように命名してください。
+新しいマイグレーションを追加する場合は `V8__description.sql` のように命名してください。
 
 ### SQLite の制約
 
@@ -196,3 +227,5 @@ Conventional Commits 形式を使用:
 | @stomp/stompjs | ^7.3.0 | WebSocket (STOMP) クライアント |
 | React Router | ^7.13.0 | ルーティング |
 | Lucide React | ^0.563.0 | アイコン |
+| @dnd-kit/core | ^6.3.1 | ドラッグ&ドロップ (コア) |
+| @dnd-kit/sortable | ^10.0.0 | ドラッグ&ドロップ (ソート) |

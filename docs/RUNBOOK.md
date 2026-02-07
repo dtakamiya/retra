@@ -143,9 +143,16 @@ curl http://localhost:8080/api/v1/boards
 **原因:** 既存のマイグレーションファイルが変更された
 
 **解決方法:**
-- マイグレーションファイルは一度適用したら変更しない
-- 開発中にスキーマを変更する場合は新しい `V{N}__description.sql` を追加
+- マイグレーションファイルは一度適用したら変更しない (V1〜V7)
+- 開発中にスキーマを変更する場合は新しい `V{N}__description.sql` を追加 (次は V8)
 - 開発環境でリセットする場合: `retra.db` を削除して再起動
+
+**現在のマイグレーション一覧:**
+| Version | Description |
+|---------|-------------|
+| V1-V5 | 基本テーブル (boards, columns, participants, cards, votes) |
+| V6 | カードの並べ替え用 sort_order カラム追加 |
+| V7 | メモテーブル (memos) 作成 |
 
 ```bash
 # 開発環境のみ: DB リセット
