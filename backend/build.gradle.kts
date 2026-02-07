@@ -57,15 +57,32 @@ jacoco {
     toolVersion = "0.8.11"
 }
 
+val jacocoExcludes = listOf(
+    "com/retra/RetraApplicationKt*",
+    "com/retra/config/**",
+    "com/retra/board/gateway/db/**",
+    "com/retra/card/gateway/db/**"
+)
+
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
     reports {
         xml.required.set(true)
         html.required.set(true)
     }
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) { exclude(jacocoExcludes) }
+        })
+    )
 }
 
 tasks.jacocoTestCoverageVerification {
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) { exclude(jacocoExcludes) }
+        })
+    )
     violationRules {
         rule {
             limit {

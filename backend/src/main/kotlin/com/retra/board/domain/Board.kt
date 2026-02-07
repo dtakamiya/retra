@@ -1,0 +1,138 @@
+package com.retra.board.domain
+
+import com.retra.shared.domain.DomainEvent
+import com.retra.shared.domain.ForbiddenException
+import com.retra.shared.domain.NotFoundException
+import com.retra.card.domain.Card
+import jakarta.persistence.*
+import java.time.Instant
+import java.util.UUID
+
+@Entity
+@Table(name = "boards")
+open class Board(
+    @Id
+    open var id: String = UUID.randomUUID().toString(),
+
+    @Column(nullable = false, unique = true)
+    open var slug: String = "",
+
+    @Column(nullable = false)
+    open var title: String = "",
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    open var framework: Framework = Framework.KPT,
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    open var phase: Phase = Phase.WRITING,
+
+    @Column(name = "max_votes_per_person", nullable = false)
+    open var maxVotesPerPerson: Int = 5,
+
+    @Column(name = "created_at", nullable = false)
+    open var createdAt: String = Instant.now().toString(),
+
+    @Column(name = "updated_at", nullable = false)
+    open var updatedAt: String = Instant.now().toString(),
+
+    @OneToMany(mappedBy = "board", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OrderBy("sortOrder ASC")
+    open var columns: MutableList<BoardColumn> = mutableListOf(),
+
+    @OneToMany(mappedBy = "board", cascade = [CascadeType.ALL], orphanRemoval = true)
+    open var participants: MutableList<Participant> = mutableListOf(),
+
+    @OneToMany(mappedBy = "board", cascade = [CascadeType.ALL], orphanRemoval = true)
+    open var cards: MutableList<Card> = mutableListOf()
+) {
+    @Transient
+    private val _domainEvents: MutableList<DomainEvent> = mutableListOf()
+
+    fun getDomainEvents(): List<DomainEvent> = _domainEvents.toList()
+
+    fun clearDomainEvents() {
+        _domainEvents.clear()
+    }
+
+    fun getVoteLimit(): VoteLimit = VoteLimit(maxVotesPerPerson)
+
+    fun transitionPhase(targetPhase: Phase, executorId: String): Phase {
+        val participant = findParticipantById(executorId)
+        if (!participant.isFacilitator) {
+            throw ForbiddenException("Only facilitator can change phase")
+        }
+        phase = phase.transitionTo(targetPhase)
+        updatedAt = Instant.now().toString()
+        _domainEvents.add(BoardEvent.PhaseChanged(slug, phase))
+        return phase
+    }
+
+    fun addParticipant(nickname: String): Participant {
+        val isFirst = participants.isEmpty()
+        val participant = Participant(
+            id = UUID.randomUUID().toString(),
+            board = this,
+            nickname = nickname,
+            isFacilitator = isFirst,
+            isOnline = true,
+            createdAt = Instant.now().toString()
+        )
+        participants.add(participant)
+        _domainEvents.add(
+            BoardEvent.ParticipantJoined(
+                slug = slug,
+                participantId = participant.id,
+                nickname = participant.nickname,
+                isFacilitator = participant.isFacilitator
+            )
+        )
+        return participant
+    }
+
+    fun findParticipantById(id: String): Participant {
+        return participants.find { it.id == id }
+            ?: throw NotFoundException("Participant not found")
+    }
+
+    fun findColumnById(id: String): BoardColumn {
+        return columns.find { it.id == id }
+            ?: throw NotFoundException("Column not found")
+    }
+
+    companion object {
+        fun create(
+            title: String,
+            framework: Framework,
+            maxVotesPerPerson: Int = 5
+        ): Board {
+            val slug = BoardSlug.generate()
+            val now = Instant.now().toString()
+            val board = Board(
+                id = UUID.randomUUID().toString(),
+                slug = slug.value,
+                title = title,
+                framework = framework,
+                maxVotesPerPerson = maxVotesPerPerson,
+                createdAt = now,
+                updatedAt = now
+            )
+
+            val columnDefs = framework.getColumnDefinitions()
+            val boardColumns = columnDefs.map { def ->
+                BoardColumn(
+                    id = UUID.randomUUID().toString(),
+                    board = board,
+                    name = def.name,
+                    sortOrder = def.sortOrder,
+                    color = def.color
+                )
+            }
+            board.columns.addAll(boardColumns)
+
+            board._domainEvents.add(BoardEvent.BoardCreated(board.id, board.slug))
+            return board
+        }
+    }
+}

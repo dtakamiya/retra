@@ -1,7 +1,12 @@
 package com.retra
 
-import com.retra.domain.model.*
-import com.retra.dto.*
+import com.retra.board.domain.Board
+import com.retra.board.domain.BoardColumn
+import com.retra.board.domain.Participant
+import com.retra.card.domain.Card
+import com.retra.card.domain.Vote
+import com.retra.board.domain.Framework
+import com.retra.board.domain.Phase
 import java.time.Instant
 import java.util.UUID
 

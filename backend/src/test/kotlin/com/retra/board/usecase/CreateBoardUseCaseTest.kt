@@ -1,0 +1,50 @@
+package com.retra.board.usecase
+
+import com.retra.board.domain.Board
+import com.retra.board.domain.BoardRepository
+import com.retra.board.domain.Framework
+import com.retra.board.domain.Phase
+import com.retra.shared.gateway.event.SpringDomainEventPublisher
+import io.mockk.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+
+class CreateBoardUseCaseTest {
+
+    private val boardRepository: BoardRepository = mockk()
+    private val eventPublisher: SpringDomainEventPublisher = mockk(relaxed = true)
+    private lateinit var useCase: CreateBoardUseCase
+
+    @BeforeEach
+    fun setUp() {
+        clearAllMocks()
+        useCase = CreateBoardUseCase(boardRepository, eventPublisher)
+    }
+
+    @Test
+    fun `KPTフレームワークでボード作成`() {
+        every { boardRepository.save(any()) } answers { firstArg() }
+
+        val response = useCase.execute(CreateBoardRequest("My Retro", Framework.KPT, 5))
+
+        assertEquals("My Retro", response.title)
+        assertEquals(Framework.KPT, response.framework)
+        assertEquals(Phase.WRITING, response.phase)
+        assertEquals(3, response.columns.size)
+        assertEquals("Keep", response.columns[0].name)
+        assertEquals("Problem", response.columns[1].name)
+        assertEquals("Try", response.columns[2].name)
+        verify { boardRepository.save(any<Board>()) }
+        verify { eventPublisher.publishAll(any()) }
+    }
+
+    @Test
+    fun `スラッグは8文字`() {
+        every { boardRepository.save(any()) } answers { firstArg() }
+
+        val response = useCase.execute(CreateBoardRequest("Retro"))
+
+        assertEquals(8, response.slug.length)
+    }
+}
