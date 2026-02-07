@@ -5,6 +5,26 @@ import { CardItem } from './CardItem';
 import { CardForm } from './CardForm';
 import type { Column } from '../types';
 
+const columnDescriptions: Record<string, string> = {
+  // KPT
+  Keep: '続けたいこと・うまくいっていること',
+  Problem: '困っていること・課題',
+  Try: '次に試したいこと',
+  // Fun Done Learn
+  Fun: '楽しかったこと',
+  Done: 'やり遂げたこと',
+  Learn: '学んだこと',
+  // 4Ls
+  Liked: '良かったこと',
+  Learned: '学んだこと',
+  Lacked: '不足していたこと',
+  'Longed For': '欲しかったこと',
+  // Start Stop Continue
+  Start: '新しく始めたいこと',
+  Stop: 'やめたいこと',
+  Continue: '続けたいこと',
+};
+
 interface Props {
   column: Column;
 }
@@ -31,9 +51,14 @@ export function ColumnView({ column }: Props) {
         className="rounded-t-lg px-4 py-3 flex items-center justify-between"
         style={{ backgroundColor: column.color + '20', borderTop: `3px solid ${column.color}` }}
       >
-        <div className="flex items-center gap-2">
-          <h2 className="font-semibold text-gray-900">{column.name}</h2>
-          <span className="text-sm text-gray-500">({column.cards.length})</span>
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="font-semibold text-gray-900">{column.name}</h2>
+            <span className="text-sm text-gray-500">({column.cards.length})</span>
+          </div>
+          {columnDescriptions[column.name] && (
+            <p className="text-xs text-gray-500 mt-0.5">{columnDescriptions[column.name]}</p>
+          )}
         </div>
         {isWriting && (
           <button
