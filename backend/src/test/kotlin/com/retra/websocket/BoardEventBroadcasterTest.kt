@@ -22,7 +22,7 @@ class BoardEventBroadcasterTest {
         broadcaster = BoardEventBroadcaster(messagingTemplate)
     }
 
-    private val sampleCard = CardResponse("card-1", "col-1", "Test", "Alice", "p-1", 0, "2024-01-01T00:00:00Z", "2024-01-01T00:00:00Z")
+    private val sampleCard = CardResponse("card-1", "col-1", "Test", "Alice", "p-1", 0, 0, "2024-01-01T00:00:00Z", "2024-01-01T00:00:00Z")
     private val sampleVote = VoteResponse("vote-1", "card-1", "p-1", "2024-01-01T00:00:00Z")
     private val sampleParticipant = ParticipantResponse("p-1", "Alice", true, true, "2024-01-01T00:00:00Z")
 
@@ -103,6 +103,21 @@ class BoardEventBroadcasterTest {
                 match<WebSocketMessage> { it.type == "JOINED" }
             )
         }
+    }
+
+    @Test
+    fun `CardMovedEvent を cards トピックにブロードキャスト`() {
+        broadcaster.handleCardMoved(CardMovedEvent("test1234", "card-1", "col-1", "col-2", 0))
+
+        val slot = slot<WebSocketMessage>()
+        verify { messagingTemplate.convertAndSend("/topic/board/test1234/cards", capture(slot)) }
+        assertEquals("CARD_MOVED", slot.captured.type)
+        @Suppress("UNCHECKED_CAST")
+        val payload = slot.captured.payload as Map<String, Any>
+        assertEquals("card-1", payload["cardId"])
+        assertEquals("col-1", payload["sourceColumnId"])
+        assertEquals("col-2", payload["targetColumnId"])
+        assertEquals(0, payload["sortOrder"])
     }
 
     @Test

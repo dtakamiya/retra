@@ -4,6 +4,7 @@ import { useBoardStore } from '../store/boardStore';
 import type {
   Card,
   CardDeletedPayload,
+  CardMovedPayload,
   Participant,
   ParticipantOnlinePayload,
   TimerState,
@@ -20,6 +21,7 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleCardCreated,
     handleCardUpdated,
     handleCardDeleted,
+    handleCardMoved,
     handleVoteAdded,
     handleVoteRemoved,
     handlePhaseChanged,
@@ -59,6 +61,9 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
               break;
             case 'CARD_DELETED':
               handleCardDeleted(data.payload as CardDeletedPayload);
+              break;
+            case 'CARD_MOVED':
+              handleCardMoved(data.payload as CardMovedPayload);
               break;
           }
         });
@@ -127,6 +132,7 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleCardCreated,
     handleCardUpdated,
     handleCardDeleted,
+    handleCardMoved,
     handleVoteAdded,
     handleVoteRemoved,
     handlePhaseChanged,

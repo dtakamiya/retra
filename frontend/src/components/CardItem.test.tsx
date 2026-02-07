@@ -15,6 +15,14 @@ vi.mock('../api/client', () => ({
     deleteCard: vi.fn(),
   },
 }))
+vi.mock('@dnd-kit/sortable', async () => {
+  const { createDndSortableMock } = await import('../test/dnd-mocks')
+  return createDndSortableMock()
+})
+vi.mock('@dnd-kit/utilities', async () => {
+  const { createDndUtilitiesMock } = await import('../test/dnd-mocks')
+  return createDndUtilitiesMock()
+})
 
 describe('CardItem', () => {
   const defaultCard = createCard({
@@ -51,6 +59,57 @@ describe('CardItem', () => {
 
     expect(screen.getByText('テストカードの内容')).toBeInTheDocument()
     expect(screen.getByText('TestUser')).toBeInTheDocument()
+  })
+
+  it('shows drag handle for author in WRITING phase', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant({ id: 'p-1', isFacilitator: false }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    const card = createCard({ participantId: 'p-1' })
+    render(<CardItem card={card} columnColor="#22c55e" />)
+
+    expect(screen.getByLabelText('ドラッグして並べ替え')).toBeInTheDocument()
+  })
+
+  it('shows drag handle for facilitator in DISCUSSION phase', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-2', isFacilitator: true }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    const card = createCard({ participantId: 'p-1' })
+    render(<CardItem card={card} columnColor="#22c55e" />)
+
+    expect(screen.getByLabelText('ドラッグして並べ替え')).toBeInTheDocument()
+  })
+
+  it('does NOT show drag handle in VOTING phase', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'VOTING' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: createRemainingVotes({ remaining: 5 }),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={defaultCard} columnColor="#22c55e" />)
+
+    expect(screen.queryByLabelText('ドラッグして並べ替え')).not.toBeInTheDocument()
+  })
+
+  it('does NOT show drag handle for non-author in WRITING phase', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant({ id: 'p-2', isFacilitator: false }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    const card = createCard({ participantId: 'p-1' })
+    render(<CardItem card={card} columnColor="#22c55e" />)
+
+    expect(screen.queryByLabelText('ドラッグして並べ替え')).not.toBeInTheDocument()
   })
 
   it('shows vote button in VOTING phase', () => {
@@ -90,9 +149,9 @@ describe('CardItem', () => {
     const card = createCard({ participantId: 'p-1' })
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // edit (Pencil) and delete (Trash2) buttons should be present
+    // drag handle + edit (Pencil) + delete (Trash2) buttons
     const buttons = screen.getAllByRole('button')
-    expect(buttons.length).toBe(2)
+    expect(buttons.length).toBe(3)
   })
 
   it('shows delete (not edit) button for facilitator who is not author in WRITING phase', () => {
@@ -106,6 +165,7 @@ describe('CardItem', () => {
     render(<CardItem card={card} columnColor="#22c55e" />)
 
     // Only delete button, not edit (since facilitator is not the author)
+    // No drag handle because isAuthor is false and phase is WRITING (isDndEnabled = isWriting && isAuthor)
     const buttons = screen.getAllByRole('button')
     expect(buttons.length).toBe(1)
   })
@@ -135,9 +195,9 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // Click the edit (Pencil) button — first button for author
+    // Click the edit (Pencil) button — buttons: drag handle, edit, delete
     const buttons = screen.getAllByRole('button')
-    await user.click(buttons[0])
+    await user.click(buttons[1]) // edit is the second button (after drag handle)
 
     const textarea = screen.getByRole('textbox')
     expect(textarea).toBeInTheDocument()
@@ -160,9 +220,9 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // Enter edit mode
+    // Enter edit mode (drag handle, edit, delete)
     const buttons = screen.getAllByRole('button')
-    await user.click(buttons[0])
+    await user.click(buttons[1])
 
     // Clear and type new content
     const textarea = screen.getByRole('textbox')
@@ -191,7 +251,7 @@ describe('CardItem', () => {
 
     // Enter edit mode
     const buttons = screen.getAllByRole('button')
-    await user.click(buttons[0])
+    await user.click(buttons[1])
 
     // Press Enter to save (content is already the original)
     const textarea = screen.getByRole('textbox')
@@ -214,7 +274,7 @@ describe('CardItem', () => {
 
     // Enter edit mode
     const buttons = screen.getAllByRole('button')
-    await user.click(buttons[0])
+    await user.click(buttons[1])
 
     // Type something then press Escape
     const textarea = screen.getByRole('textbox')
@@ -240,7 +300,7 @@ describe('CardItem', () => {
 
     // Enter edit mode
     const buttons = screen.getAllByRole('button')
-    await user.click(buttons[0])
+    await user.click(buttons[1])
 
     // Type something then click cancel
     const textarea = screen.getByRole('textbox')
@@ -307,10 +367,24 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // For author in WRITING phase, buttons are: edit (Pencil), delete (Trash2)
+    // For author in WRITING phase, buttons are: drag handle, edit (Pencil), delete (Trash2)
     const buttons = screen.getAllByRole('button')
-    await user.click(buttons[1]) // Delete is the second button
+    await user.click(buttons[2]) // Delete is the third button
 
     expect(api.deleteCard).toHaveBeenCalledWith('del-slug', 'card-1', 'p-1')
+  })
+
+  it('renders with isOverlay style', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    const { container } = render(<CardItem card={defaultCard} columnColor="#22c55e" isOverlay />)
+
+    const card = container.firstChild as HTMLElement
+    expect(card.className).toContain('ring-2')
+    expect(card.className).toContain('ring-indigo-300')
   })
 })

@@ -30,6 +30,7 @@ export interface Card {
   authorNickname: string | null;
   participantId: string | null;
   voteCount: number;
+  sortOrder: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -86,4 +87,11 @@ export interface ParticipantOnlinePayload {
 export interface VoteRemovedPayload {
   cardId: string;
   participantId: string;
+}
+
+export interface CardMovedPayload {
+  cardId: string;
+  sourceColumnId: string;
+  targetColumnId: string;
+  sortOrder: number;
 }

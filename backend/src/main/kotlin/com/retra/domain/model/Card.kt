@@ -28,6 +28,9 @@ open class Card(
     @JoinColumn(name = "participant_id")
     open var participant: Participant? = null,
 
+    @Column(name = "sort_order", nullable = false)
+    open var sortOrder: Int = 0,
+
     @Column(name = "created_at", nullable = false)
     open var createdAt: String = Instant.now().toString(),
 

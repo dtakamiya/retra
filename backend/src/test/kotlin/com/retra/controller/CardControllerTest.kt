@@ -2,6 +2,7 @@ package com.retra.controller
 
 import com.retra.dto.*
 import com.retra.exception.BadRequestException
+import com.retra.exception.ForbiddenException
 import com.retra.service.CardService
 import io.mockk.every
 import io.mockk.justRun
@@ -24,6 +25,7 @@ class CardControllerTest {
         authorNickname = "Alice",
         participantId = "p-1",
         voteCount = 0,
+        sortOrder = 0,
         createdAt = "2024-01-01T00:00:00Z",
         updatedAt = "2024-01-01T00:00:00Z"
     )
@@ -77,5 +79,37 @@ class CardControllerTest {
         controller.deleteCard("test1234", "card-1", request)
 
         verify(exactly = 1) { cardService.deleteCard("test1234", "card-1", request) }
+    }
+
+    @Test
+    fun `moveCard カード移動成功`() {
+        val request = MoveCardRequest("col-2", 0, "p-1")
+        justRun { cardService.moveCard("test1234", "card-1", request) }
+
+        controller.moveCard("test1234", "card-1", request)
+
+        verify(exactly = 1) { cardService.moveCard("test1234", "card-1", request) }
+    }
+
+    @Test
+    fun `moveCard VOTINGフェーズでBadRequestException`() {
+        val request = MoveCardRequest("col-1", 0, "p-1")
+        every { cardService.moveCard("test1234", "card-1", request) } throws
+            BadRequestException("Cards cannot be moved in VOTING phase")
+
+        assertThrows(BadRequestException::class.java) {
+            controller.moveCard("test1234", "card-1", request)
+        }
+    }
+
+    @Test
+    fun `moveCard 非著者でForbiddenException`() {
+        val request = MoveCardRequest("col-1", 0, "p-2")
+        every { cardService.moveCard("test1234", "card-1", request) } throws
+            ForbiddenException("Only the author can move this card during WRITING phase")
+
+        assertThrows(ForbiddenException::class.java) {
+            controller.moveCard("test1234", "card-1", request)
+        }
     }
 }

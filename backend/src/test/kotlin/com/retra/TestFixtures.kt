@@ -66,6 +66,7 @@ object TestFixtures {
         content: String = "Test card content",
         authorNickname: String? = "TestUser",
         participant: Participant? = null,
+        sortOrder: Int = 0,
         createdAt: String = Instant.now().toString(),
         updatedAt: String = Instant.now().toString()
     ): Card = Card(
@@ -75,6 +76,7 @@ object TestFixtures {
         content = content,
         authorNickname = authorNickname,
         participant = participant,
+        sortOrder = sortOrder,
         createdAt = createdAt,
         updatedAt = updatedAt
     )

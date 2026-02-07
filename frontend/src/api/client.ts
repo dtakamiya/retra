@@ -82,6 +82,13 @@ export const api = {
     });
   },
 
+  moveCard(slug: string, cardId: string, targetColumnId: string, sortOrder: number, participantId: string): Promise<void> {
+    return request(`/boards/${slug}/cards/${cardId}/move`, {
+      method: 'PATCH',
+      body: JSON.stringify({ targetColumnId, sortOrder, participantId }),
+    });
+  },
+
   // Votes
   addVote(slug: string, cardId: string, participantId: string): Promise<Vote> {
     return request(`/boards/${slug}/votes`, {

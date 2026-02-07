@@ -156,7 +156,7 @@ class BoardService(
                     name = col.name,
                     sortOrder = col.sortOrder,
                     color = col.color,
-                    cards = col.cards.map { card ->
+                    cards = col.cards.sortedBy { it.sortOrder }.map { card ->
                         CardResponse(
                             id = card.id,
                             columnId = col.id,
@@ -164,6 +164,7 @@ class BoardService(
                             authorNickname = card.authorNickname,
                             participantId = card.participant?.id,
                             voteCount = card.votes.size,
+                            sortOrder = card.sortOrder,
                             createdAt = card.createdAt,
                             updatedAt = card.updatedAt
                         )
@@ -194,3 +195,10 @@ data class VoteAddedEvent(val slug: String, val vote: VoteResponse)
 data class VoteRemovedEvent(val slug: String, val cardId: String, val participantId: String)
 data class ParticipantJoinedEvent(val slug: String, val participant: ParticipantResponse)
 data class ParticipantOnlineEvent(val slug: String, val participantId: String, val isOnline: Boolean)
+data class CardMovedEvent(
+    val slug: String,
+    val cardId: String,
+    val sourceColumnId: String,
+    val targetColumnId: String,
+    val sortOrder: Int
+)

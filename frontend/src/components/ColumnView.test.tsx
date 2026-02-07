@@ -14,6 +14,18 @@ vi.mock('../api/client', () => ({
     deleteCard: vi.fn(),
   },
 }))
+vi.mock('@dnd-kit/core', async () => {
+  const { createDndCoreMock } = await import('../test/dnd-mocks')
+  return createDndCoreMock()
+})
+vi.mock('@dnd-kit/sortable', async () => {
+  const { createDndSortableMock } = await import('../test/dnd-mocks')
+  return createDndSortableMock()
+})
+vi.mock('@dnd-kit/utilities', async () => {
+  const { createDndUtilitiesMock } = await import('../test/dnd-mocks')
+  return createDndUtilitiesMock()
+})
 
 describe('ColumnView', () => {
   beforeEach(() => {
@@ -83,27 +95,27 @@ describe('ColumnView', () => {
     expect(screen.queryByTitle('カードを追加')).not.toBeInTheDocument()
   })
 
-  it('sorts cards by votes in DISCUSSION phase', () => {
+  it('sorts cards by sortOrder', () => {
     const column = createColumn({
       name: 'Keep',
       cards: [
-        createCard({ id: 'c-1', content: 'Low votes', voteCount: 1 }),
-        createCard({ id: 'c-2', content: 'High votes', voteCount: 5 }),
-        createCard({ id: 'c-3', content: 'Mid votes', voteCount: 3 }),
+        createCard({ id: 'c-1', content: 'Third card', sortOrder: 2 }),
+        createCard({ id: 'c-2', content: 'First card', sortOrder: 0 }),
+        createCard({ id: 'c-3', content: 'Second card', sortOrder: 1 }),
       ],
     })
 
     vi.mocked(useBoardStore).mockReturnValue({
-      board: createBoard({ phase: 'DISCUSSION' }),
+      board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant(),
       remainingVotes: null,
     } as unknown as ReturnType<typeof useBoardStore>)
 
     render(<ColumnView column={column} />)
 
-    const cardContents = screen.getAllByText(/votes/)
-    expect(cardContents[0]).toHaveTextContent('High votes')
-    expect(cardContents[1]).toHaveTextContent('Mid votes')
-    expect(cardContents[2]).toHaveTextContent('Low votes')
+    const cardContents = screen.getAllByText(/card/)
+    expect(cardContents[0]).toHaveTextContent('First card')
+    expect(cardContents[1]).toHaveTextContent('Second card')
+    expect(cardContents[2]).toHaveTextContent('Third card')
   })
 })

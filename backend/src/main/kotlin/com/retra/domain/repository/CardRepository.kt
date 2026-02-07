@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface CardRepository : JpaRepository<Card, String> {
     fun findByBoardId(boardId: String): List<Card>
-    fun findByColumnId(columnId: String): List<Card>
+    fun findByColumnIdOrderBySortOrderAsc(columnId: String): List<Card>
+    fun countByColumnId(columnId: String): Long
 }

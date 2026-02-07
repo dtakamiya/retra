@@ -38,4 +38,14 @@ class CardController(
     ) {
         cardService.deleteCard(slug, cardId, request)
     }
+
+    @PatchMapping("/{cardId}/move")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun moveCard(
+        @PathVariable slug: String,
+        @PathVariable cardId: String,
+        @RequestBody request: MoveCardRequest
+    ) {
+        cardService.moveCard(slug, cardId, request)
+    }
 }

@@ -221,6 +221,87 @@ describe('boardStore', () => {
     expect(state.remainingVotes!.used).toBe(2);
   });
 
+  // --- handleCardMoved ---
+
+  it('handleCardMoved moves card within same column', () => {
+    const card1 = createCard({ id: 'card-1', columnId: 'col-1', sortOrder: 1 });
+    const card2 = createCard({ id: 'card-2', columnId: 'col-1', sortOrder: 2 });
+    const board = createBoard({
+      columns: [
+        createColumn({ id: 'col-1', cards: [card1, card2] }),
+        createColumn({ id: 'col-2' }),
+        createColumn({ id: 'col-3' }),
+      ],
+    });
+    useBoardStore.setState({ board });
+
+    useBoardStore.getState().handleCardMoved({
+      cardId: 'card-2',
+      sourceColumnId: 'col-1',
+      targetColumnId: 'col-1',
+      sortOrder: 0,
+    });
+
+    const state = useBoardStore.getState();
+    const col1 = state.board!.columns.find((c) => c.id === 'col-1');
+    expect(col1!.cards).toHaveLength(2);
+    expect(col1!.cards[0].id).toBe('card-2');
+    expect(col1!.cards[0].sortOrder).toBe(0);
+  });
+
+  it('handleCardMoved moves card across columns', () => {
+    const card = createCard({ id: 'card-1', columnId: 'col-1', sortOrder: 0 });
+    const board = createBoard({
+      columns: [
+        createColumn({ id: 'col-1', cards: [card] }),
+        createColumn({ id: 'col-2' }),
+        createColumn({ id: 'col-3' }),
+      ],
+    });
+    useBoardStore.setState({ board });
+
+    useBoardStore.getState().handleCardMoved({
+      cardId: 'card-1',
+      sourceColumnId: 'col-1',
+      targetColumnId: 'col-2',
+      sortOrder: 0,
+    });
+
+    const state = useBoardStore.getState();
+    const col1 = state.board!.columns.find((c) => c.id === 'col-1');
+    const col2 = state.board!.columns.find((c) => c.id === 'col-2');
+    expect(col1!.cards).toHaveLength(0);
+    expect(col2!.cards).toHaveLength(1);
+    expect(col2!.cards[0].id).toBe('card-1');
+    expect(col2!.cards[0].columnId).toBe('col-2');
+  });
+
+  it('handleCardMoved with null board returns unchanged state', () => {
+    useBoardStore.setState({ board: null });
+    useBoardStore.getState().handleCardMoved({
+      cardId: 'card-1',
+      sourceColumnId: 'col-1',
+      targetColumnId: 'col-2',
+      sortOrder: 0,
+    });
+    expect(useBoardStore.getState().board).toBeNull();
+  });
+
+  it('handleCardMoved with non-existent card returns unchanged state', () => {
+    const board = createBoard();
+    useBoardStore.setState({ board });
+
+    useBoardStore.getState().handleCardMoved({
+      cardId: 'non-existent',
+      sourceColumnId: 'col-1',
+      targetColumnId: 'col-2',
+      sortOrder: 0,
+    });
+
+    const state = useBoardStore.getState();
+    expect(state.board).toEqual(board);
+  });
+
   // --- handlePhaseChanged ---
 
   it('handlePhaseChanged updates board phase', () => {

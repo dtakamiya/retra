@@ -1,12 +1,14 @@
 package com.retra.service
 
 import com.retra.TestFixtures
+import com.retra.domain.model.Card
 import com.retra.domain.model.Phase
 import com.retra.domain.repository.BoardColumnRepository
 import com.retra.domain.repository.CardRepository
 import com.retra.domain.repository.ParticipantRepository
 import com.retra.dto.CreateCardRequest
 import com.retra.dto.DeleteCardRequest
+import com.retra.dto.MoveCardRequest
 import com.retra.dto.UpdateCardRequest
 import com.retra.exception.BadRequestException
 import com.retra.exception.ForbiddenException
@@ -48,6 +50,7 @@ class CardServiceTest {
             every { boardService.findBoardBySlug(any()) } returns board
             every { columnRepository.findById("col-1") } returns Optional.of(column)
             every { participantRepository.findById("p-1") } returns Optional.of(participant)
+            every { cardRepository.countByColumnId("col-1") } returns 0L
             every { cardRepository.save(any()) } answers { firstArg() }
 
             val request = CreateCardRequest("col-1", "New card", "p-1")
@@ -240,6 +243,186 @@ class CardServiceTest {
 
             assertFailsWith<NotFoundException> {
                 cardService.deleteCard("test1234", "card-1", DeleteCardRequest("unknown"))
+            }
+        }
+    }
+
+    @Nested
+    inner class MoveCard {
+
+        @Test
+        fun `WRITINGフェーズで著者がカラム内並べ替え成功`() {
+            val board = TestFixtures.board(phase = Phase.WRITING)
+            val author = TestFixtures.participant(id = "p-1", board = board, isFacilitator = false)
+            board.participants.add(author)
+            val column = TestFixtures.boardColumn(id = "col-1", board = board)
+            val card1 = TestFixtures.card(id = "card-1", column = column, board = board, participant = author, sortOrder = 0)
+            val card2 = TestFixtures.card(id = "card-2", column = column, board = board, participant = author, sortOrder = 1)
+
+            every { boardService.findBoardBySlug(any()) } returns board
+            every { cardRepository.findById("card-2") } returns Optional.of(card2)
+            every { columnRepository.findById("col-1") } returns Optional.of(column)
+            every { cardRepository.findByColumnIdOrderBySortOrderAsc("col-1") } returns listOf(card1, card2)
+            every { cardRepository.saveAll(any<List<Card>>()) } answers { firstArg() }
+            every { cardRepository.save(any()) } answers { firstArg() }
+
+            val request = MoveCardRequest("col-1", 0, "p-1")
+            cardService.moveCard("test1234", "card-2", request)
+
+            verify { cardRepository.saveAll(match<List<Card>> { cards -> cards.any { it.id == "card-1" && it.sortOrder == 1 } }) }
+            verify { cardRepository.save(match { it.id == "card-2" && it.sortOrder == 0 }) }
+            verify { eventPublisher.publishEvent(any<CardMovedEvent>()) }
+        }
+
+        @Test
+        fun `WRITINGフェーズで著者がカラム間移動成功`() {
+            val board = TestFixtures.board(phase = Phase.WRITING)
+            val author = TestFixtures.participant(id = "p-1", board = board, isFacilitator = false)
+            board.participants.add(author)
+            val col1 = TestFixtures.boardColumn(id = "col-1", board = board)
+            val col2 = TestFixtures.boardColumn(id = "col-2", board = board)
+            val card = TestFixtures.card(id = "card-1", column = col1, board = board, participant = author, sortOrder = 0)
+
+            every { boardService.findBoardBySlug(any()) } returns board
+            every { cardRepository.findById("card-1") } returns Optional.of(card)
+            every { columnRepository.findById("col-2") } returns Optional.of(col2)
+            every { cardRepository.findByColumnIdOrderBySortOrderAsc("col-2") } returns emptyList()
+            every { cardRepository.save(any()) } answers { firstArg() }
+
+            val request = MoveCardRequest("col-2", 0, "p-1")
+            cardService.moveCard("test1234", "card-1", request)
+
+            verify { cardRepository.save(match { it.id == "card-1" && it.column?.id == "col-2" && it.sortOrder == 0 }) }
+            verify { eventPublisher.publishEvent(any<CardMovedEvent>()) }
+        }
+
+        @Test
+        fun `DISCUSSIONフェーズでファシリテーターが並べ替え成功`() {
+            val board = TestFixtures.board(phase = Phase.DISCUSSION)
+            val facilitator = TestFixtures.participant(id = "p-1", board = board, isFacilitator = true)
+            board.participants.add(facilitator)
+            val column = TestFixtures.boardColumn(id = "col-1", board = board)
+            val card = TestFixtures.card(id = "card-1", column = column, board = board, sortOrder = 0)
+
+            every { boardService.findBoardBySlug(any()) } returns board
+            every { cardRepository.findById("card-1") } returns Optional.of(card)
+            every { columnRepository.findById("col-1") } returns Optional.of(column)
+            every { cardRepository.findByColumnIdOrderBySortOrderAsc("col-1") } returns listOf(card)
+            every { cardRepository.save(any()) } answers { firstArg() }
+
+            val request = MoveCardRequest("col-1", 0, "p-1")
+            cardService.moveCard("test1234", "card-1", request)
+
+            verify { eventPublisher.publishEvent(any<CardMovedEvent>()) }
+        }
+
+        @Test
+        fun `VOTINGフェーズでBadRequestException`() {
+            val board = TestFixtures.board(phase = Phase.VOTING)
+            val participant = TestFixtures.participant(id = "p-1", board = board)
+            board.participants.add(participant)
+            val column = TestFixtures.boardColumn(id = "col-1", board = board)
+            val card = TestFixtures.card(id = "card-1", column = column, board = board, participant = participant)
+
+            every { boardService.findBoardBySlug(any()) } returns board
+            every { cardRepository.findById("card-1") } returns Optional.of(card)
+
+            assertFailsWith<BadRequestException> {
+                cardService.moveCard("test1234", "card-1", MoveCardRequest("col-1", 0, "p-1"))
+            }
+        }
+
+        @Test
+        fun `CLOSEDフェーズでBadRequestException`() {
+            val board = TestFixtures.board(phase = Phase.CLOSED)
+            val participant = TestFixtures.participant(id = "p-1", board = board)
+            board.participants.add(participant)
+            val card = TestFixtures.card(id = "card-1", board = board, participant = participant)
+
+            every { boardService.findBoardBySlug(any()) } returns board
+            every { cardRepository.findById("card-1") } returns Optional.of(card)
+
+            assertFailsWith<BadRequestException> {
+                cardService.moveCard("test1234", "card-1", MoveCardRequest("col-1", 0, "p-1"))
+            }
+        }
+
+        @Test
+        fun `WRITINGフェーズで非著者が移動するとForbiddenException`() {
+            val board = TestFixtures.board(phase = Phase.WRITING)
+            val author = TestFixtures.participant(id = "p-1", board = board, isFacilitator = false)
+            val other = TestFixtures.participant(id = "p-2", board = board, isFacilitator = false)
+            board.participants.addAll(listOf(author, other))
+            val column = TestFixtures.boardColumn(id = "col-1", board = board)
+            val card = TestFixtures.card(id = "card-1", column = column, board = board, participant = author)
+
+            every { boardService.findBoardBySlug(any()) } returns board
+            every { cardRepository.findById("card-1") } returns Optional.of(card)
+
+            assertFailsWith<ForbiddenException> {
+                cardService.moveCard("test1234", "card-1", MoveCardRequest("col-1", 0, "p-2"))
+            }
+        }
+
+        @Test
+        fun `DISCUSSIONフェーズで非ファシリテーターが移動するとForbiddenException`() {
+            val board = TestFixtures.board(phase = Phase.DISCUSSION)
+            val participant = TestFixtures.participant(id = "p-1", board = board, isFacilitator = false)
+            board.participants.add(participant)
+            val column = TestFixtures.boardColumn(id = "col-1", board = board)
+            val card = TestFixtures.card(id = "card-1", column = column, board = board)
+
+            every { boardService.findBoardBySlug(any()) } returns board
+            every { cardRepository.findById("card-1") } returns Optional.of(card)
+
+            assertFailsWith<ForbiddenException> {
+                cardService.moveCard("test1234", "card-1", MoveCardRequest("col-1", 0, "p-1"))
+            }
+        }
+
+        @Test
+        fun `DISCUSSIONフェーズでカラム間移動するとBadRequestException`() {
+            val board = TestFixtures.board(phase = Phase.DISCUSSION)
+            val facilitator = TestFixtures.participant(id = "p-1", board = board, isFacilitator = true)
+            board.participants.add(facilitator)
+            val col1 = TestFixtures.boardColumn(id = "col-1", board = board)
+            val card = TestFixtures.card(id = "card-1", column = col1, board = board)
+
+            every { boardService.findBoardBySlug(any()) } returns board
+            every { cardRepository.findById("card-1") } returns Optional.of(card)
+
+            assertFailsWith<BadRequestException> {
+                cardService.moveCard("test1234", "card-1", MoveCardRequest("col-2", 0, "p-1"))
+            }
+        }
+
+        @Test
+        fun `存在しないカードでNotFoundException`() {
+            val board = TestFixtures.board(phase = Phase.WRITING)
+            every { boardService.findBoardBySlug(any()) } returns board
+            every { cardRepository.findById("bad-card") } returns Optional.empty()
+
+            assertFailsWith<NotFoundException> {
+                cardService.moveCard("test1234", "bad-card", MoveCardRequest("col-1", 0, "p-1"))
+            }
+        }
+
+        @Test
+        fun `別ボードのターゲットカラムでBadRequestException`() {
+            val board = TestFixtures.board(id = "board-1", phase = Phase.WRITING)
+            val author = TestFixtures.participant(id = "p-1", board = board, isFacilitator = false)
+            board.participants.add(author)
+            val col1 = TestFixtures.boardColumn(id = "col-1", board = board)
+            val card = TestFixtures.card(id = "card-1", column = col1, board = board, participant = author)
+            val otherBoard = TestFixtures.board(id = "board-2")
+            val otherCol = TestFixtures.boardColumn(id = "col-other", board = otherBoard)
+
+            every { boardService.findBoardBySlug(any()) } returns board
+            every { cardRepository.findById("card-1") } returns Optional.of(card)
+            every { columnRepository.findById("col-other") } returns Optional.of(otherCol)
+
+            assertFailsWith<BadRequestException> {
+                cardService.moveCard("test1234", "card-1", MoveCardRequest("col-other", 0, "p-1"))
             }
         }
     }

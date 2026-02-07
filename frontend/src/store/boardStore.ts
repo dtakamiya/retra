@@ -3,6 +3,7 @@ import type {
   Board,
   Card,
   CardDeletedPayload,
+  CardMovedPayload,
   Participant,
   ParticipantOnlinePayload,
   Phase,
@@ -29,6 +30,7 @@ interface BoardState {
   handleCardCreated: (card: Card) => void;
   handleCardUpdated: (card: Card) => void;
   handleCardDeleted: (payload: CardDeletedPayload) => void;
+  handleCardMoved: (payload: CardMovedPayload) => void;
   handleVoteAdded: (vote: Vote) => void;
   handleVoteRemoved: (payload: VoteRemovedPayload) => void;
   handlePhaseChanged: (phase: Phase) => void;
@@ -79,6 +81,37 @@ export const useBoardStore = create<BoardState>((set) => ({
         ...col,
         cards: col.cards.filter((c) => c.id !== payload.cardId),
       }));
+      return { board: { ...state.board, columns } };
+    }),
+
+  handleCardMoved: (payload) =>
+    set((state) => {
+      if (!state.board) return state;
+
+      let movedCard: Card | undefined;
+
+      // Remove card from source column
+      let columns = state.board.columns.map((col) => {
+        if (col.id === payload.sourceColumnId) {
+          const card = col.cards.find((c) => c.id === payload.cardId);
+          if (card) movedCard = { ...card, columnId: payload.targetColumnId, sortOrder: payload.sortOrder };
+          return { ...col, cards: col.cards.filter((c) => c.id !== payload.cardId) };
+        }
+        return col;
+      });
+
+      if (!movedCard) return state;
+
+      // Insert card into target column
+      columns = columns.map((col) => {
+        if (col.id === payload.targetColumnId) {
+          const cards = [...col.cards.filter((c) => c.id !== payload.cardId), movedCard!];
+          cards.sort((a, b) => a.sortOrder - b.sortOrder);
+          return { ...col, cards };
+        }
+        return col;
+      });
+
       return { board: { ...state.board, columns } };
     }),
 

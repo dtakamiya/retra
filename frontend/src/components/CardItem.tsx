@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { ThumbsUp, Pencil, Trash2 } from 'lucide-react';
+import { ThumbsUp, Pencil, Trash2, GripVertical } from 'lucide-react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
 import type { Card } from '../types';
@@ -7,20 +9,47 @@ import type { Card } from '../types';
 interface Props {
   card: Card;
   columnColor: string;
+  isOverlay?: boolean;
 }
 
-export function CardItem({ card, columnColor }: Props) {
+export function CardItem({ card, columnColor, isOverlay }: Props) {
   const { board, participant, remainingVotes } = useBoardStore();
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(card.content);
   const [loading, setLoading] = useState(false);
 
+  const isAuthor = board && participant ? card.participantId === participant.id : false;
+  const isFacilitator = participant?.isFacilitator ?? false;
+  const phase = board?.phase;
+  const isVoting = phase === 'VOTING';
+  const isWriting = phase === 'WRITING';
+  const isDiscussionLike = phase === 'DISCUSSION' || phase === 'ACTION_ITEMS';
+
+  const isDndEnabled =
+    (isWriting && isAuthor) || (isDiscussionLike && isFacilitator);
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: card.id,
+    disabled: !isDndEnabled || editing,
+  });
+
+  const style = isOverlay
+    ? { opacity: 1 }
+    : {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.3 : 1,
+      };
+
   if (!board || !participant) return null;
 
-  const isAuthor = card.participantId === participant.id;
-  const isFacilitator = participant.isFacilitator;
-  const isVoting = board.phase === 'VOTING';
-  const isWriting = board.phase === 'WRITING';
   const canVote = isVoting && (remainingVotes?.remaining ?? 0) > 0;
 
   const handleVote = async () => {
@@ -28,8 +57,8 @@ export function CardItem({ card, columnColor }: Props) {
     setLoading(true);
     try {
       await api.addVote(board.slug, card.id, participant.id);
-    } catch (err) {
-      console.error('Failed to vote:', err);
+    } catch {
+      // 投票失敗はWebSocket経由で最新状態が反映される
     } finally {
       setLoading(false);
     }
@@ -40,8 +69,8 @@ export function CardItem({ card, columnColor }: Props) {
     setLoading(true);
     try {
       await api.removeVote(board.slug, card.id, participant.id);
-    } catch (err) {
-      console.error('Failed to remove vote:', err);
+    } catch {
+      // 投票解除失敗はWebSocket経由で最新状態が反映される
     } finally {
       setLoading(false);
     }
@@ -53,8 +82,8 @@ export function CardItem({ card, columnColor }: Props) {
     try {
       await api.updateCard(board.slug, card.id, editContent.trim(), participant.id);
       setEditing(false);
-    } catch (err) {
-      console.error('Failed to update card:', err);
+    } catch {
+      // 更新失敗はWebSocket経由で最新状態が反映される
     } finally {
       setLoading(false);
     }
@@ -64,8 +93,8 @@ export function CardItem({ card, columnColor }: Props) {
     setLoading(true);
     try {
       await api.deleteCard(board.slug, card.id, participant.id);
-    } catch (err) {
-      console.error('Failed to delete card:', err);
+    } catch {
+      // 削除失敗はWebSocket経由で最新状態が反映される
     } finally {
       setLoading(false);
     }
@@ -84,7 +113,7 @@ export function CardItem({ card, columnColor }: Props) {
 
   if (editing) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+      <div ref={setNodeRef} style={style} className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
         <textarea
           value={editContent}
           onChange={(e) => setEditContent(e.target.value)}
@@ -116,8 +145,26 @@ export function CardItem({ card, columnColor }: Props) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 group">
-      <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">{card.content}</p>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className={`bg-white rounded-lg shadow-sm border border-gray-200 p-3 group ${
+        isOverlay ? 'shadow-lg ring-2 ring-indigo-300' : ''
+      }`}
+    >
+      <div className="flex gap-2">
+        {isDndEnabled && (
+          <button
+            {...listeners}
+            className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 mt-0.5"
+            aria-label="ドラッグして並べ替え"
+          >
+            <GripVertical size={14} />
+          </button>
+        )}
+        <p className="text-sm text-gray-800 whitespace-pre-wrap break-words flex-1">{card.content}</p>
+      </div>
 
       <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
         <div className="flex items-center gap-2">

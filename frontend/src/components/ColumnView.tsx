@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Plus } from 'lucide-react';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useDroppable } from '@dnd-kit/core';
 import { useBoardStore } from '../store/boardStore';
 import { CardItem } from './CardItem';
 import { CardForm } from './CardForm';
@@ -34,16 +36,16 @@ export function ColumnView({ column }: Props) {
   const [showForm, setShowForm] = useState(false);
 
   const isWriting = board?.phase === 'WRITING';
-  const isDiscussion = board?.phase === 'DISCUSSION' || board?.phase === 'ACTION_ITEMS';
 
-  // Sort by votes in discussion phase, otherwise by creation time
+  const { setNodeRef } = useDroppable({ id: column.id });
+
   const sortedCards = useMemo(() => {
     const cards = [...column.cards];
-    if (isDiscussion) {
-      cards.sort((a, b) => b.voteCount - a.voteCount);
-    }
+    cards.sort((a, b) => a.sortOrder - b.sortOrder);
     return cards;
-  }, [column.cards, isDiscussion]);
+  }, [column.cards]);
+
+  const cardIds = useMemo(() => sortedCards.map((c) => c.id), [sortedCards]);
 
   return (
     <div className="flex-1 min-w-[280px] max-w-[400px] flex flex-col">
@@ -71,13 +73,15 @@ export function ColumnView({ column }: Props) {
         )}
       </div>
 
-      <div className="flex-1 bg-gray-100/50 rounded-b-lg p-2 space-y-2 overflow-y-auto">
+      <div ref={setNodeRef} className="flex-1 bg-gray-100/50 rounded-b-lg p-2 space-y-2 overflow-y-auto">
         {showForm && isWriting && (
           <CardForm columnId={column.id} onClose={() => setShowForm(false)} />
         )}
-        {sortedCards.map((card) => (
-          <CardItem key={card.id} card={card} columnColor={column.color} />
-        ))}
+        <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
+          {sortedCards.map((card) => (
+            <CardItem key={card.id} card={card} columnColor={column.color} />
+          ))}
+        </SortableContext>
         {column.cards.length === 0 && !showForm && (
           <div className="text-center py-8 text-gray-400 text-sm">
             {isWriting ? '＋ボタンでカードを追加' : 'カードはありません'}

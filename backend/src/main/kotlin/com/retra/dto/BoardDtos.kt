@@ -34,6 +34,12 @@ data class DeleteCardRequest(
     val participantId: String
 )
 
+data class MoveCardRequest(
+    val targetColumnId: String,
+    val sortOrder: Int,
+    val participantId: String
+)
+
 data class VoteRequest(
     val cardId: String,
     val participantId: String
@@ -84,6 +90,7 @@ data class CardResponse(
     val authorNickname: String?,
     val participantId: String?,
     val voteCount: Int,
+    val sortOrder: Int,
     val createdAt: String,
     val updatedAt: String
 )

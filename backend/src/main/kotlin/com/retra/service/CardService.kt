@@ -24,6 +24,10 @@ class CardService(
     private val eventPublisher: ApplicationEventPublisher
 ) {
 
+    companion object {
+        private val CARD_MOVABLE_PHASES = listOf(Phase.WRITING, Phase.DISCUSSION, Phase.ACTION_ITEMS)
+    }
+
     @Transactional
     fun createCard(slug: String, request: CreateCardRequest): CardResponse {
         val board = boardService.findBoardBySlug(slug)
@@ -43,6 +47,7 @@ class CardService(
             .orElseThrow { NotFoundException("Participant not found") }
 
         val now = Instant.now().toString()
+        val nextSortOrder = cardRepository.countByColumnId(request.columnId).toInt()
         val card = Card(
             id = UUID.randomUUID().toString(),
             column = column,
@@ -50,6 +55,7 @@ class CardService(
             content = request.content,
             authorNickname = participant.nickname,
             participant = participant,
+            sortOrder = nextSortOrder,
             createdAt = now,
             updatedAt = now
         )
@@ -110,6 +116,69 @@ class CardService(
         eventPublisher.publishEvent(CardDeletedEvent(slug, cardId, columnId))
     }
 
+    @Transactional
+    fun moveCard(slug: String, cardId: String, request: MoveCardRequest) {
+        val board = boardService.findBoardBySlug(slug)
+        val card = cardRepository.findById(cardId)
+            .orElseThrow { NotFoundException("Card not found") }
+
+        if (card.board?.id != board.id) {
+            throw BadRequestException("Card does not belong to this board")
+        }
+
+        if (board.phase !in CARD_MOVABLE_PHASES) {
+            throw BadRequestException("Cards cannot be moved in ${board.phase} phase")
+        }
+
+        val participant = board.participants.find { it.id == request.participantId }
+            ?: throw NotFoundException("Participant not found")
+
+        val isAuthor = card.participant?.id == request.participantId
+        val isFacilitator = participant.isFacilitator
+
+        if (board.phase == Phase.WRITING && !isAuthor) {
+            throw ForbiddenException("Only the author can move this card during WRITING phase")
+        }
+        if (board.phase in listOf(Phase.DISCUSSION, Phase.ACTION_ITEMS) && !isFacilitator) {
+            throw ForbiddenException("Only facilitator can reorder cards during ${board.phase} phase")
+        }
+
+        val sourceColumnId = card.column?.id ?: ""
+        if (sourceColumnId != request.targetColumnId && board.phase != Phase.WRITING) {
+            throw BadRequestException("Cross-column moves are only allowed during WRITING phase")
+        }
+
+        val targetColumn = columnRepository.findById(request.targetColumnId)
+            .orElseThrow { NotFoundException("Target column not found") }
+
+        if (targetColumn.board?.id != board.id) {
+            throw BadRequestException("Target column does not belong to this board")
+        }
+
+        val targetCards = cardRepository.findByColumnIdOrderBySortOrderAsc(request.targetColumnId)
+            .filter { it.id != cardId }
+
+        val cardsToUpdate = targetCards.mapIndexedNotNull { index, c ->
+            val newOrder = if (index >= request.sortOrder) index + 1 else index
+            if (c.sortOrder != newOrder) {
+                c.sortOrder = newOrder
+                c
+            } else null
+        }
+        if (cardsToUpdate.isNotEmpty()) {
+            cardRepository.saveAll(cardsToUpdate)
+        }
+
+        card.column = targetColumn
+        card.sortOrder = request.sortOrder
+        card.updatedAt = Instant.now().toString()
+        cardRepository.save(card)
+
+        eventPublisher.publishEvent(
+            CardMovedEvent(slug, cardId, sourceColumnId, request.targetColumnId, request.sortOrder)
+        )
+    }
+
     private fun toResponse(card: Card): CardResponse {
         return CardResponse(
             id = card.id,
@@ -118,6 +187,7 @@ class CardService(
             authorNickname = card.authorNickname,
             participantId = card.participant?.id,
             voteCount = card.votes.size,
+            sortOrder = card.sortOrder,
             createdAt = card.createdAt,
             updatedAt = card.updatedAt
         )

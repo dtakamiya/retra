@@ -32,6 +32,19 @@ class BoardEventBroadcaster(
     }
 
     @EventListener
+    fun handleCardMoved(event: CardMovedEvent) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.slug}/cards",
+            WebSocketMessage("CARD_MOVED", mapOf(
+                "cardId" to event.cardId,
+                "sourceColumnId" to event.sourceColumnId,
+                "targetColumnId" to event.targetColumnId,
+                "sortOrder" to event.sortOrder
+            ))
+        )
+    }
+
+    @EventListener
     fun handleCardDeleted(event: CardDeletedEvent) {
         messagingTemplate.convertAndSend(
             "/topic/board/${event.slug}/cards",

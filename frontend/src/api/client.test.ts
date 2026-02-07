@@ -150,6 +150,21 @@ describe('api client', () => {
     });
   });
 
+  // --- moveCard ---
+
+  it('moveCard sends PATCH with targetColumnId, sortOrder, participantId', async () => {
+    mock204();
+
+    const result = await api.moveCard('slug1', 'card-1', 'col-2', 0, 'p-1');
+
+    expect(result).toBeUndefined();
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/cards/card-1/move', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetColumnId: 'col-2', sortOrder: 0, participantId: 'p-1' }),
+    });
+  });
+
   // --- addVote ---
 
   it('addVote sends POST with cardId and participantId', async () => {
