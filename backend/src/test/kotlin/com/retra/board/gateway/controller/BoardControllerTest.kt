@@ -36,6 +36,9 @@ class BoardControllerTest {
     @MockBean
     private lateinit var joinBoardUseCase: JoinBoardUseCase
 
+    @MockBean
+    private lateinit var exportBoardUseCase: ExportBoardUseCase
+
     private fun boardResponse() = BoardResponse(
         id = "board-1",
         slug = "test1234",
@@ -104,5 +107,33 @@ class BoardControllerTest {
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.nickname").value("Alice"))
             .andExpect(jsonPath("$.isFacilitator").value(true))
+    }
+
+    @Test
+    fun `GET boards slug export CSVエクスポート 200`() {
+        whenever(exportBoardUseCase.execute(any(), any())).thenReturn("csv-data".toByteArray())
+
+        mockMvc.perform(
+            get("/api/v1/boards/test1234/export")
+                .param("participantId", "p-1")
+                .param("format", "CSV")
+        )
+            .andExpect(status().isOk)
+            .andExpect(header().exists("Content-Disposition"))
+            .andExpect(content().contentType("text/csv;charset=UTF-8"))
+    }
+
+    @Test
+    fun `GET boards slug export Markdownエクスポート 200`() {
+        whenever(exportBoardUseCase.execute(any(), any())).thenReturn("# markdown".toByteArray())
+
+        mockMvc.perform(
+            get("/api/v1/boards/test1234/export")
+                .param("participantId", "p-1")
+                .param("format", "MARKDOWN")
+        )
+            .andExpect(status().isOk)
+            .andExpect(header().exists("Content-Disposition"))
+            .andExpect(content().contentType("text/markdown;charset=UTF-8"))
     }
 }

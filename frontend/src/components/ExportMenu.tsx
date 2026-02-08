@@ -1,0 +1,149 @@
+import { Check, ClipboardCopy, Download, FileSpreadsheet, FileText } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { api } from '../api/client';
+import { useBoardStore } from '../store/boardStore';
+import type { ExportFormat } from '../types';
+import { copyMarkdownToClipboard } from '../utils/exportMarkdown';
+
+export function ExportMenu() {
+  const { board, participant } = useBoardStore();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
+
+  if (!board) return null;
+
+  const handleExport = async (format: ExportFormat) => {
+    if (!participant) return;
+    setIsExporting(true);
+    setError(null);
+    try {
+      const blob = await api.exportBoard(board.slug, participant.id, format);
+      const extension = format === 'CSV' ? 'csv' : 'md';
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${board.slug}_export.${extension}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'エクスポートに失敗しました');
+    } finally {
+      setIsExporting(false);
+      setIsOpen(false);
+    }
+  };
+
+  const handleCopy = async () => {
+    setError(null);
+    try {
+      await copyMarkdownToClipboard(board);
+      setCopied(true);
+      setIsOpen(false);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'コピーに失敗しました');
+    }
+  };
+
+  return (
+    <div className="relative" ref={menuRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        disabled={isExporting}
+        className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+        aria-label="エクスポート"
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+      >
+        {copied ? (
+          <>
+            <Check size={16} className="text-green-500" />
+            <span className="text-green-600">コピー済み</span>
+          </>
+        ) : (
+          <>
+            <Download size={16} />
+            <span>{isExporting ? 'エクスポート中...' : 'エクスポート'}</span>
+          </>
+        )}
+      </button>
+
+      {error && (
+        <p className="absolute right-0 mt-1 text-red-500 text-xs whitespace-nowrap" role="alert">
+          {error}
+        </p>
+      )}
+
+      {isOpen && (
+        <div
+          className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+          role="menu"
+        >
+          {participant && (
+            <>
+              <button
+                onClick={() => handleExport('CSV')}
+                className="flex items-center gap-3 w-full px-4 py-3 text-sm text-left hover:bg-gray-50 rounded-t-lg transition-colors"
+                role="menuitem"
+              >
+                <FileSpreadsheet size={16} className="text-green-600" />
+                <div>
+                  <div>CSV形式でダウンロード</div>
+                  <div className="text-xs text-gray-400">.csv ファイルとして保存</div>
+                </div>
+              </button>
+              <button
+                onClick={() => handleExport('MARKDOWN')}
+                className="flex items-center gap-3 w-full px-4 py-3 text-sm text-left hover:bg-gray-50 transition-colors border-t border-gray-100"
+                role="menuitem"
+              >
+                <FileText size={16} className="text-blue-600" />
+                <div>
+                  <div>Markdown形式でダウンロード</div>
+                  <div className="text-xs text-gray-400">.md ファイルとして保存</div>
+                </div>
+              </button>
+            </>
+          )}
+          <button
+            onClick={handleCopy}
+            className={`flex items-center gap-3 w-full px-4 py-3 text-sm text-left hover:bg-gray-50 transition-colors border-t border-gray-100 ${participant ? '' : 'rounded-t-lg'} rounded-b-lg`}
+            role="menuitem"
+          >
+            <ClipboardCopy size={16} className="text-purple-600" />
+            <div>
+              <div>クリップボードにコピー</div>
+              <div className="text-xs text-gray-400">Markdown形式でコピー</div>
+            </div>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

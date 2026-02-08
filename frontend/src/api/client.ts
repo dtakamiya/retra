@@ -1,6 +1,7 @@
 import type {
   Board,
   Card,
+  ExportFormat,
   Framework,
   Memo,
   Participant,
@@ -157,5 +158,18 @@ export const api = {
       method: 'DELETE',
       body: JSON.stringify({ cardId, participantId, emoji }),
     });
+  },
+
+  // Export
+  async exportBoard(slug: string, participantId: string, format: ExportFormat): Promise<Blob> {
+    const params = new URLSearchParams({ participantId, format });
+    const response = await fetch(
+      `${BASE_URL}/boards/${encodeURIComponent(slug)}/export?${params}`
+    );
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: '不明なエラー' }));
+      throw new Error(error.message || `HTTP ${response.status}`);
+    }
+    return response.blob();
   },
 };

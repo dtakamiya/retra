@@ -318,6 +318,36 @@ describe('api client', () => {
     });
   });
 
+  // --- exportBoard ---
+
+  describe('exportBoard', () => {
+    it('CSVエクスポートでBlobが返される', async () => {
+      const mockBlob = new Blob(['csv-data'], { type: 'text/csv' });
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        blob: () => Promise.resolve(mockBlob),
+      });
+
+      const result = await api.exportBoard('test1234', 'p-1', 'CSV');
+      expect(result).toBeInstanceOf(Blob);
+      expect(mockFetch).toHaveBeenCalledWith(
+        '/api/v1/boards/test1234/export?participantId=p-1&format=CSV'
+      );
+    });
+
+    it('エラー時に例外がスローされる', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 403,
+        json: () => Promise.resolve({ message: 'Only facilitator can export board' }),
+      });
+
+      await expect(api.exportBoard('test1234', 'p-2', 'CSV')).rejects.toThrow(
+        'Only facilitator can export board'
+      );
+    });
+  });
+
   // --- Error handling ---
 
   it('HTTP error throws Error with message from response', async () => {

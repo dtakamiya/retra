@@ -126,3 +126,5 @@ export interface ReactionRemovedPayload {
   participantId: string;
   emoji: string;
 }
+
+export type ExportFormat = 'CSV' | 'MARKDOWN';

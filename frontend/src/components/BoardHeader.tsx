@@ -1,8 +1,8 @@
 import { Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useBoardStore } from '../store/boardStore';
+import { ExportMenu } from './ExportMenu';
 import { PhaseControl } from './PhaseControl';
-import { ExportButton } from './ExportButton';
 
 export function BoardHeader() {
   const { board } = useBoardStore();
@@ -29,7 +29,7 @@ export function BoardHeader() {
 
         <div className="flex items-center gap-3">
           <PhaseControl />
-          <ExportButton />
+          <ExportMenu />
           <button
             onClick={handleCopyLink}
             className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
