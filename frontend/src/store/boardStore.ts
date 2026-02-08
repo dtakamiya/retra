@@ -64,9 +64,14 @@ export const useBoardStore = create<BoardState>((set) => ({
   handleCardCreated: (card) =>
     set((state) => {
       if (!state.board) return state;
+      const cardWithDefaults = {
+        ...card,
+        memos: card.memos ?? [],
+        reactions: card.reactions ?? [],
+      };
       const columns = state.board.columns.map((col) => {
-        if (col.id === card.columnId) {
-          return { ...col, cards: [...col.cards, card] };
+        if (col.id === cardWithDefaults.columnId) {
+          return { ...col, cards: [...col.cards, cardWithDefaults] };
         }
         return col;
       });
@@ -78,7 +83,11 @@ export const useBoardStore = create<BoardState>((set) => ({
       if (!state.board) return state;
       const columns = state.board.columns.map((col) => ({
         ...col,
-        cards: col.cards.map((c) => (c.id === card.id ? card : c)),
+        cards: col.cards.map((c) =>
+          c.id === card.id
+            ? { ...card, memos: card.memos ?? c.memos, reactions: card.reactions ?? c.reactions }
+            : c
+        ),
       }));
       return { board: { ...state.board, columns } };
     }),
