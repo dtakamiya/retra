@@ -18,7 +18,7 @@ async function addCard(page: import('@playwright/test').Page, content: string) {
     await page.getByRole('button', { name: 'カードを追加' }).first().click();
     await page.getByPlaceholder('意見を入力').fill(content);
     await page.locator('button', { hasText: '追加' }).click();
-    await expect(page.getByText(content)).toBeVisible();
+    await expect(page.locator('p', { hasText: content })).toBeVisible();
 }
 
 test.describe('カード編集機能', () => {
@@ -29,7 +29,7 @@ test.describe('カード編集機能', () => {
         // カードにホバーして編集ボタンをクリック
         const card = page.locator('.group', { hasText: '編集前の内容' });
         await card.hover();
-        await card.getByRole('button').filter({ has: page.locator('svg') }).first().click();
+        await card.locator('button[aria-label="カードを編集"]').click();
 
         // 編集フォームが表示される
         const textarea = page.locator('textarea');
@@ -51,7 +51,7 @@ test.describe('カード編集機能', () => {
         // 編集モードに入る
         const card = page.locator('.group', { hasText: 'キャンセルテスト' });
         await card.hover();
-        await card.getByRole('button').filter({ has: page.locator('svg') }).first().click();
+        await card.locator('button[aria-label="カードを編集"]').click();
 
         // 内容を変更してESCでキャンセル
         await page.locator('textarea').fill('変更された内容');
@@ -69,7 +69,7 @@ test.describe('カード編集機能', () => {
         // 編集モードに入る
         const card = page.locator('.group', { hasText: 'ボタンキャンセルテスト' });
         await card.hover();
-        await card.getByRole('button').filter({ has: page.locator('svg') }).first().click();
+        await card.locator('button[aria-label="カードを編集"]').click();
 
         // キャンセルボタンをクリック
         await page.locator('button', { hasText: 'キャンセル' }).click();
@@ -85,7 +85,7 @@ test.describe('カード編集機能', () => {
         // 編集モードに入る
         const card = page.locator('.group', { hasText: 'Enter保存テスト' });
         await card.hover();
-        await card.getByRole('button').filter({ has: page.locator('svg') }).first().click();
+        await card.locator('button[aria-label="カードを編集"]').click();
 
         // 内容を編集してEnterで保存
         await page.locator('textarea').fill('Enter保存後');
@@ -104,8 +104,7 @@ test.describe('カード削除機能', () => {
         // カードにホバーして削除ボタンをクリック
         const card = page.locator('.group', { hasText: '削除対象カード' });
         await card.hover();
-        // 削除ボタンは2番目のSVGボタン
-        await card.getByRole('button').filter({ has: page.locator('svg') }).last().click();
+        await card.locator('button[aria-label="カードを削除"]').click();
 
         // カードが削除される
         await expect(page.getByText('削除対象カード')).not.toBeVisible();
@@ -140,7 +139,7 @@ test.describe('カード削除機能', () => {
         await memberPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await memberPage.getByPlaceholder('意見を入力').fill('メンバーのカード');
         await memberPage.locator('button', { hasText: '追加' }).click();
-        await expect(memberPage.getByText('メンバーのカード')).toBeVisible();
+        await expect(memberPage.locator('p', { hasText: 'メンバーのカード' })).toBeVisible();
 
         // ファシリテーターのページでカードが表示されるのを待つ
         await expect(facilitatorPage.getByText('メンバーのカード')).toBeVisible({ timeout: 10000 });
@@ -148,7 +147,7 @@ test.describe('カード削除機能', () => {
         // ファシリテーターがメンバーのカードを削除
         const card = facilitatorPage.locator('.group', { hasText: 'メンバーのカード' });
         await card.hover();
-        await card.getByRole('button').filter({ has: facilitatorPage.locator('svg') }).last().click();
+        await card.locator('button[aria-label="カードを削除"]').click();
 
         // カードが削除される
         await expect(facilitatorPage.getByText('メンバーのカード')).not.toBeVisible();
@@ -166,7 +165,7 @@ test.describe('投票フェーズでの編集・削除制限', () => {
         // WRITINGフェーズではボタンが表示される
         const card = page.locator('.group', { hasText: '投票フェーズテストカード' });
         await card.hover();
-        await expect(card.getByRole('button').filter({ has: page.locator('svg') }).first()).toBeVisible();
+        await expect(card.locator('button[aria-label="カードを編集"]')).toBeVisible();
 
         // 投票フェーズに進める
         await page.locator('button', { hasText: '次へ: 投票' }).click();
@@ -174,7 +173,7 @@ test.describe('投票フェーズでの編集・削除制限', () => {
 
         // 投票フェーズでは編集・削除ボタンが非表示
         await card.hover();
-        await expect(card.locator('button').filter({ has: page.locator('svg.lucide-pencil') })).not.toBeVisible();
-        await expect(card.locator('button').filter({ has: page.locator('svg.lucide-trash-2') })).not.toBeVisible();
+        await expect(card.locator('button[aria-label="カードを編集"]')).not.toBeVisible();
+        await expect(card.locator('button[aria-label="カードを削除"]')).not.toBeVisible();
     });
 });

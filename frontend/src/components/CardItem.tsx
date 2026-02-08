@@ -45,6 +45,9 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
     disabled: !isDndEnabled || editing,
   });
 
+  // aria-disabledをカード全体から除外（DnD無効時でもメモ・リアクション等は操作可能にする）
+  const { 'aria-disabled': _ariaDisabled, ...safeAttributes } = attributes;
+
   const style = isOverlay
     ? { opacity: 1 }
     : {
@@ -168,7 +171,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
+      {...safeAttributes}
       className={`bg-white rounded-lg shadow-sm border border-gray-200 p-3 group ${
         isOverlay ? 'shadow-lg ring-2 ring-indigo-300' : ''
       }`}
@@ -199,6 +202,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}
               style={card.voteCount > 0 ? { backgroundColor: columnColor } : undefined}
+              data-testid="vote-button"
             >
               <ThumbsUp size={12} />
               <span>{card.voteCount}</span>
@@ -230,6 +234,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
               <button
                 onClick={() => setEditing(true)}
                 className="p-1 text-gray-400 hover:text-gray-600 rounded"
+                aria-label="カードを編集"
               >
                 <Pencil size={14} />
               </button>
@@ -237,6 +242,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
             <button
               onClick={handleDelete}
               className="p-1 text-gray-400 hover:text-red-500 rounded"
+              aria-label="カードを削除"
             >
               <Trash2 size={14} />
             </button>

@@ -42,9 +42,13 @@ class AddVoteUseCase(
         }
 
         val vote = card.addVote(participant)
-        voteRepository.save(vote)
 
-        val response = CardMapper.toVoteResponse(vote)
+        val response = VoteResponse(
+            id = vote.id,
+            cardId = request.cardId,
+            participantId = request.participantId,
+            createdAt = vote.createdAt
+        )
         eventPublisher.publish(
             VoteEvent.VoteAdded(
                 slug = slug,

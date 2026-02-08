@@ -38,7 +38,6 @@ class AddVoteUseCaseTest {
         every { boardRepository.findBySlug(any()) } returns board
         every { cardRepository.findById("card-1") } returns card
         every { voteRepository.countByParticipantIdAndCardBoardId("p-1", board.id) } returns 0
-        every { voteRepository.save(any()) } answers { firstArg() }
 
         val response = useCase.execute("test1234", VoteRequest("card-1", "p-1"))
 

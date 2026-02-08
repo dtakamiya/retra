@@ -27,6 +27,28 @@ async function setupVotingWithMultipleCards(page: import('@playwright/test').Pag
     await expect(page.locator('.bg-indigo-600.text-white', { hasText: '投票' }).first()).toBeVisible();
 }
 
+// ヘルパー関数: 特定カードの投票ボタンをクリックし、投票数が更新されるのを待つ
+async function voteOnCard(page: import('@playwright/test').Page, cardText: string) {
+    const card = page.locator('.group', { hasText: cardText }).first();
+    const voteButton = card.locator('[data-testid="vote-button"]');
+    const currentCount = await voteButton.locator('span').textContent();
+    const expectedCount = String(Number(currentCount) + 1);
+    await voteButton.click({ force: true });
+    // 投票数が更新されるのを待つ
+    await expect(voteButton.locator('span')).toHaveText(expectedCount, { timeout: 5000 });
+}
+
+// ヘルパー関数: 特定カードの投票を取り消し、投票数が減少するのを待つ
+async function unvoteOnCard(page: import('@playwright/test').Page, cardText: string) {
+    const card = page.locator('.group', { hasText: cardText }).first();
+    const voteButton = card.locator('[data-testid="vote-button"]');
+    const currentCount = await voteButton.locator('span').textContent();
+    const expectedCount = String(Number(currentCount) - 1);
+    await voteButton.click({ force: true });
+    // 投票数が更新されるのを待つ
+    await expect(voteButton.locator('span')).toHaveText(expectedCount, { timeout: 5000 });
+}
+
 test.describe('残り投票数表示', () => {
     test('投票フェーズに入ると残り投票数が表示される', async ({ page }) => {
         await setupVotingWithMultipleCards(page);
@@ -42,11 +64,10 @@ test.describe('残り投票数表示', () => {
         await expect(page.getByText('残り 5票')).toBeVisible();
 
         // 投票
-        await page.getByRole('button', { name: '0' }).first().click();
-        await expect(page.getByRole('button', { name: '1' }).first()).toBeVisible();
+        await voteOnCard(page, '投票カード1');
 
         // 残り投票数が減少していることを確認
-        await expect(page.getByText('残り 4票')).toBeVisible();
+        await expect(page.getByText('残り 4票')).toBeVisible({ timeout: 5000 });
     });
 });
 
@@ -55,25 +76,20 @@ test.describe('投票上限制限', () => {
         // 十分なカードを用意
         await setupVotingWithMultipleCards(page, 7);
 
-        // 投票数上限（デフォルト5票）まで投票
-        const voteButtons = page.getByRole('button', { name: '0' });
-
-        // 5回投票（上限）
-        for (let i = 0; i < 5; i++) {
-            await voteButtons.first().click();
-            // 少し待機して確実に反映されるようにする
-            await page.waitForTimeout(300);
+        // 投票数上限（デフォルト5票）まで1枚ずつ別のカードに投票
+        for (let i = 1; i <= 5; i++) {
+            await voteOnCard(page, `投票カード${i}`);
+            // 残り票数の更新を待つ
+            await expect(page.getByText(`残り ${5 - i}票`)).toBeVisible({ timeout: 5000 });
         }
 
         // 残り0票であることを確認
         await expect(page.getByText('残り 0票')).toBeVisible();
 
-        // 追加の投票ボタンが無効であることを確認
-        const remainingZeroButton = voteButtons.first();
-        if (await remainingZeroButton.count() > 0) {
-            // disabledになっているか確認
-            await expect(remainingZeroButton).toBeDisabled();
-        }
+        // 未投票のカードの投票ボタンが無効であることを確認
+        const card6 = page.locator('.group', { hasText: '投票カード6' }).first();
+        const disabledButton = card6.locator('[data-testid="vote-button"]');
+        await expect(disabledButton).toBeDisabled();
     });
 
     test('投票を取り消すと残り投票数が回復する', async ({ page }) => {
@@ -83,36 +99,33 @@ test.describe('投票上限制限', () => {
         await expect(page.getByText('残り 5票')).toBeVisible();
 
         // 投票
-        await page.getByRole('button', { name: '0' }).first().click();
-        await expect(page.getByRole('button', { name: '1' }).first()).toBeVisible();
-        await expect(page.getByText('残り 4票')).toBeVisible();
+        await voteOnCard(page, '投票カード1');
+        await expect(page.getByText('残り 4票')).toBeVisible({ timeout: 5000 });
 
         // 投票を取り消し
-        await page.getByRole('button', { name: '1' }).first().click();
-        await expect(page.getByRole('button', { name: '0' }).first()).toBeVisible();
+        await unvoteOnCard(page, '投票カード1');
 
         // 残り投票数が回復
-        await expect(page.getByText('残り 5票')).toBeVisible();
+        await expect(page.getByText('残り 5票')).toBeVisible({ timeout: 5000 });
     });
 
     test('複数回投票と取り消しで正しく票数が管理される', async ({ page }) => {
         await setupVotingWithMultipleCards(page, 5);
 
-        // 3回投票
-        for (let i = 0; i < 3; i++) {
-            await page.getByRole('button', { name: '0' }).first().click();
-            await page.waitForTimeout(300);
+        // 3枚のカードに投票
+        for (let i = 1; i <= 3; i++) {
+            await voteOnCard(page, `投票カード${i}`);
+            await expect(page.getByText(`残り ${5 - i}票`)).toBeVisible({ timeout: 5000 });
         }
 
-        // 投票数が表示されるカードの確認
-        const voteCountButtons = page.getByRole('button', { name: '1' });
-        await expect(voteCountButtons).toHaveCount(3, { timeout: 5000 });
+        // 残り2票であることを確認
+        await expect(page.getByText('残り 2票')).toBeVisible();
 
         // 1つ取り消し
-        await voteCountButtons.first().click();
+        await unvoteOnCard(page, '投票カード1');
 
-        // 投票数1のカードが2つになる
-        await expect(page.getByRole('button', { name: '1' })).toHaveCount(2, { timeout: 5000 });
+        // 残り3票に回復
+        await expect(page.getByText('残り 3票')).toBeVisible({ timeout: 5000 });
     });
 });
 
