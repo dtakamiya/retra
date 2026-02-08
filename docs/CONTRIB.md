@@ -153,8 +153,9 @@ Flyway で管理。マイグレーションファイルは `backend/src/main/res
 | `V5__create_votes.sql` | 投票テーブル作成 |
 | `V6__add_card_sort_order.sql` | カードの並べ替え用 sort_order カラム追加 |
 | `V7__create_memos.sql` | メモテーブル作成 |
+| `V8__create_reactions.sql` | リアクションテーブル作成 |
 
-新しいマイグレーションを追加する場合は `V8__description.sql` のように命名してください。
+新しいマイグレーションを追加する場合は `V9__description.sql` のように命名してください。
 
 ### SQLite の制約
 
