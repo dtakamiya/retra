@@ -95,7 +95,7 @@ describe('ColumnView', () => {
     expect(screen.queryByTitle('カードを追加')).not.toBeInTheDocument()
   })
 
-  it('sorts cards by sortOrder', () => {
+  it('sorts cards by sortOrder in WRITING phase', () => {
     const column = createColumn({
       name: 'Keep',
       cards: [
@@ -117,5 +117,53 @@ describe('ColumnView', () => {
     expect(cardContents[0]).toHaveTextContent('First card')
     expect(cardContents[1]).toHaveTextContent('Second card')
     expect(cardContents[2]).toHaveTextContent('Third card')
+  })
+
+  it('sorts cards by voteCount descending in DISCUSSION phase', () => {
+    const column = createColumn({
+      name: 'Keep',
+      cards: [
+        createCard({ id: 'c-1', content: 'Low votes', sortOrder: 0, voteCount: 1 }),
+        createCard({ id: 'c-2', content: 'High votes', sortOrder: 1, voteCount: 5 }),
+        createCard({ id: 'c-3', content: 'Mid votes', sortOrder: 2, voteCount: 3 }),
+      ],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant(),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<ColumnView column={column} />)
+
+    const cardContents = screen.getAllByText(/votes/)
+    expect(cardContents[0]).toHaveTextContent('High votes')
+    expect(cardContents[1]).toHaveTextContent('Mid votes')
+    expect(cardContents[2]).toHaveTextContent('Low votes')
+  })
+
+  it('sorts cards by voteCount descending then sortOrder ascending when tied', () => {
+    const column = createColumn({
+      name: 'Keep',
+      cards: [
+        createCard({ id: 'c-1', content: 'Second tied', sortOrder: 1, voteCount: 3 }),
+        createCard({ id: 'c-2', content: 'First tied', sortOrder: 0, voteCount: 3 }),
+        createCard({ id: 'c-3', content: 'Top card', sortOrder: 2, voteCount: 5 }),
+      ],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'ACTION_ITEMS' }),
+      participant: createParticipant(),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<ColumnView column={column} />)
+
+    const cardContents = screen.getAllByText(/tied|Top/)
+    expect(cardContents[0]).toHaveTextContent('Top card')
+    expect(cardContents[1]).toHaveTextContent('First tied')
+    expect(cardContents[2]).toHaveTextContent('Second tied')
   })
 })

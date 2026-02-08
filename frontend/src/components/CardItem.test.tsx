@@ -140,6 +140,37 @@ describe('CardItem', () => {
     render(<CardItem card={cardWithVotes} columnColor="#22c55e" />)
 
     expect(screen.getByText('3')).toBeInTheDocument()
+    expect(screen.getByTestId('vote-badge')).toBeInTheDocument()
+  })
+
+  it('shows larger vote badge in DISCUSSION phase', () => {
+    const cardWithVotes = createCard({ voteCount: 5 })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={cardWithVotes} columnColor="#22c55e" />)
+
+    const badge = screen.getByTestId('vote-badge')
+    expect(badge.className).toContain('text-sm')
+  })
+
+  it('shows larger vote badge in CLOSED phase', () => {
+    const cardWithVotes = createCard({ voteCount: 2 })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'CLOSED' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={cardWithVotes} columnColor="#22c55e" />)
+
+    const badge = screen.getByTestId('vote-badge')
+    expect(badge.className).toContain('text-sm')
   })
 
   it('shows edit/delete buttons for author in WRITING phase', () => {

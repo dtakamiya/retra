@@ -205,10 +205,15 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
             </button>
           ) : card.voteCount > 0 ? (
             <span
-              className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium text-white"
+              className={`flex items-center gap-1 rounded font-bold text-white ${
+                isDiscussionLike || phase === 'CLOSED'
+                  ? 'px-2.5 py-1 text-sm'
+                  : 'px-2 py-1 text-xs font-medium'
+              }`}
               style={{ backgroundColor: columnColor }}
+              data-testid="vote-badge"
             >
-              <ThumbsUp size={12} />
+              <ThumbsUp size={isDiscussionLike || phase === 'CLOSED' ? 16 : 12} />
               {card.voteCount}
             </span>
           ) : null}

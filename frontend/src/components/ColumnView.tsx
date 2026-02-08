@@ -39,11 +39,17 @@ export function ColumnView({ column }: Props) {
 
   const { setNodeRef } = useDroppable({ id: column.id });
 
+  const isPostVoting = board?.phase === 'DISCUSSION' || board?.phase === 'ACTION_ITEMS' || board?.phase === 'CLOSED';
+
   const sortedCards = useMemo(() => {
     const cards = [...column.cards];
-    cards.sort((a, b) => a.sortOrder - b.sortOrder);
+    if (isPostVoting) {
+      cards.sort((a, b) => b.voteCount - a.voteCount || a.sortOrder - b.sortOrder);
+    } else {
+      cards.sort((a, b) => a.sortOrder - b.sortOrder);
+    }
     return cards;
-  }, [column.cards]);
+  }, [column.cards, isPostVoting]);
 
   const cardIds = useMemo(() => sortedCards.map((c) => c.id), [sortedCards]);
 
