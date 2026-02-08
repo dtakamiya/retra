@@ -11,7 +11,7 @@ Retra is a real-time retrospective board for Scrum teams. It supports multiple f
 
 - **Backend:** Spring Boot 3.4.1 + Kotlin 2.0.21 (`backend/`)
 - **Frontend:** React 19 + TypeScript 5.9 + Vite 7 + Zustand 5 + TailwindCSS v4 (`frontend/`)
-- **Database:** SQLite with Flyway migrations (V1-V7)
+- **Database:** SQLite with Flyway migrations (V1-V8)
 - **Realtime:** WebSocket via STOMP protocol (`@stomp/stompjs`)
 - **Drag & Drop:** @dnd-kit (core, sortable, utilities)
 - **Icons:** Lucide React
@@ -98,13 +98,13 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 | `board/gateway/db/` | JPA repository implementations (`JpaBoardRepository`, `JpaParticipantRepository`) |
 | `board/gateway/websocket/` | `WebSocketController`, `WebSocketEventListener` |
 
-#### `card/` - Card Module (Cards, Votes, Memos)
+#### `card/` - Card Module (Cards, Votes, Memos, Reactions)
 | Package | Purpose |
 |---------|---------|
-| `card/domain/` | `Card`, `Vote`, `Memo`, `Content`, `SortOrder`, `CardEvent`, `VoteEvent`, `MemoEvent`, repositories |
-| `card/usecase/` | `CreateCardUseCase`, `UpdateCardUseCase`, `DeleteCardUseCase`, `MoveCardUseCase`, `AddVoteUseCase`, `RemoveVoteUseCase`, `GetRemainingVotesUseCase`, `CreateMemoUseCase`, `UpdateMemoUseCase`, `DeleteMemoUseCase`, DTOs, Mappers |
-| `card/gateway/controller/` | `CardController`, `VoteController`, `MemoController` (REST) |
-| `card/gateway/db/` | JPA repository implementations (`JpaCardRepository`, `JpaVoteRepository`, `JpaMemoRepository`) |
+| `card/domain/` | `Card`, `Vote`, `Memo`, `Reaction`, `Content`, `SortOrder`, `CardEvent`, `VoteEvent`, `MemoEvent`, `ReactionEvent`, repositories |
+| `card/usecase/` | `CreateCardUseCase`, `UpdateCardUseCase`, `DeleteCardUseCase`, `MoveCardUseCase`, `AddVoteUseCase`, `RemoveVoteUseCase`, `GetRemainingVotesUseCase`, `CreateMemoUseCase`, `UpdateMemoUseCase`, `DeleteMemoUseCase`, `AddReactionUseCase`, `RemoveReactionUseCase`, DTOs, Mappers |
+| `card/gateway/controller/` | `CardController`, `VoteController`, `MemoController`, `ReactionController` (REST) |
+| `card/gateway/db/` | JPA repository implementations (`JpaCardRepository`, `JpaVoteRepository`, `JpaMemoRepository`, `JpaReactionRepository`) |
 
 #### `timer/` - Timer Module
 | Package | Purpose |
@@ -127,11 +127,11 @@ Entry point: `RetraApplication.kt`
 |-----------|---------|
 | `api/client.ts` | REST API wrapper (`/api/v1` base) |
 | `pages/` | `HomePage` (create/join), `BoardPage` (main board), `NotFoundPage` |
-| `components/` | `BoardHeader`, `BoardView`, `ColumnView`, `CardItem`, `CardForm`, `MemoList`, `MemoItem`, `MemoForm`, `ParticipantList`, `PhaseControl`, `TimerDisplay`, `ConnectionBanner`, `NicknameModal` |
+| `components/` | `BoardHeader`, `BoardView`, `ColumnView`, `CardItem`, `CardForm`, `MemoList`, `MemoItem`, `MemoForm`, `ReactionList`, `ReactionPicker`, `ParticipantList`, `PhaseControl`, `TimerDisplay`, `ConnectionBanner`, `NicknameModal` |
 | `store/boardStore.ts` | Zustand store with WebSocket event handlers |
 | `websocket/useWebSocket.ts` | STOMP client hook with auto-reconnect |
 | `hooks/useTimerAlert.ts` | Timer alert sound hook |
-| `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `CardMovedPayload`, etc.) |
+| `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `Reaction`, `CardMovedPayload`, `ReactionRemovedPayload`, etc.) |
 | `test/` | Test utilities: `setup.ts`, `fixtures.ts`, `test-utils.tsx`, `dnd-mocks.ts` |
 
 App entry: `main.tsx` -> `App.tsx` (React Router with 3 routes)
@@ -153,6 +153,8 @@ All REST endpoints are under `/api/v1`:
 - `POST /boards/{slug}/cards/{cardId}/memos` - Create memo
 - `PUT /boards/{slug}/cards/{cardId}/memos/{memoId}` - Update memo
 - `DELETE /boards/{slug}/cards/{cardId}/memos/{memoId}` - Delete memo
+- `POST /boards/{slug}/reactions` - Add reaction (emoji: 👍❤️😂🎉🤔👀)
+- `DELETE /boards/{slug}/reactions` - Remove reaction
 - `POST /boards/{slug}/timer` - Timer control (facilitator only)
 - `GET /boards/{slug}/timer` - Get timer state
 
@@ -161,6 +163,7 @@ All REST endpoints are under `/api/v1`:
 STOMP topics under `/topic/board/{slug}/`:
 - `cards` - `CARD_CREATED`, `CARD_UPDATED`, `CARD_MOVED`, `CARD_DELETED`
 - `votes` - `VOTE_ADDED`, `VOTE_REMOVED`
+- `reactions` - `REACTION_ADDED`, `REACTION_REMOVED`
 - `memos` - `MEMO_CREATED`, `MEMO_UPDATED`, `MEMO_DELETED`
 - `phase` - `PHASE_CHANGED`
 - `participants` - `PARTICIPANT_JOINED`, `PARTICIPANT_ONLINE_CHANGED`
@@ -186,9 +189,9 @@ Business rules are enforced in the usecase layer:
   - `board/usecase/` - CreateBoard, GetBoard, TransitionPhase, JoinBoard, UpdateOnlineStatus usecase tests
   - `board/gateway/controller/` - BoardController test
   - `board/gateway/websocket/` - WebSocketEventListener test
-  - `card/domain/` - Card, Memo tests
-  - `card/usecase/` - CreateCard, UpdateCard, DeleteCard, MoveCard, AddVote, RemoveVote, GetRemainingVotes, CreateMemo, UpdateMemo, DeleteMemo usecase tests
-  - `card/gateway/controller/` - CardController, VoteController, MemoController tests
+  - `card/domain/` - Card, Memo, Reaction tests
+  - `card/usecase/` - CreateCard, UpdateCard, DeleteCard, MoveCard, AddVote, RemoveVote, GetRemainingVotes, CreateMemo, UpdateMemo, DeleteMemo, AddReaction, RemoveReaction usecase tests
+  - `card/gateway/controller/` - CardController, VoteController, MemoController, ReactionController tests
   - `timer/` - TimerController, TimerService tests
   - `shared/gateway/` - GlobalExceptionHandler, DomainEventBroadcaster, SpringDomainEventPublisher tests
 
@@ -212,7 +215,7 @@ Business rules are enforced in the usecase layer:
 - **SQLite single-writer:** HikariCP `maximum-pool-size=1`, WAL mode, `busy_timeout=5000ms`, `foreign_keys=ON`
 - **Kotlin JPA entities** use `open class` (not data class) due to `allOpen` plugin with `@Entity`, `@MappedSuperclass`, `@Embeddable` annotations
 - **TailwindCSS v4:** Uses `@tailwindcss/vite` plugin with `@import "tailwindcss"` syntax. No `tailwind.config.js`.
-- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V7, do not modify existing migrations)
+- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V8, do not modify existing migrations)
 - **SPA fallback:** `SpaConfig.kt` serves `index.html` for non-API, non-static routes in production
 - **Vite proxy:** Dev server proxies `/api` to `http://localhost:8080` and `/ws` to `ws://localhost:8080`
 - **TypeScript strict mode:** `noUnusedLocals`, `noUnusedParameters`, `erasableSyntaxOnly`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports` all enabled
