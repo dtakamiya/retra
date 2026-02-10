@@ -215,6 +215,7 @@ Conventional Commits 形式を使用:
 | SQLite JDBC | 3.45.1.0 | DB ドライバ |
 | Hibernate SQLite Dialect | 6.4.2.Final | JPA Dialect |
 | Jackson Kotlin Module | - | JSON シリアライゼーション |
+| Apache Commons CSV | 1.12.0 | CSV エクスポート |
 
 ### Frontend
 

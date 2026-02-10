@@ -15,6 +15,7 @@
 - **タイマー機能** - フェーズごとの時間管理（開始・一時停止・リセット）
 - **投票機能** - 1人あたりの最大投票数を設定可能
 - **フェーズベースのアクセス制御** - 記入フェーズでのみカード作成、投票フェーズでのみ投票など
+- **エクスポート機能** - ボード内容をCSVまたはMarkdown形式でダウンロード
 - **複数人参加** - URLを共有するだけでボードに参加可能
 
 ## 技術スタック
@@ -163,7 +164,7 @@ backend/src/main/kotlin/com/retra/
 │   └── gateway/         # イベント発行, 例外ハンドラ, STOMP ブロードキャスト
 ├── board/
 │   ├── domain/          # Board, Participant, Framework, Phase
-│   ├── usecase/         # ボード作成・取得・フェーズ遷移・参加
+│   ├── usecase/         # ボード作成・取得・フェーズ遷移・参加・エクスポート
 │   └── gateway/         # REST コントローラ, JPA リポジトリ, WebSocket
 ├── card/
 │   ├── domain/          # Card, Vote, Memo, Reaction
@@ -181,7 +182,8 @@ frontend/src/
 ├── websocket/           # STOMP クライアント
 ├── hooks/               # カスタムフック
 ├── test/                # テストユーティリティ・フィクスチャ
-└── types/               # TypeScript 型定義
+├── types/               # TypeScript 型定義
+└── utils/               # ユーティリティ (エクスポート変換等)
 ```
 
 ## API エンドポイント
@@ -208,3 +210,4 @@ frontend/src/
 | `DELETE` | `/boards/{slug}/reactions` | リアクション削除 |
 | `POST` | `/boards/{slug}/timer` | タイマー操作（ファシリテーターのみ） |
 | `GET` | `/boards/{slug}/timer` | タイマー状態取得 |
+| `GET` | `/boards/{slug}/export` | ボードエクスポート（CSV/Markdown） |
