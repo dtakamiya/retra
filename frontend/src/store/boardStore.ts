@@ -66,6 +66,7 @@ export const useBoardStore = create<BoardState>((set) => ({
       if (!state.board) return state;
       const cardWithDefaults = {
         ...card,
+        votedParticipantIds: card.votedParticipantIds ?? [],
         memos: card.memos ?? [],
         reactions: card.reactions ?? [],
       };
@@ -85,7 +86,7 @@ export const useBoardStore = create<BoardState>((set) => ({
         ...col,
         cards: col.cards.map((c) =>
           c.id === card.id
-            ? { ...card, memos: card.memos ?? c.memos, reactions: card.reactions ?? c.reactions }
+            ? { ...card, votedParticipantIds: card.votedParticipantIds ?? c.votedParticipantIds, memos: card.memos ?? c.memos, reactions: card.reactions ?? c.reactions }
             : c
         ),
       }));
@@ -139,7 +140,15 @@ export const useBoardStore = create<BoardState>((set) => ({
       const columns = state.board.columns.map((col) => ({
         ...col,
         cards: col.cards.map((c) =>
-          c.id === vote.cardId ? { ...c, voteCount: c.voteCount + 1 } : c
+          c.id === vote.cardId
+            ? {
+                ...c,
+                voteCount: c.voteCount + 1,
+                votedParticipantIds: c.votedParticipantIds.includes(vote.participantId)
+                  ? c.votedParticipantIds
+                  : [...c.votedParticipantIds, vote.participantId],
+              }
+            : c
         ),
       }));
       // Decrement remaining votes if it's this participant
@@ -160,7 +169,15 @@ export const useBoardStore = create<BoardState>((set) => ({
       const columns = state.board.columns.map((col) => ({
         ...col,
         cards: col.cards.map((c) =>
-          c.id === payload.cardId ? { ...c, voteCount: Math.max(0, c.voteCount - 1) } : c
+          c.id === payload.cardId
+            ? {
+                ...c,
+                voteCount: Math.max(0, c.voteCount - 1),
+                votedParticipantIds: c.votedParticipantIds.filter(
+                  (id) => id !== payload.participantId
+                ),
+              }
+            : c
         ),
       }));
       let remainingVotes = state.remainingVotes;
@@ -183,6 +200,8 @@ export const useBoardStore = create<BoardState>((set) => ({
   handleParticipantJoined: (participant) =>
     set((state) => {
       if (!state.board) return state;
+      const alreadyExists = state.board.participants.some((p) => p.id === participant.id);
+      if (alreadyExists) return state;
       return {
         board: {
           ...state.board,

@@ -368,9 +368,9 @@ describe('CardItem', () => {
     expect(api.addVote).toHaveBeenCalledWith('vote-slug', 'card-1', 'p-1')
   })
 
-  it('clicking vote button when voteCount > 0 calls api.removeVote', async () => {
+  it('clicking vote button when user has voted calls api.removeVote', async () => {
     const user = userEvent.setup()
-    const card = createCard({ voteCount: 2, participantId: 'p-1' })
+    const card = createCard({ voteCount: 2, votedParticipantIds: ['p-1', 'p-2'], participantId: 'p-1' })
 
     vi.mocked(useBoardStore).mockReturnValue({
       board: createBoard({ slug: 'vote-slug', phase: 'VOTING' }),

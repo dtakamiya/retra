@@ -13,6 +13,7 @@ object CardMapper {
             authorNickname = card.authorNickname,
             participantId = card.participant?.id,
             voteCount = card.votes.size,
+            votedParticipantIds = card.votes.mapNotNull { it.participant?.id },
             sortOrder = card.sortOrder,
             createdAt = card.createdAt,
             updatedAt = card.updatedAt,
