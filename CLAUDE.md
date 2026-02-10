@@ -93,7 +93,8 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 | Package | Purpose |
 |---------|---------|
 | `board/domain/` | `Board`, `BoardColumn`, `Participant`, `BoardSlug`, `VoteLimit`, `Framework`, `Phase`, `BoardAuthorizationService`, `BoardEvent`, repositories |
-| `board/usecase/` | `CreateBoardUseCase`, `GetBoardUseCase`, `TransitionPhaseUseCase`, `JoinBoardUseCase`, `UpdateOnlineStatusUseCase`, `BoardDtos`, `BoardMapper` |
+| `board/usecase/` | `CreateBoardUseCase`, `GetBoardUseCase`, `TransitionPhaseUseCase`, `JoinBoardUseCase`, `UpdateOnlineStatusUseCase`, `ExportBoardUseCase`, `BoardDtos`, `ExportDtos`, `BoardMapper` |
+| `board/usecase/export/` | `CsvExportService`, `MarkdownExportService` (CSV/Markdownエクスポート) |
 | `board/gateway/controller/` | `BoardController` (REST) |
 | `board/gateway/db/` | JPA repository implementations (`JpaBoardRepository`, `JpaParticipantRepository`) |
 | `board/gateway/websocket/` | `WebSocketController`, `WebSocketEventListener` |
@@ -127,11 +128,12 @@ Entry point: `RetraApplication.kt`
 |-----------|---------|
 | `api/client.ts` | REST API wrapper (`/api/v1` base) |
 | `pages/` | `HomePage` (create/join), `BoardPage` (main board), `NotFoundPage` |
-| `components/` | `BoardHeader`, `BoardView`, `ColumnView`, `CardItem`, `CardForm`, `MemoList`, `MemoItem`, `MemoForm`, `ReactionList`, `ReactionPicker`, `ParticipantList`, `PhaseControl`, `TimerDisplay`, `ConnectionBanner`, `NicknameModal` |
+| `components/` | `BoardHeader`, `BoardView`, `ColumnView`, `CardItem`, `CardForm`, `MemoList`, `MemoItem`, `MemoForm`, `ReactionList`, `ReactionPicker`, `ParticipantList`, `PhaseControl`, `TimerDisplay`, `ConnectionBanner`, `NicknameModal`, `ExportMenu` |
 | `store/boardStore.ts` | Zustand store with WebSocket event handlers |
 | `websocket/useWebSocket.ts` | STOMP client hook with auto-reconnect |
 | `hooks/useTimerAlert.ts` | Timer alert sound hook |
-| `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `Reaction`, `CardMovedPayload`, `ReactionRemovedPayload`, etc.) |
+| `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `Reaction`, `ExportFormat`, `CardMovedPayload`, `ReactionRemovedPayload`, etc.) |
+| `utils/` | Utility functions (`exportMarkdown.ts` - Markdown export conversion) |
 | `test/` | Test utilities: `setup.ts`, `fixtures.ts`, `test-utils.tsx`, `dnd-mocks.ts` |
 
 App entry: `main.tsx` -> `App.tsx` (React Router with 3 routes)
@@ -157,6 +159,7 @@ All REST endpoints are under `/api/v1`:
 - `DELETE /boards/{slug}/reactions` - Remove reaction
 - `POST /boards/{slug}/timer` - Timer control (facilitator only)
 - `GET /boards/{slug}/timer` - Get timer state
+- `GET /boards/{slug}/export` - Export board (CSV/Markdown, query params: `participantId`, `format`)
 
 ### WebSocket Events
 
@@ -186,7 +189,8 @@ Business rules are enforced in the usecase layer:
 - **Test fixtures:** `TestFixtures.kt` provides shared test data builders
 - **Structure:** Tests mirror the modular monolith structure:
   - `board/domain/` - Board, BoardSlug, BoardColumn, BoardAuthorizationService, Framework, Phase, VoteLimit tests
-  - `board/usecase/` - CreateBoard, GetBoard, TransitionPhase, JoinBoard, UpdateOnlineStatus usecase tests
+  - `board/usecase/` - CreateBoard, GetBoard, TransitionPhase, JoinBoard, UpdateOnlineStatus, ExportBoard usecase tests
+  - `board/usecase/export/` - CsvExportService, MarkdownExportService tests
   - `board/gateway/controller/` - BoardController test
   - `board/gateway/websocket/` - WebSocketEventListener test
   - `card/domain/` - Card, Memo, Reaction tests
@@ -207,7 +211,7 @@ Business rules are enforced in the usecase layer:
 ### E2E Tests (`frontend/e2e/`)
 - **Framework:** Playwright
 - **Config:** `playwright.config.ts`
-- **Test suites:** `home`, `board-creation`, `board-join`, `card-operations`, `card-edit-delete`, `voting`, `voting-limit`, `phase-control`, `timer`, `realtime-sync`
+- **Test suites:** `home`, `board-creation`, `board-join`, `card-operations`, `card-edit-delete`, `card-drag-drop`, `voting`, `voting-limit`, `phase-control`, `timer`, `realtime-sync`, `authorization`, `memo-operations`, `reaction-operations`, `export`
 
 ## Technical Constraints
 
