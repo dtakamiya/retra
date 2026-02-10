@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
+import { useToastStore } from '../store/toastStore';
 
 interface Props {
   columnId: string;
@@ -9,6 +10,7 @@ interface Props {
 
 export function CardForm({ columnId, onClose }: Props) {
   const { board, participant } = useBoardStore();
+  const addToast = useToastStore((s) => s.addToast);
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -19,8 +21,8 @@ export function CardForm({ columnId, onClose }: Props) {
       await api.createCard(board.slug, columnId, content.trim(), participant.id);
       setContent('');
       onClose();
-    } catch (err) {
-      console.error('Failed to create card:', err);
+    } catch {
+      addToast('error', 'カードの作成に失敗しました');
     } finally {
       setLoading(false);
     }

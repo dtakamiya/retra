@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
+import { useToastStore } from '../store/toastStore';
 import type { Phase } from '../types';
 
 const PHASES: { key: Phase; label: string }[] = [
@@ -22,6 +23,7 @@ const NEXT_PHASE: Record<Phase, Phase | null> = {
 
 export function PhaseControl() {
   const { board, participant, setBoard } = useBoardStore();
+  const addToast = useToastStore((s) => s.addToast);
   const [loading, setLoading] = useState(false);
 
   if (!board || !participant) return null;
@@ -36,8 +38,8 @@ export function PhaseControl() {
     try {
       const updated = await api.changePhase(board.slug, nextPhase, participant.id);
       setBoard(updated);
-    } catch (err) {
-      console.error('Failed to change phase:', err);
+    } catch {
+      addToast('error', 'フェーズの変更に失敗しました');
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pencil, Trash2, Check, X } from 'lucide-react';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
+import { useToastStore } from '../store/toastStore';
 import type { Memo } from '../types';
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 
 export function MemoItem({ memo, cardId }: Props) {
   const { board, participant } = useBoardStore();
+  const addToast = useToastStore((s) => s.addToast);
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(memo.content);
   const [loading, setLoading] = useState(false);
@@ -29,7 +31,7 @@ export function MemoItem({ memo, cardId }: Props) {
       await api.updateMemo(board.slug, cardId, memo.id, editContent.trim(), participant.id);
       setEditing(false);
     } catch {
-      // エラー時はWebSocket経由で最新状態が反映される
+      addToast('error', 'メモの更新に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -40,7 +42,7 @@ export function MemoItem({ memo, cardId }: Props) {
     try {
       await api.deleteMemo(board.slug, cardId, memo.id, participant.id);
     } catch {
-      // エラー時はWebSocket経由で最新状態が反映される
+      addToast('error', 'メモの削除に失敗しました');
     } finally {
       setLoading(false);
     }
