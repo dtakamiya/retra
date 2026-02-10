@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
+import { useToastStore } from '../store/toastStore';
 import { useWebSocket } from '../websocket/useWebSocket';
 import { NicknameModal } from '../components/NicknameModal';
 import { BoardHeader } from '../components/BoardHeader';
@@ -15,6 +16,7 @@ export function BoardPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { board, participant, setBoard, setParticipant, setRemainingVotes, setTimer, isConnected } = useBoardStore();
+  const addToast = useToastStore((s) => s.addToast);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -65,13 +67,18 @@ export function BoardPage() {
 
   const handleJoin = async (nickname: string) => {
     if (!slug) return;
-    const p = await api.joinBoard(slug, nickname);
-    setParticipant(p);
-    localStorage.setItem(`retra-participant-${slug}`, p.id);
-    setShowNicknameModal(false);
-    // Reload board to get updated participants
-    const boardData = await api.getBoard(slug);
-    setBoard(boardData);
+    try {
+      const p = await api.joinBoard(slug, nickname);
+      setParticipant(p);
+      localStorage.setItem(`retra-participant-${slug}`, p.id);
+      setShowNicknameModal(false);
+      // Reload board to get updated participants
+      const boardData = await api.getBoard(slug);
+      setBoard(boardData);
+      addToast('success', `${nickname} としてボードに参加しました`);
+    } catch {
+      addToast('error', 'ボードへの参加に失敗しました');
+    }
   };
 
   if (loading) {

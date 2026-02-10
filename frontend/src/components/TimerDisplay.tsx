@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Play, Pause, RotateCcw, Timer } from 'lucide-react';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
+import { useToastStore } from '../store/toastStore';
 
 interface Props {
   compact?: boolean;
@@ -9,6 +10,7 @@ interface Props {
 
 export function TimerDisplay({ compact = false }: Props) {
   const { board, participant, timer } = useBoardStore();
+  const addToast = useToastStore((s) => s.addToast);
   const [showDuration, setShowDuration] = useState(false);
   const [duration, setDuration] = useState(5);
 
@@ -25,32 +27,32 @@ export function TimerDisplay({ compact = false }: Props) {
     try {
       await api.controlTimer(board.slug, 'START', participant.id, duration * 60);
       setShowDuration(false);
-    } catch (err) {
-      console.error('Failed to start timer:', err);
+    } catch {
+      addToast('error', 'タイマーの開始に失敗しました');
     }
   };
 
   const handlePause = async () => {
     try {
       await api.controlTimer(board.slug, 'PAUSE', participant.id);
-    } catch (err) {
-      console.error('Failed to pause timer:', err);
+    } catch {
+      addToast('error', 'タイマーの一時停止に失敗しました');
     }
   };
 
   const handleResume = async () => {
     try {
       await api.controlTimer(board.slug, 'RESUME', participant.id);
-    } catch (err) {
-      console.error('Failed to resume timer:', err);
+    } catch {
+      addToast('error', 'タイマーの再開に失敗しました');
     }
   };
 
   const handleReset = async () => {
     try {
       await api.controlTimer(board.slug, 'RESET', participant.id);
-    } catch (err) {
-      console.error('Failed to reset timer:', err);
+    } catch {
+      addToast('error', 'タイマーのリセットに失敗しました');
     }
   };
 

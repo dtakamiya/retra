@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LayoutGrid, Users } from 'lucide-react';
 import { api } from '../api/client';
+import { useToastStore } from '../store/toastStore';
 import type { Framework } from '../types';
 
 const FRAMEWORKS: { value: Framework; label: string; description: string }[] = [
@@ -13,6 +14,7 @@ const FRAMEWORKS: { value: Framework; label: string; description: string }[] = [
 
 export function HomePage() {
   const navigate = useNavigate();
+  const addToast = useToastStore((s) => s.addToast);
   const [mode, setMode] = useState<'create' | 'join'>('create');
   const [title, setTitle] = useState('');
   const [framework, setFramework] = useState<Framework>('KPT');
@@ -28,6 +30,7 @@ export function HomePage() {
     setError('');
     try {
       const board = await api.createBoard(title.trim(), framework, maxVotes);
+      addToast('success', 'ボードを作成しました');
       navigate(`/board/${board.slug}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'ボードの作成に失敗しました');

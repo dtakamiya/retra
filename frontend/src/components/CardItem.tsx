@@ -4,6 +4,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
+import { useToastStore } from '../store/toastStore';
 import { MemoList } from './MemoList';
 import { ReactionList } from './ReactionList';
 import { ReactionPicker } from './ReactionPicker';
@@ -17,6 +18,7 @@ interface Props {
 
 export function CardItem({ card, columnColor, isOverlay }: Props) {
   const { board, participant, remainingVotes } = useBoardStore();
+  const addToast = useToastStore((s) => s.addToast);
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(card.content);
   const [loading, setLoading] = useState(false);
@@ -66,7 +68,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
     try {
       await api.addVote(board.slug, card.id, participant.id);
     } catch {
-      // 投票失敗はWebSocket経由で最新状態が反映される
+      addToast('error', '投票に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -78,7 +80,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
     try {
       await api.removeVote(board.slug, card.id, participant.id);
     } catch {
-      // 投票解除失敗はWebSocket経由で最新状態が反映される
+      addToast('error', '投票の取り消しに失敗しました');
     } finally {
       setLoading(false);
     }
@@ -91,7 +93,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
       await api.updateCard(board.slug, card.id, editContent.trim(), participant.id);
       setEditing(false);
     } catch {
-      // 更新失敗はWebSocket経由で最新状態が反映される
+      addToast('error', 'カードの更新に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -102,7 +104,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
     try {
       await api.deleteCard(board.slug, card.id, participant.id);
     } catch {
-      // 削除失敗はWebSocket経由で最新状態が反映される
+      addToast('error', 'カードの削除に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -119,7 +121,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
         await api.addReaction(board.slug, card.id, participant!.id, emoji);
       }
     } catch {
-      // リアクション失敗はWebSocket経由で最新状態が反映される
+      addToast('error', 'リアクションの操作に失敗しました');
     }
   };
 

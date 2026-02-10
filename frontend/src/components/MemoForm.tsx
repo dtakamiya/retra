@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Send } from 'lucide-react';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
+import { useToastStore } from '../store/toastStore';
 
 interface Props {
   cardId: string;
@@ -12,6 +13,8 @@ export function MemoForm({ cardId }: Props) {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const addToast = useToastStore((s) => s.addToast);
+
   if (!board || !participant) return null;
 
   const handleSubmit = async () => {
@@ -21,7 +24,7 @@ export function MemoForm({ cardId }: Props) {
       await api.createMemo(board.slug, cardId, content.trim(), participant.id);
       setContent('');
     } catch {
-      // エラー時はWebSocket経由で最新状態が反映される
+      addToast('error', 'メモの追加に失敗しました');
     } finally {
       setLoading(false);
     }
