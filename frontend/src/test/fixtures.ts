@@ -32,6 +32,7 @@ export function createCard(overrides: Partial<Card> = {}): Card {
     authorNickname: 'TestUser',
     participantId: 'p-1',
     voteCount: 0,
+    votedParticipantIds: [],
     sortOrder: 0,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',

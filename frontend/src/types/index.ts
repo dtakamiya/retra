@@ -48,6 +48,7 @@ export interface Card {
   authorNickname: string | null;
   participantId: string | null;
   voteCount: number;
+  votedParticipantIds: string[];
   sortOrder: number;
   createdAt: string;
   updatedAt: string;

@@ -5,7 +5,7 @@ import { BoardPage } from './BoardPage'
 import { useBoardStore } from '../store/boardStore'
 import { api } from '../api/client'
 import { createBoard, createParticipant, createTimerState } from '../test/fixtures'
-import type { Board, Participant, TimerState } from '../types'
+import type { Board, Participant } from '../types'
 
 // --- Mocks ---
 

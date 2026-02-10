@@ -38,6 +38,7 @@ data class CardResponse(
     val authorNickname: String?,
     val participantId: String?,
     val voteCount: Int,
+    val votedParticipantIds: List<String> = emptyList(),
     val sortOrder: Int,
     val createdAt: String,
     val updatedAt: String,

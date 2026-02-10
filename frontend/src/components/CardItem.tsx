@@ -58,6 +58,9 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
 
   if (!board || !participant) return null;
 
+  const hasMyVote = isVoting && participant
+    ? card.votedParticipantIds.includes(participant.id)
+    : false;
   const canVote = isVoting && (remainingVotes?.remaining ?? 0) > 0;
 
   const handleVote = async () => {
@@ -194,14 +197,14 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
           {/* Vote button / count */}
           {isVoting ? (
             <button
-              onClick={card.voteCount > 0 ? handleUnvote : handleVote}
-              disabled={loading || (!canVote && card.voteCount === 0)}
+              onClick={hasMyVote ? handleUnvote : handleVote}
+              disabled={loading || (!canVote && !hasMyVote)}
               className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                card.voteCount > 0
+                hasMyVote
                   ? 'text-white'
                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}
-              style={card.voteCount > 0 ? { backgroundColor: columnColor } : undefined}
+              style={hasMyVote ? { backgroundColor: columnColor } : undefined}
               data-testid="vote-button"
             >
               <ThumbsUp size={12} />
