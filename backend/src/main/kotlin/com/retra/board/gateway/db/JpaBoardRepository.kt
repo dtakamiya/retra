@@ -13,7 +13,4 @@ class JpaBoardRepository(
 
     override fun findBySlug(slug: String): Board? =
         springDataRepo.findBySlug(slug).orElse(null)
-
-    override fun existsBySlug(slug: String): Boolean =
-        springDataRepo.existsBySlug(slug)
 }

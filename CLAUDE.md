@@ -101,7 +101,7 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 #### `card/` - Card Module (Cards, Votes, Memos, Reactions)
 | Package | Purpose |
 |---------|---------|
-| `card/domain/` | `Card`, `Vote`, `Memo`, `Reaction`, `Content`, `SortOrder`, `CardEvent`, `VoteEvent`, `MemoEvent`, `ReactionEvent`, repositories |
+| `card/domain/` | `Card`, `Vote`, `Memo`, `Reaction`, `CardEvent`, `VoteEvent`, `MemoEvent`, `ReactionEvent`, repositories |
 | `card/usecase/` | `CreateCardUseCase`, `UpdateCardUseCase`, `DeleteCardUseCase`, `MoveCardUseCase`, `AddVoteUseCase`, `RemoveVoteUseCase`, `GetRemainingVotesUseCase`, `CreateMemoUseCase`, `UpdateMemoUseCase`, `DeleteMemoUseCase`, `AddReactionUseCase`, `RemoveReactionUseCase`, DTOs, Mappers |
 | `card/gateway/controller/` | `CardController`, `VoteController`, `MemoController`, `ReactionController` (REST) |
 | `card/gateway/db/` | JPA repository implementations (`JpaCardRepository`, `JpaVoteRepository`, `JpaMemoRepository`, `JpaReactionRepository`) |

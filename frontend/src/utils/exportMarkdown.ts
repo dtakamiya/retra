@@ -106,19 +106,6 @@ export function generateMarkdown(board: Board): string {
   return lines.join('\n');
 }
 
-export function downloadMarkdown(board: Board): void {
-  const markdown = generateMarkdown(board);
-  const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${board.title}.md`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
 export async function copyMarkdownToClipboard(board: Board): Promise<void> {
   const markdown = generateMarkdown(board);
   await navigator.clipboard.writeText(markdown);

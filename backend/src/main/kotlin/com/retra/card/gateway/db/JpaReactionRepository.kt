@@ -15,7 +15,4 @@ class JpaReactionRepository(
 
     override fun findByCardIdAndParticipantIdAndEmoji(cardId: String, participantId: String, emoji: String): Reaction? =
         springDataRepo.findByCardIdAndParticipantIdAndEmoji(cardId, participantId, emoji)
-
-    override fun findByCardId(cardId: String): List<Reaction> =
-        springDataRepo.findByCardId(cardId)
 }

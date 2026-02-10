@@ -96,10 +96,6 @@ export interface CardDeletedPayload {
   columnId: string;
 }
 
-export interface PhaseChangedPayload {
-  phase: Phase;
-}
-
 export interface ParticipantOnlinePayload {
   participantId: string;
 }

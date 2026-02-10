@@ -7,7 +7,6 @@ import com.retra.shared.domain.NotFoundException
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CardTest {
@@ -44,32 +43,6 @@ class CardTest {
         assertFailsWith<ForbiddenException> {
             card.updateContent("Updated", "p-2")
         }
-    }
-
-    @Test
-    fun `canBeDeletedBy で著者は true`() {
-        val author = TestFixtures.participant(id = "p-1")
-        val card = TestFixtures.card(participant = author)
-
-        assertTrue(card.canBeDeletedBy(author))
-    }
-
-    @Test
-    fun `canBeDeletedBy でファシリテーターは true`() {
-        val author = TestFixtures.participant(id = "p-1")
-        val facilitator = TestFixtures.participant(id = "p-2", isFacilitator = true)
-        val card = TestFixtures.card(participant = author)
-
-        assertTrue(card.canBeDeletedBy(facilitator))
-    }
-
-    @Test
-    fun `canBeDeletedBy で非著者・非ファシリテーターは false`() {
-        val author = TestFixtures.participant(id = "p-1")
-        val other = TestFixtures.participant(id = "p-3", isFacilitator = false)
-        val card = TestFixtures.card(participant = author)
-
-        assertFalse(card.canBeDeletedBy(other))
     }
 
     @Test

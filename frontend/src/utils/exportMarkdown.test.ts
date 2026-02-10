@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { generateMarkdown, downloadMarkdown, copyMarkdownToClipboard } from './exportMarkdown';
+import { generateMarkdown, copyMarkdownToClipboard } from './exportMarkdown';
 import { createBoard, createCard, createColumn, createMemo, createReaction, createParticipant } from '../test/fixtures';
 
 describe('generateMarkdown', () => {
@@ -154,37 +154,6 @@ describe('generateMarkdown', () => {
     const md = generateMarkdown(board);
     expect(md).toContain('_Retra で');
     expect(md).toContain('に作成_');
-  });
-});
-
-describe('downloadMarkdown', () => {
-  it('Blob URLを作成してダウンロードリンクをクリックする', () => {
-    const createObjectURLMock = vi.fn().mockReturnValue('blob:test');
-    const revokeObjectURLMock = vi.fn();
-    global.URL.createObjectURL = createObjectURLMock;
-    global.URL.revokeObjectURL = revokeObjectURLMock;
-
-    const clickMock = vi.fn();
-    const appendChildMock = vi.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
-    const removeChildMock = vi.spyOn(document.body, 'removeChild').mockImplementation((node) => node);
-
-    vi.spyOn(document, 'createElement').mockReturnValue({
-      href: '',
-      download: '',
-      click: clickMock,
-    } as unknown as HTMLAnchorElement);
-
-    const board = createBoard({ title: 'テストボード' });
-    downloadMarkdown(board);
-
-    expect(createObjectURLMock).toHaveBeenCalled();
-    expect(clickMock).toHaveBeenCalled();
-    expect(revokeObjectURLMock).toHaveBeenCalledWith('blob:test');
-    expect(appendChildMock).toHaveBeenCalled();
-    expect(removeChildMock).toHaveBeenCalled();
-
-    appendChildMock.mockRestore();
-    removeChildMock.mockRestore();
   });
 });
 

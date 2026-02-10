@@ -11,5 +11,5 @@ function customRender(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>
 }
 
 export { customRender as render }
-export { screen, waitFor, within, act } from '@testing-library/react'
+export { screen, waitFor } from '@testing-library/react'
 export { default as userEvent } from '@testing-library/user-event'

@@ -84,10 +84,6 @@ open class Card(
         )
     }
 
-    fun canBeDeletedBy(executor: Participant): Boolean {
-        return participant?.id == executor.id || executor.isFacilitator
-    }
-
     fun moveTo(targetColumn: BoardColumn, newSortOrder: Int) {
         val sourceColumnId = column?.id ?: ""
         column = targetColumn

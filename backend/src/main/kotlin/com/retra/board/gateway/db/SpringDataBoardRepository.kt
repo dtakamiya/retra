@@ -6,5 +6,4 @@ import java.util.Optional
 
 interface SpringDataBoardRepository : JpaRepository<Board, String> {
     fun findBySlug(slug: String): Optional<Board>
-    fun existsBySlug(slug: String): Boolean
 }
