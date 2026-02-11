@@ -10,8 +10,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Retra is a real-time retrospective board for Scrum teams. It supports multiple frameworks (KPT, Fun Done Learn, 4Ls, Start Stop Continue) with phase-based workflows (Writing -> Voting -> Discussion -> Action Items -> Closed).
 
 - **Backend:** Spring Boot 3.4.1 + Kotlin 2.0.21 (`backend/`)
-- **Frontend:** React 19 + TypeScript 5.9 + Vite 7 + Zustand 5 + TailwindCSS v4 (`frontend/`)
+- **Frontend:** React 19.2 + TypeScript 5.9 + Vite 7 + Zustand 5 + TailwindCSS v4 (`frontend/`)
 - **Database:** SQLite with Flyway migrations (V1-V8)
+- **CI/CD:** なし（GitHub Actions、Docker等の設定は未導入）
 - **Realtime:** WebSocket via STOMP protocol (`@stomp/stompjs`)
 - **Drag & Drop:** @dnd-kit (core, sortable, utilities)
 - **Icons:** Lucide React
@@ -84,7 +85,7 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 #### `shared/` - Shared Infrastructure
 | Package | Purpose |
 |---------|---------|
-| `shared/domain/` | `DomainException`, `DomainEvent` (base class for all domain events) |
+| `shared/domain/` | `DomainException` (base + `NotFoundException`, `BadRequestException`, `ForbiddenException`, `ConflictException`, `InvalidPhaseTransitionException`), `DomainEvent` (base class for all domain events) |
 | `shared/gateway/event/` | `SpringDomainEventPublisher` (Spring ApplicationEvent bridge) |
 | `shared/gateway/exception/` | `GlobalExceptionHandler` (`@RestControllerAdvice`) |
 | `shared/gateway/websocket/` | `DomainEventBroadcaster` (STOMP broadcast for all domain events) |
@@ -96,16 +97,16 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 | `board/usecase/` | `CreateBoardUseCase`, `GetBoardUseCase`, `TransitionPhaseUseCase`, `JoinBoardUseCase`, `UpdateOnlineStatusUseCase`, `ExportBoardUseCase`, `BoardDtos`, `ExportDtos`, `BoardMapper` |
 | `board/usecase/export/` | `CsvExportService`, `MarkdownExportService` (CSV/Markdownエクスポート) |
 | `board/gateway/controller/` | `BoardController` (REST) |
-| `board/gateway/db/` | JPA repository implementations (`JpaBoardRepository`, `JpaParticipantRepository`) |
+| `board/gateway/db/` | JPA repository implementations (`JpaBoardRepository`, `JpaParticipantRepository`) + Spring Data interfaces (`SpringDataBoardRepository`, `SpringDataParticipantRepository`) |
 | `board/gateway/websocket/` | `WebSocketController`, `WebSocketEventListener` |
 
 #### `card/` - Card Module (Cards, Votes, Memos, Reactions)
 | Package | Purpose |
 |---------|---------|
 | `card/domain/` | `Card`, `Vote`, `Memo`, `Reaction`, `CardEvent`, `VoteEvent`, `MemoEvent`, `ReactionEvent`, repositories |
-| `card/usecase/` | `CreateCardUseCase`, `UpdateCardUseCase`, `DeleteCardUseCase`, `MoveCardUseCase`, `AddVoteUseCase`, `RemoveVoteUseCase`, `GetRemainingVotesUseCase`, `CreateMemoUseCase`, `UpdateMemoUseCase`, `DeleteMemoUseCase`, `AddReactionUseCase`, `RemoveReactionUseCase`, DTOs, Mappers |
+| `card/usecase/` | `CreateCardUseCase`, `UpdateCardUseCase`, `DeleteCardUseCase`, `MoveCardUseCase`, `AddVoteUseCase`, `RemoveVoteUseCase`, `GetRemainingVotesUseCase`, `CreateMemoUseCase`, `UpdateMemoUseCase`, `DeleteMemoUseCase`, `AddReactionUseCase`, `RemoveReactionUseCase`, DTOs (`CardDtos`, `MemoDtos`, `ReactionDtos`), Mappers (`CardMapper`, `MemoMapper`, `ReactionMapper`) |
 | `card/gateway/controller/` | `CardController`, `VoteController`, `MemoController`, `ReactionController` (REST) |
-| `card/gateway/db/` | JPA repository implementations (`JpaCardRepository`, `JpaVoteRepository`, `JpaMemoRepository`, `JpaReactionRepository`) |
+| `card/gateway/db/` | JPA repository implementations (`JpaCardRepository`, `JpaVoteRepository`, `JpaMemoRepository`, `JpaReactionRepository`) + Spring Data interfaces (`SpringDataCardRepository`, `SpringDataVoteRepository`, `SpringDataMemoRepository`, `SpringDataReactionRepository`) |
 
 #### `timer/` - Timer Module
 | Package | Purpose |
@@ -128,8 +129,9 @@ Entry point: `RetraApplication.kt`
 |-----------|---------|
 | `api/client.ts` | REST API wrapper (`/api/v1` base) |
 | `pages/` | `HomePage` (create/join), `BoardPage` (main board), `NotFoundPage` |
-| `components/` | `BoardHeader`, `BoardView`, `ColumnView`, `CardItem`, `CardForm`, `MemoList`, `MemoItem`, `MemoForm`, `ReactionList`, `ReactionPicker`, `ParticipantList`, `PhaseControl`, `TimerDisplay`, `ConnectionBanner`, `NicknameModal`, `ExportMenu` |
+| `components/` | `BoardHeader`, `BoardView`, `ColumnView`, `CardItem`, `CardForm`, `MemoList`, `MemoItem`, `MemoForm`, `ReactionList`, `ReactionPicker`, `ParticipantList`, `PhaseControl`, `TimerDisplay`, `ConnectionBanner`, `NicknameModal`, `ExportMenu`, `ToastContainer` |
 | `store/boardStore.ts` | Zustand store with WebSocket event handlers |
+| `store/toastStore.ts` | Toast notification store (success/error/info, 4秒自動削除) |
 | `websocket/useWebSocket.ts` | STOMP client hook with auto-reconnect |
 | `hooks/useTimerAlert.ts` | Timer alert sound hook |
 | `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `Reaction`, `ExportFormat`, `CardMovedPayload`, `ReactionRemovedPayload`, etc.) |
@@ -215,7 +217,7 @@ Business rules are enforced in the usecase layer:
 
 ## Technical Constraints
 
-- **Java 21 required.** `backend/gradle.properties` contains a local Java home path that may need adjustment for your system. `build.gradle.kts` sets `sourceCompatibility = JavaVersion.VERSION_21`.
+- **Java 21 required.** `build.gradle.kts` sets `sourceCompatibility = JavaVersion.VERSION_21`. `gradle.properties` is empty by default; set `org.gradle.java.home` if the system default is not Java 21.
 - **SQLite single-writer:** HikariCP `maximum-pool-size=1`, WAL mode, `busy_timeout=5000ms`, `foreign_keys=ON`
 - **Kotlin JPA entities** use `open class` (not data class) due to `allOpen` plugin with `@Entity`, `@MappedSuperclass`, `@Embeddable` annotations
 - **TailwindCSS v4:** Uses `@tailwindcss/vite` plugin with `@import "tailwindcss"` syntax. No `tailwind.config.js`.
@@ -231,7 +233,39 @@ Business rules are enforced in the usecase layer:
 - `README.md` - Project overview, features, setup instructions (日本語)
 - `docs/CONTRIB.md` - Contributor guide with development workflow (日本語)
 - `docs/RUNBOOK.md` - Production deployment and operations runbook (日本語)
+- `docs/images/` - 32枚のスクリーンショット（UIフロー全体をカバー）
 
 ## Git Workflow
 
 - Conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`
+
+## Key Dependencies (Backend)
+
+| Library | Version | Purpose |
+|---------|---------|---------|
+| Spring Boot | 3.4.1 | Web framework |
+| Kotlin | 2.0.21 | Language |
+| sqlite-jdbc | 3.45.1.0 | SQLite driver |
+| hibernate-community-dialects | 6.4.2.Final | SQLite dialect for Hibernate |
+| commons-csv | 1.12.0 | CSV export |
+| flyway-core | (managed) | DB migration |
+| mockk | 1.13.10 | Kotlin mocking |
+| mockito-kotlin | 5.2.1 | Mockito for Kotlin |
+| JaCoCo | 0.8.11 | Code coverage (excludes: `RetraApplicationKt*`, `config/**`, `**/gateway/db/**`) |
+
+## Key Dependencies (Frontend)
+
+| Library | Version | Purpose |
+|---------|---------|---------|
+| react | ^19.2.0 | UI framework |
+| typescript | ~5.9.3 | Type system |
+| vite | ^7.2.4 | Build tool |
+| zustand | ^5.0.11 | State management |
+| @stomp/stompjs | ^7.3.0 | WebSocket STOMP client |
+| @dnd-kit/core | ^6.3.1 | Drag & drop |
+| @dnd-kit/sortable | ^10.0.0 | Sortable lists |
+| lucide-react | ^0.563.0 | Icons |
+| react-router-dom | ^7.13.0 | Routing |
+| tailwindcss | ^4.1.18 | CSS framework |
+| vitest | ^3.2.4 | Unit testing |
+| @playwright/test | ^1.58.2 | E2E testing |
