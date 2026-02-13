@@ -6,6 +6,7 @@ import com.retra.board.domain.Framework
 import com.retra.board.domain.Phase
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -46,6 +47,7 @@ class BoardControllerTest {
         framework = Framework.KPT,
         phase = Phase.WRITING,
         maxVotesPerPerson = 5,
+        isAnonymous = false,
         columns = listOf(
             ColumnResponse("col-1", "Keep", 0, "#22c55e", emptyList()),
             ColumnResponse("col-2", "Problem", 1, "#ef4444", emptyList()),
@@ -72,7 +74,7 @@ class BoardControllerTest {
 
     @Test
     fun `GET boards slug ボード取得 200`() {
-        whenever(getBoardUseCase.execute("test1234")).thenReturn(boardResponse())
+        whenever(getBoardUseCase.execute(any(), anyOrNull())).thenReturn(boardResponse())
 
         mockMvc.perform(get("/api/v1/boards/test1234"))
             .andExpect(status().isOk)

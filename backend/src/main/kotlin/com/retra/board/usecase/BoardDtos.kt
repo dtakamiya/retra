@@ -7,7 +7,8 @@ import com.retra.card.usecase.CardResponse
 data class CreateBoardRequest(
     val title: String,
     val framework: Framework = Framework.KPT,
-    val maxVotesPerPerson: Int = 5
+    val maxVotesPerPerson: Int = 5,
+    val isAnonymous: Boolean = false
 )
 
 data class ChangePhaseRequest(
@@ -26,6 +27,7 @@ data class BoardResponse(
     val framework: Framework,
     val phase: Phase,
     val maxVotesPerPerson: Int,
+    val isAnonymous: Boolean,
     val columns: List<ColumnResponse>,
     val participants: List<ParticipantResponse>,
     val createdAt: String,

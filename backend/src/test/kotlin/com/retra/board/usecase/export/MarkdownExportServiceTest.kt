@@ -27,6 +27,7 @@ class MarkdownExportServiceTest {
         framework = Framework.KPT,
         phase = Phase.DISCUSSION,
         maxVotesPerPerson = 5,
+        isAnonymous = false,
         columns = columns,
         participants = participants,
         createdAt = "2024-01-01T00:00:00Z",

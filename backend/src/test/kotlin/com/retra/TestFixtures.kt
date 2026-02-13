@@ -23,6 +23,7 @@ object TestFixtures {
         framework: Framework = Framework.KPT,
         phase: Phase = Phase.WRITING,
         maxVotesPerPerson: Int = 5,
+        isAnonymous: Boolean = false,
         createdAt: String = Instant.now().toString(),
         updatedAt: String = Instant.now().toString()
     ): Board = Board(
@@ -32,6 +33,7 @@ object TestFixtures {
         framework = framework,
         phase = phase,
         maxVotesPerPerson = maxVotesPerPerson,
+        isAnonymous = isAnonymous,
         createdAt = createdAt,
         updatedAt = updatedAt
     )

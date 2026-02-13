@@ -31,6 +31,9 @@ open class Board(
     @Column(name = "max_votes_per_person", nullable = false)
     open var maxVotesPerPerson: Int = 5,
 
+    @Column(name = "is_anonymous", nullable = false)
+    open var isAnonymous: Boolean = false,
+
     @Column(name = "created_at", nullable = false)
     open var createdAt: String = Instant.now().toString(),
 
@@ -105,7 +108,8 @@ open class Board(
         fun create(
             title: String,
             framework: Framework,
-            maxVotesPerPerson: Int = 5
+            maxVotesPerPerson: Int = 5,
+            isAnonymous: Boolean = false
         ): Board {
             val slug = BoardSlug.generate()
             val now = Instant.now().toString()
@@ -115,6 +119,7 @@ open class Board(
                 title = title,
                 framework = framework,
                 maxVotesPerPerson = maxVotesPerPerson,
+                isAnonymous = isAnonymous,
                 createdAt = now,
                 updatedAt = now
             )

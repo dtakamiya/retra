@@ -11,9 +11,9 @@ class GetBoardUseCase(
 ) {
 
     @Transactional(readOnly = true)
-    fun execute(slug: String): BoardResponse {
+    fun execute(slug: String, requesterId: String? = null): BoardResponse {
         val board = boardRepository.findBySlug(slug)
             ?: throw NotFoundException("Board not found: $slug")
-        return BoardMapper.toBoardResponse(board)
+        return BoardMapper.toBoardResponse(board, requesterId)
     }
 }

@@ -36,8 +36,11 @@ class BoardController(
     }
 
     @GetMapping("/{slug}")
-    fun getBoard(@PathVariable slug: String): BoardResponse {
-        return getBoardUseCase.execute(slug)
+    fun getBoard(
+        @PathVariable slug: String,
+        @RequestParam(required = false) participantId: String?
+    ): BoardResponse {
+        return getBoardUseCase.execute(slug, participantId)
     }
 
     @PatchMapping("/{slug}/phase")

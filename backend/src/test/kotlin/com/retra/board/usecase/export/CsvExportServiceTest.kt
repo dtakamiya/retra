@@ -22,6 +22,7 @@ class CsvExportServiceTest {
         framework = Framework.KPT,
         phase = Phase.DISCUSSION,
         maxVotesPerPerson = 5,
+        isAnonymous = false,
         columns = columns,
         participants = listOf(
             ParticipantResponse("p-1", "Alice", true, true, "2024-01-01T00:00:00Z")
