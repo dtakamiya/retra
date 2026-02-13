@@ -125,3 +125,29 @@ export interface ReactionRemovedPayload {
 }
 
 export type ExportFormat = 'CSV' | 'MARKDOWN';
+
+export type ActionItemStatus = 'OPEN' | 'IN_PROGRESS' | 'DONE';
+
+export interface ActionItem {
+  id: string;
+  boardId: string;
+  cardId: string | null;
+  content: string;
+  assigneeId: string | null;
+  assigneeNickname: string | null;
+  dueDate: string | null;
+  status: ActionItemStatus;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ActionItemDeletedPayload {
+  actionItemId: string;
+}
+
+export interface ActionItemStatusChangedPayload {
+  actionItemId: string;
+  boardSlug: string;
+  newStatus: ActionItemStatus;
+}

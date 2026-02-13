@@ -1,4 +1,5 @@
 import type {
+  ActionItem,
   Board,
   Card,
   ExportFormat,
@@ -157,6 +158,39 @@ export const api = {
     return request(`/boards/${slug}/reactions`, {
       method: 'DELETE',
       body: JSON.stringify({ cardId, participantId, emoji }),
+    });
+  },
+
+  // Action Items
+  getActionItems(slug: string): Promise<ActionItem[]> {
+    return request<ActionItem[]>(`/boards/${slug}/action-items`);
+  },
+
+  createActionItem(slug: string, content: string, participantId: string, cardId?: string, assigneeId?: string, dueDate?: string): Promise<ActionItem> {
+    return request<ActionItem>(`/boards/${slug}/action-items`, {
+      method: 'POST',
+      body: JSON.stringify({ content, participantId, cardId, assigneeId, dueDate }),
+    });
+  },
+
+  updateActionItem(slug: string, id: string, content: string, participantId: string, assigneeId?: string, dueDate?: string): Promise<ActionItem> {
+    return request<ActionItem>(`/boards/${slug}/action-items/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ content, participantId, assigneeId, dueDate }),
+    });
+  },
+
+  updateActionItemStatus(slug: string, id: string, status: string, participantId: string): Promise<ActionItem> {
+    return request<ActionItem>(`/boards/${slug}/action-items/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status, participantId }),
+    });
+  },
+
+  deleteActionItem(slug: string, id: string, participantId: string): Promise<void> {
+    return request<void>(`/boards/${slug}/action-items/${id}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ participantId }),
     });
   },
 
