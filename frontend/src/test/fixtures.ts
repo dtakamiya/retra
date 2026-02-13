@@ -1,4 +1,4 @@
-import type { Board, Card, Column, Memo, Participant, Reaction, RemainingVotes, TimerState, Vote } from '../types'
+import type { ActionItem, Board, Card, Column, Memo, Participant, Reaction, RemainingVotes, TimerState, Vote } from '../types'
 
 export function createParticipant(overrides: Partial<Participant> = {}): Participant {
   return {
@@ -109,6 +109,23 @@ export function createTimerState(overrides: Partial<TimerState> = {}): TimerStat
     isRunning: false,
     remainingSeconds: 0,
     totalSeconds: 0,
+    ...overrides,
+  }
+}
+
+export function createActionItem(overrides: Partial<ActionItem> = {}): ActionItem {
+  return {
+    id: 'ai-1',
+    boardId: 'board-1',
+    cardId: null,
+    content: 'Test action item',
+    assigneeId: null,
+    assigneeNickname: null,
+    dueDate: null,
+    status: 'OPEN',
+    sortOrder: 0,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
     ...overrides,
   }
 }

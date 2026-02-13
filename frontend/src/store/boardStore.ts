@@ -1,5 +1,8 @@
 import { create } from 'zustand';
 import type {
+  ActionItem,
+  ActionItemDeletedPayload,
+  ActionItemStatusChangedPayload,
   Board,
   Card,
   CardDeletedPayload,
@@ -23,12 +26,14 @@ interface BoardState {
   remainingVotes: RemainingVotes | null;
   timer: TimerState;
   isConnected: boolean;
+  actionItems: ActionItem[];
 
   setBoard: (board: Board) => void;
   setParticipant: (participant: Participant) => void;
   setRemainingVotes: (votes: RemainingVotes) => void;
   setTimer: (timer: TimerState) => void;
   setConnected: (connected: boolean) => void;
+  setActionItems: (items: ActionItem[]) => void;
 
   // WebSocket event handlers
   handleCardCreated: (card: Card) => void;
@@ -46,6 +51,10 @@ interface BoardState {
   handleMemoDeleted: (payload: MemoDeletedPayload) => void;
   handleReactionAdded: (reaction: Reaction) => void;
   handleReactionRemoved: (payload: ReactionRemovedPayload) => void;
+  handleActionItemCreated: (item: ActionItem) => void;
+  handleActionItemUpdated: (item: ActionItem) => void;
+  handleActionItemStatusChanged: (payload: ActionItemStatusChangedPayload) => void;
+  handleActionItemDeleted: (payload: ActionItemDeletedPayload) => void;
 }
 
 export const useBoardStore = create<BoardState>((set) => ({
@@ -54,12 +63,14 @@ export const useBoardStore = create<BoardState>((set) => ({
   remainingVotes: null,
   timer: { isRunning: false, remainingSeconds: 0, totalSeconds: 0 },
   isConnected: false,
+  actionItems: [],
 
   setBoard: (board) => set({ board }),
   setParticipant: (participant) => set({ participant }),
   setRemainingVotes: (votes) => set({ remainingVotes: votes }),
   setTimer: (timer) => set({ timer }),
   setConnected: (connected) => set({ isConnected: connected }),
+  setActionItems: (items) => set({ actionItems: items }),
 
   handleCardCreated: (card) =>
     set((state) => {
@@ -308,4 +319,32 @@ export const useBoardStore = create<BoardState>((set) => ({
       }));
       return { board: { ...state.board, columns } };
     }),
+
+  handleActionItemCreated: (item) =>
+    set((state) => ({
+      actionItems: [...state.actionItems, item],
+    })),
+
+  handleActionItemUpdated: (item) =>
+    set((state) => ({
+      actionItems: state.actionItems.map((ai) =>
+        ai.id === item.id ? item : ai
+      ),
+    })),
+
+  handleActionItemStatusChanged: (payload) =>
+    set((state) => ({
+      actionItems: state.actionItems.map((ai) =>
+        ai.id === payload.actionItemId
+          ? { ...ai, status: payload.newStatus }
+          : ai
+      ),
+    })),
+
+  handleActionItemDeleted: (payload) =>
+    set((state) => ({
+      actionItems: state.actionItems.filter(
+        (ai) => ai.id !== payload.actionItemId
+      ),
+    })),
 }));

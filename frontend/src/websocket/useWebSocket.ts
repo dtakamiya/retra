@@ -2,6 +2,9 @@ import { Client } from '@stomp/stompjs';
 import { useCallback, useEffect, useRef } from 'react';
 import { useBoardStore } from '../store/boardStore';
 import type {
+  ActionItem,
+  ActionItemDeletedPayload,
+  ActionItemStatusChangedPayload,
   Card,
   CardDeletedPayload,
   CardMovedPayload,
@@ -37,6 +40,10 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleMemoDeleted,
     handleReactionAdded,
     handleReactionRemoved,
+    handleActionItemCreated,
+    handleActionItemUpdated,
+    handleActionItemStatusChanged,
+    handleActionItemDeleted,
   } = useBoardStore();
 
   const connect = useCallback(() => {
@@ -150,6 +157,25 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
               break;
           }
         });
+
+        // Subscribe to action item events
+        client.subscribe(`/topic/board/${slug}/action-items`, (message) => {
+          const data: WebSocketMessage = JSON.parse(message.body);
+          switch (data.type) {
+            case 'ACTION_ITEM_CREATED':
+              handleActionItemCreated(data.payload as ActionItem);
+              break;
+            case 'ACTION_ITEM_UPDATED':
+              handleActionItemUpdated(data.payload as ActionItem);
+              break;
+            case 'ACTION_ITEM_STATUS_CHANGED':
+              handleActionItemStatusChanged(data.payload as ActionItemStatusChangedPayload);
+              break;
+            case 'ACTION_ITEM_DELETED':
+              handleActionItemDeleted(data.payload as ActionItemDeletedPayload);
+              break;
+          }
+        });
       },
       onDisconnect: () => {
         setConnected(false);
@@ -182,6 +208,10 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleMemoDeleted,
     handleReactionAdded,
     handleReactionRemoved,
+    handleActionItemCreated,
+    handleActionItemUpdated,
+    handleActionItemStatusChanged,
+    handleActionItemDeleted,
   ]);
 
   useEffect(() => {
