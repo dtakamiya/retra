@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { BarChart3, Search, ArrowLeft } from 'lucide-react';
 import { api } from '../api/client';
@@ -13,11 +13,7 @@ export function TeamDashboardPage() {
   const [trends, setTrends] = useState<TrendData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadData();
-  }, [teamName]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const [historyData, trendsData] = await Promise.all([
@@ -31,7 +27,11 @@ export function TeamDashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [teamName]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
