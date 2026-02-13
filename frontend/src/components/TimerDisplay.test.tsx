@@ -122,7 +122,7 @@ describe('TimerDisplay', () => {
       timer: createTimerState({ totalSeconds: 0, remainingSeconds: 0, isRunning: false }),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    vi.mocked(api.controlTimer).mockResolvedValue(undefined)
+    vi.mocked(api.controlTimer).mockResolvedValue(createTimerState())
 
     render(<TimerDisplay />)
 
@@ -174,7 +174,7 @@ describe('TimerDisplay', () => {
       timer: createTimerState({ totalSeconds: 300, remainingSeconds: 180, isRunning: true }),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    vi.mocked(api.controlTimer).mockResolvedValue(undefined)
+    vi.mocked(api.controlTimer).mockResolvedValue(createTimerState())
 
     render(<TimerDisplay />)
 
@@ -192,7 +192,7 @@ describe('TimerDisplay', () => {
       timer: createTimerState({ totalSeconds: 300, remainingSeconds: 120, isRunning: false }),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    vi.mocked(api.controlTimer).mockResolvedValue(undefined)
+    vi.mocked(api.controlTimer).mockResolvedValue(createTimerState())
 
     render(<TimerDisplay />)
 
@@ -210,7 +210,7 @@ describe('TimerDisplay', () => {
       timer: createTimerState({ totalSeconds: 300, remainingSeconds: 120, isRunning: false }),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    vi.mocked(api.controlTimer).mockResolvedValue(undefined)
+    vi.mocked(api.controlTimer).mockResolvedValue(createTimerState())
 
     render(<TimerDisplay />)
 
