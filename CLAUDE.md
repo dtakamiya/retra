@@ -11,7 +11,7 @@ Retra is a real-time retrospective board for Scrum teams. It supports multiple f
 
 - **Backend:** Spring Boot 3.4.1 + Kotlin 2.0.21 (`backend/`)
 - **Frontend:** React 19.2 + TypeScript 5.9 + Vite 7 + Zustand 5 + TailwindCSS v4 (`frontend/`)
-- **Database:** SQLite with Flyway migrations (V1-V8)
+- **Database:** SQLite with Flyway migrations (V1-V10)
 - **CI/CD:** なし（GitHub Actions、Docker等の設定は未導入）
 - **Realtime:** WebSocket via STOMP protocol (`@stomp/stompjs`)
 - **Drag & Drop:** @dnd-kit (core, sortable, utilities)
@@ -114,6 +114,22 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 | `timer/usecase/` | `TimerService`, `TimerDtos` |
 | `timer/gateway/controller/` | `TimerController` (REST) |
 
+#### `actionitem/` - Action Item Module
+| Package | Purpose |
+|---------|---------|
+| `actionitem/domain/` | `ActionItem`, `ActionItemStatus`, `ActionItemEvent`, `ActionItemRepository` |
+| `actionitem/usecase/` | `CreateActionItemUseCase`, `UpdateActionItemUseCase`, `UpdateActionItemStatusUseCase`, `DeleteActionItemUseCase`, `GetActionItemsUseCase`, DTOs (`ActionItemDtos`), Mapper (`ActionItemMapper`) |
+| `actionitem/gateway/controller/` | `ActionItemController` (REST) |
+| `actionitem/gateway/db/` | JPA repository implementations (`JpaActionItemRepository`) + Spring Data interfaces (`SpringDataActionItemRepository`) |
+
+#### `history/` - History Module
+| Package | Purpose |
+|---------|---------|
+| `history/domain/` | `BoardSnapshot`, `BoardSnapshotRepository` |
+| `history/usecase/` | `CreateSnapshotUseCase`, `GetSnapshotUseCase`, `GetTeamHistoryUseCase`, DTOs (`SnapshotDtos`, `TrendDtos`), Mapper (`SnapshotMapper`) |
+| `history/gateway/controller/` | `HistoryController` (REST) |
+| `history/gateway/db/` | JPA repository implementations (`JpaBoardSnapshotRepository`) + Spring Data interfaces (`SpringDataBoardSnapshotRepository`) |
+
 #### `config/` - Application Configuration
 | File | Purpose |
 |------|---------|
@@ -128,8 +144,8 @@ Entry point: `RetraApplication.kt`
 | Directory | Purpose |
 |-----------|---------|
 | `api/client.ts` | REST API wrapper (`/api/v1` base) |
-| `pages/` | `HomePage` (create/join), `BoardPage` (main board), `NotFoundPage` |
-| `components/` | `BoardHeader`, `BoardView`, `ColumnView`, `CardItem`, `CardForm`, `MemoList`, `MemoItem`, `MemoForm`, `ReactionList`, `ReactionPicker`, `ParticipantList`, `PhaseControl`, `TimerDisplay`, `ConnectionBanner`, `NicknameModal`, `ExportMenu`, `ToastContainer` |
+| `pages/` | `HomePage` (create/join), `BoardPage` (main board), `TeamDashboardPage` (history + trends), `SnapshotDetailPage` (snapshot detail), `NotFoundPage` |
+| `components/` | `BoardHeader`, `BoardView`, `ColumnView`, `CardItem`, `CardForm`, `MemoList`, `MemoItem`, `MemoForm`, `ReactionList`, `ReactionPicker`, `ParticipantList`, `PhaseControl`, `TimerDisplay`, `ConnectionBanner`, `NicknameModal`, `ExportMenu`, `ToastContainer`, `ActionItemList`, `ActionItemCard`, `ActionItemForm`, `ActionItemStatusBadge`, `RetroHistoryList`, `RetroSummaryCard`, `TrendChart`, `SnapshotDetailView` |
 | `store/boardStore.ts` | Zustand store with WebSocket event handlers |
 | `store/toastStore.ts` | Toast notification store (success/error/info, 4秒自動削除) |
 | `websocket/useWebSocket.ts` | STOMP client hook with auto-reconnect |
@@ -138,7 +154,7 @@ Entry point: `RetraApplication.kt`
 | `utils/` | Utility functions (`exportMarkdown.ts` - Markdown export conversion) |
 | `test/` | Test utilities: `setup.ts`, `fixtures.ts`, `test-utils.tsx`, `dnd-mocks.ts` |
 
-App entry: `main.tsx` -> `App.tsx` (React Router with 3 routes)
+App entry: `main.tsx` -> `App.tsx` (React Router with 5 routes)
 
 ### API Routes
 
@@ -162,6 +178,14 @@ All REST endpoints are under `/api/v1`:
 - `POST /boards/{slug}/timer` - Timer control (facilitator only)
 - `GET /boards/{slug}/timer` - Get timer state
 - `GET /boards/{slug}/export` - Export board (CSV/Markdown, query params: `participantId`, `format`)
+- `GET /boards/{slug}/action-items` - Get action items
+- `POST /boards/{slug}/action-items` - Create action item (ACTION_ITEMS phase)
+- `PUT /boards/{slug}/action-items/{id}` - Update action item
+- `PATCH /boards/{slug}/action-items/{id}/status` - Change action item status
+- `DELETE /boards/{slug}/action-items/{id}` - Delete action item
+- `GET /history` - Get retro history (optional query param: `teamName`)
+- `GET /history/{snapshotId}` - Get snapshot detail
+- `GET /history/trends` - Get trend data (optional query param: `teamName`)
 
 ### WebSocket Events
 
@@ -172,6 +196,7 @@ STOMP topics under `/topic/board/{slug}/`:
 - `memos` - `MEMO_CREATED`, `MEMO_UPDATED`, `MEMO_DELETED`
 - `phase` - `PHASE_CHANGED`
 - `participants` - `PARTICIPANT_JOINED`, `PARTICIPANT_ONLINE_CHANGED`
+- `action-items` - `ACTION_ITEM_CREATED`, `ACTION_ITEM_UPDATED`, `ACTION_ITEM_STATUS_CHANGED`, `ACTION_ITEM_DELETED`
 
 ### Phase-Based Access Control
 
@@ -180,8 +205,10 @@ Business rules are enforced in the usecase layer:
 - Card move: drag & drop between columns with sort order
 - Votes: add/remove only in VOTING phase; max votes per person enforced
 - Memos: create/edit/delete in DISCUSSION and ACTION_ITEMS phases
+- Action Items: create/edit/delete only in ACTION_ITEMS phase; view in CLOSED phase
 - Phase transitions: facilitator only, must follow sequential order
 - Timer: facilitator only
+- Auto-snapshot: created automatically when board transitions to CLOSED phase
 
 ## Testing
 
@@ -199,6 +226,12 @@ Business rules are enforced in the usecase layer:
   - `card/usecase/` - CreateCard, UpdateCard, DeleteCard, MoveCard, AddVote, RemoveVote, GetRemainingVotes, CreateMemo, UpdateMemo, DeleteMemo, AddReaction, RemoveReaction usecase tests
   - `card/gateway/controller/` - CardController, VoteController, MemoController, ReactionController tests
   - `timer/` - TimerController, TimerService tests
+  - `actionitem/domain/` - ActionItem, ActionItemStatus tests
+  - `actionitem/usecase/` - CreateActionItem, UpdateActionItem, UpdateActionItemStatus, DeleteActionItem, GetActionItems usecase tests
+  - `actionitem/gateway/controller/` - ActionItemController tests
+  - `history/domain/` - BoardSnapshot tests
+  - `history/usecase/` - CreateSnapshot, GetSnapshot, GetTeamHistory usecase tests
+  - `history/gateway/controller/` - HistoryController tests
   - `shared/gateway/` - GlobalExceptionHandler, DomainEventBroadcaster, SpringDomainEventPublisher tests
 
 ### Frontend Tests (`frontend/src/`)
@@ -213,7 +246,7 @@ Business rules are enforced in the usecase layer:
 ### E2E Tests (`frontend/e2e/`)
 - **Framework:** Playwright
 - **Config:** `playwright.config.ts`
-- **Test suites:** `home`, `board-creation`, `board-join`, `card-operations`, `card-edit-delete`, `card-drag-drop`, `voting`, `voting-limit`, `phase-control`, `timer`, `realtime-sync`, `authorization`, `memo-operations`, `reaction-operations`, `export`
+- **Test suites:** `home`, `board-creation`, `board-join`, `card-operations`, `card-edit-delete`, `card-drag-drop`, `voting`, `voting-limit`, `phase-control`, `timer`, `realtime-sync`, `authorization`, `memo-operations`, `reaction-operations`, `export`, `action-item-operations`, `dashboard`
 
 ## Technical Constraints
 
@@ -221,7 +254,7 @@ Business rules are enforced in the usecase layer:
 - **SQLite single-writer:** HikariCP `maximum-pool-size=1`, WAL mode, `busy_timeout=5000ms`, `foreign_keys=ON`
 - **Kotlin JPA entities** use `open class` (not data class) due to `allOpen` plugin with `@Entity`, `@MappedSuperclass`, `@Embeddable` annotations
 - **TailwindCSS v4:** Uses `@tailwindcss/vite` plugin with `@import "tailwindcss"` syntax. No `tailwind.config.js`.
-- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V8, do not modify existing migrations)
+- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V10, do not modify existing migrations)
 - **SPA fallback:** `SpaConfig.kt` serves `index.html` for non-API, non-static routes in production
 - **Vite proxy:** Dev server proxies `/api` to `http://localhost:8080` and `/ws` to `ws://localhost:8080`
 - **TypeScript strict mode:** `noUnusedLocals`, `noUnusedParameters`, `erasableSyntaxOnly`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports` all enabled
@@ -267,5 +300,6 @@ Business rules are enforced in the usecase layer:
 | lucide-react | ^0.563.0 | Icons |
 | react-router-dom | ^7.13.0 | Routing |
 | tailwindcss | ^4.1.18 | CSS framework |
+| recharts | ^2.x | Charts for dashboard |
 | vitest | ^3.2.4 | Unit testing |
 | @playwright/test | ^1.58.2 | E2E testing |
