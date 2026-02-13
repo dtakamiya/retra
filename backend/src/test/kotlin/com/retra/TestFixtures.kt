@@ -10,6 +10,7 @@ import com.retra.card.domain.Reaction
 import com.retra.card.domain.Vote
 import com.retra.board.domain.Framework
 import com.retra.board.domain.Phase
+import com.retra.history.domain.BoardSnapshot
 import java.time.Instant
 import java.util.UUID
 
@@ -139,5 +140,33 @@ object TestFixtures {
         sortOrder = sortOrder,
         createdAt = createdAt,
         updatedAt = updatedAt
+    )
+
+    fun boardSnapshot(
+        id: String = UUID.randomUUID().toString(),
+        boardId: String = UUID.randomUUID().toString(),
+        teamName: String = "Test Team",
+        framework: String = "KPT",
+        closedAt: String = Instant.now().toString(),
+        totalCards: Int = 5,
+        totalVotes: Int = 10,
+        totalParticipants: Int = 3,
+        actionItemsTotal: Int = 2,
+        actionItemsDone: Int = 1,
+        snapshotData: String = """{"columns":[]}""",
+        createdAt: String = Instant.now().toString()
+    ): BoardSnapshot = BoardSnapshot(
+        id = id,
+        boardId = boardId,
+        teamName = teamName,
+        framework = framework,
+        closedAt = closedAt,
+        totalCards = totalCards,
+        totalVotes = totalVotes,
+        totalParticipants = totalParticipants,
+        actionItemsTotal = actionItemsTotal,
+        actionItemsDone = actionItemsDone,
+        snapshotData = snapshotData,
+        createdAt = createdAt
     )
 }

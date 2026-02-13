@@ -1,11 +1,13 @@
 package com.retra.board.usecase
 
 import com.retra.TestFixtures
+import com.retra.board.domain.Board
 import com.retra.shared.domain.ForbiddenException
 import com.retra.shared.domain.InvalidPhaseTransitionException
 import com.retra.shared.domain.NotFoundException
 import com.retra.board.domain.BoardRepository
 import com.retra.board.domain.Phase
+import com.retra.history.usecase.CreateSnapshotUseCase
 import com.retra.shared.gateway.event.SpringDomainEventPublisher
 import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
@@ -17,12 +19,13 @@ class TransitionPhaseUseCaseTest {
 
     private val boardRepository: BoardRepository = mockk()
     private val eventPublisher: SpringDomainEventPublisher = mockk(relaxed = true)
+    private val createSnapshotUseCase: CreateSnapshotUseCase = mockk(relaxed = true)
     private lateinit var useCase: TransitionPhaseUseCase
 
     @BeforeEach
     fun setUp() {
         clearAllMocks()
-        useCase = TransitionPhaseUseCase(boardRepository, eventPublisher)
+        useCase = TransitionPhaseUseCase(boardRepository, eventPublisher, createSnapshotUseCase)
     }
 
     @Test
@@ -69,5 +72,31 @@ class TransitionPhaseUseCaseTest {
         assertFailsWith<NotFoundException> {
             useCase.execute("unknown", ChangePhaseRequest(Phase.VOTING, "p-1"))
         }
+    }
+
+    @Test
+    fun `CLOSED への遷移時にスナップショットが作成される`() {
+        val board = TestFixtures.board(phase = Phase.ACTION_ITEMS)
+        val facilitator = TestFixtures.participant(id = "p-1", board = board, isFacilitator = true)
+        board.participants.add(facilitator)
+        every { boardRepository.findBySlug(any()) } returns board
+        every { boardRepository.save(any()) } answers { firstArg() }
+
+        useCase.execute("test1234", ChangePhaseRequest(Phase.CLOSED, "p-1"))
+
+        verify(exactly = 1) { createSnapshotUseCase.execute(any<Board>()) }
+    }
+
+    @Test
+    fun `CLOSED 以外への遷移時にスナップショットは作成されない`() {
+        val board = TestFixtures.board(phase = Phase.WRITING)
+        val facilitator = TestFixtures.participant(id = "p-1", board = board, isFacilitator = true)
+        board.participants.add(facilitator)
+        every { boardRepository.findBySlug(any()) } returns board
+        every { boardRepository.save(any()) } answers { firstArg() }
+
+        useCase.execute("test1234", ChangePhaseRequest(Phase.VOTING, "p-1"))
+
+        verify(exactly = 0) { createSnapshotUseCase.execute(any<Board>()) }
     }
 }
