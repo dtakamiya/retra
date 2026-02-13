@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { CardItem } from './CardItem'
 import { useBoardStore } from '../store/boardStore'
 import { api } from '../api/client'
-import { createBoard, createCard, createParticipant, createReaction, createRemainingVotes } from '../test/fixtures'
+import { createBoard, createCard, createParticipant, createReaction, createRemainingVotes, createVote } from '../test/fixtures'
 
 vi.mock('../store/boardStore')
 vi.mock('../api/client', () => ({
@@ -357,7 +357,7 @@ describe('CardItem', () => {
       remainingVotes: createRemainingVotes({ remaining: 3 }),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    vi.mocked(api.addVote).mockResolvedValue(createCard({ voteCount: 1 }))
+    vi.mocked(api.addVote).mockResolvedValue(createVote({ cardId: 'card-1', participantId: 'p-1' }))
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
