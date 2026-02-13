@@ -1,5 +1,6 @@
 package com.retra.shared.gateway.websocket
 
+import com.retra.actionitem.domain.ActionItemEvent
 import com.retra.board.domain.BoardEvent
 import com.retra.card.domain.CardEvent
 import com.retra.card.domain.MemoEvent
@@ -201,6 +202,48 @@ class DomainEventBroadcaster(
                 "cardId" to event.cardId,
                 "participantId" to event.participantId,
                 "emoji" to event.emoji
+            ))
+        )
+    }
+
+    @EventListener
+    fun handleActionItemCreated(event: ActionItemEvent.ActionItemCreated) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.boardSlug}/action-items",
+            WebSocketMessage("ACTION_ITEM_CREATED", mapOf(
+                "actionItemId" to event.actionItemId,
+                "boardId" to event.boardId
+            ))
+        )
+    }
+
+    @EventListener
+    fun handleActionItemUpdated(event: ActionItemEvent.ActionItemUpdated) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.boardSlug}/action-items",
+            WebSocketMessage("ACTION_ITEM_UPDATED", mapOf(
+                "actionItemId" to event.actionItemId
+            ))
+        )
+    }
+
+    @EventListener
+    fun handleActionItemStatusChanged(event: ActionItemEvent.ActionItemStatusChanged) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.boardSlug}/action-items",
+            WebSocketMessage("ACTION_ITEM_STATUS_CHANGED", mapOf(
+                "actionItemId" to event.actionItemId,
+                "newStatus" to event.newStatus.name
+            ))
+        )
+    }
+
+    @EventListener
+    fun handleActionItemDeleted(event: ActionItemEvent.ActionItemDeleted) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.boardSlug}/action-items",
+            WebSocketMessage("ACTION_ITEM_DELETED", mapOf(
+                "actionItemId" to event.actionItemId
             ))
         )
     }

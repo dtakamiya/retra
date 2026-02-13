@@ -1,4 +1,4 @@
-import type { Board, Card, Column, Memo, Participant, Reaction, RemainingVotes, TimerState, Vote } from '../types'
+import type { ActionItem, Board, Card, Column, Memo, Participant, Reaction, RemainingVotes, SnapshotDetail, SnapshotSummary, TimerState, TrendData, TrendPoint, Vote } from '../types'
 
 export function createParticipant(overrides: Partial<Participant> = {}): Participant {
   return {
@@ -109,6 +109,75 @@ export function createTimerState(overrides: Partial<TimerState> = {}): TimerStat
     isRunning: false,
     remainingSeconds: 0,
     totalSeconds: 0,
+    ...overrides,
+  }
+}
+
+export function createSnapshotSummary(overrides: Partial<SnapshotSummary> = {}): SnapshotSummary {
+  return {
+    id: 'snap-1',
+    teamName: 'Team Alpha',
+    framework: 'KPT',
+    closedAt: '2024-03-15T10:00:00Z',
+    totalCards: 12,
+    totalVotes: 30,
+    totalParticipants: 5,
+    actionItemsTotal: 4,
+    actionItemsDone: 2,
+    ...overrides,
+  }
+}
+
+export function createSnapshotDetail(overrides: Partial<SnapshotDetail> = {}): SnapshotDetail {
+  return {
+    ...createSnapshotSummary(),
+    snapshotData: JSON.stringify({
+      columns: [
+        { name: 'Keep', cards: [{ content: 'Good work', votes: 3 }] },
+        { name: 'Problem', cards: [{ content: 'Slow CI', votes: 5 }] },
+        { name: 'Try', cards: [{ content: 'Pair programming', votes: 2 }] },
+      ],
+    }),
+    ...overrides,
+  }
+}
+
+export function createTrendPoint(overrides: Partial<TrendPoint> = {}): TrendPoint {
+  return {
+    closedAt: '2024-03-15T10:00:00Z',
+    totalCards: 12,
+    totalVotes: 30,
+    totalParticipants: 5,
+    actionItemsTotal: 4,
+    actionItemsDone: 2,
+    actionItemCompletionRate: 50,
+    ...overrides,
+  }
+}
+
+export function createTrendData(overrides: Partial<TrendData> = {}): TrendData {
+  return {
+    snapshots: [
+      createTrendPoint({ closedAt: '2024-03-01T10:00:00Z', totalCards: 10, actionItemCompletionRate: 40 }),
+      createTrendPoint({ closedAt: '2024-03-15T10:00:00Z', totalCards: 12, actionItemCompletionRate: 50 }),
+    ],
+    ...overrides,
+  }
+}
+
+export function createActionItem(overrides: Partial<ActionItem> = {}): ActionItem {
+  return {
+    id: 'ai-1',
+    boardId: 'board-1',
+    cardId: null,
+    content: 'Test action item',
+    assigneeId: null,
+    assigneeNickname: null,
+    dueDate: null,
+    status: 'OPEN',
+    sortOrder: 0,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
     ...overrides,
   }
 }

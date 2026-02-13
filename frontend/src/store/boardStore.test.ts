@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useBoardStore } from '../store/boardStore';
 import {
+  createActionItem,
   createBoard,
   createCard,
   createColumn,
@@ -19,6 +20,7 @@ describe('boardStore', () => {
       remainingVotes: null,
       timer: { isRunning: false, remainingSeconds: 0, totalSeconds: 0 },
       isConnected: false,
+      actionItems: [],
     });
   });
 
@@ -507,5 +509,113 @@ describe('boardStore', () => {
     useBoardStore.setState({ board: null });
     useBoardStore.getState().handleReactionRemoved({ cardId: 'card-1', participantId: 'p-1', emoji: '👍' });
     expect(useBoardStore.getState().board).toBeNull();
+  });
+
+  // --- setActionItems ---
+
+  it('setActionItems sets action items list', () => {
+    const items = [
+      createActionItem({ id: 'ai-1', content: 'Action 1' }),
+      createActionItem({ id: 'ai-2', content: 'Action 2' }),
+    ];
+    useBoardStore.getState().setActionItems(items);
+    expect(useBoardStore.getState().actionItems).toEqual(items);
+  });
+
+  // --- handleActionItemCreated ---
+
+  it('handleActionItemCreated adds item to list', () => {
+    const existing = createActionItem({ id: 'ai-1', content: 'Existing' });
+    useBoardStore.setState({ actionItems: [existing] });
+
+    const newItem = createActionItem({ id: 'ai-2', content: 'New item' });
+    useBoardStore.getState().handleActionItemCreated(newItem);
+
+    const state = useBoardStore.getState();
+    expect(state.actionItems).toHaveLength(2);
+    expect(state.actionItems[1].content).toBe('New item');
+  });
+
+  it('handleActionItemCreated adds to empty list', () => {
+    const newItem = createActionItem({ id: 'ai-1', content: 'First item' });
+    useBoardStore.getState().handleActionItemCreated(newItem);
+
+    const state = useBoardStore.getState();
+    expect(state.actionItems).toHaveLength(1);
+    expect(state.actionItems[0]).toEqual(newItem);
+  });
+
+  // --- handleActionItemUpdated ---
+
+  it('handleActionItemUpdated updates existing item', () => {
+    const item1 = createActionItem({ id: 'ai-1', content: 'Old content' });
+    const item2 = createActionItem({ id: 'ai-2', content: 'Other item' });
+    useBoardStore.setState({ actionItems: [item1, item2] });
+
+    const updatedItem = createActionItem({ id: 'ai-1', content: 'Updated content', assigneeNickname: 'Alice' });
+    useBoardStore.getState().handleActionItemUpdated(updatedItem);
+
+    const state = useBoardStore.getState();
+    expect(state.actionItems).toHaveLength(2);
+    expect(state.actionItems[0].content).toBe('Updated content');
+    expect(state.actionItems[0].assigneeNickname).toBe('Alice');
+    expect(state.actionItems[1].content).toBe('Other item');
+  });
+
+  // --- handleActionItemStatusChanged ---
+
+  it('handleActionItemStatusChanged updates status field', () => {
+    const item = createActionItem({ id: 'ai-1', status: 'OPEN' });
+    useBoardStore.setState({ actionItems: [item] });
+
+    useBoardStore.getState().handleActionItemStatusChanged({
+      actionItemId: 'ai-1',
+      boardSlug: 'test1234',
+      newStatus: 'DONE',
+    });
+
+    const state = useBoardStore.getState();
+    expect(state.actionItems[0].status).toBe('DONE');
+  });
+
+  it('handleActionItemStatusChanged only updates matching item', () => {
+    const item1 = createActionItem({ id: 'ai-1', status: 'OPEN' });
+    const item2 = createActionItem({ id: 'ai-2', status: 'OPEN' });
+    useBoardStore.setState({ actionItems: [item1, item2] });
+
+    useBoardStore.getState().handleActionItemStatusChanged({
+      actionItemId: 'ai-1',
+      boardSlug: 'test1234',
+      newStatus: 'IN_PROGRESS',
+    });
+
+    const state = useBoardStore.getState();
+    expect(state.actionItems[0].status).toBe('IN_PROGRESS');
+    expect(state.actionItems[1].status).toBe('OPEN');
+  });
+
+  // --- handleActionItemDeleted ---
+
+  it('handleActionItemDeleted removes item from list', () => {
+    const item1 = createActionItem({ id: 'ai-1' });
+    const item2 = createActionItem({ id: 'ai-2' });
+    useBoardStore.setState({ actionItems: [item1, item2] });
+
+    useBoardStore.getState().handleActionItemDeleted({ actionItemId: 'ai-1' });
+
+    const state = useBoardStore.getState();
+    expect(state.actionItems).toHaveLength(1);
+    expect(state.actionItems[0].id).toBe('ai-2');
+  });
+
+  it('handleActionItemDeleted with non-existent id leaves list unchanged', () => {
+    const item = createActionItem({ id: 'ai-1' });
+    useBoardStore.setState({ actionItems: [item] });
+
+    useBoardStore.getState().handleActionItemDeleted({ actionItemId: 'non-existent' });
+
+    const state = useBoardStore.getState();
+    expect(state.actionItems).toHaveLength(1);
+    expect(state.actionItems[0].id).toBe('ai-1');
   });
 });

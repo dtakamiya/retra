@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ThumbsUp, Pencil, Trash2, GripVertical, MessageSquare } from 'lucide-react';
+import { ThumbsUp, Pencil, Trash2, GripVertical, MessageSquare, ListTodo } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { api } from '../api/client';
@@ -125,6 +125,16 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
       }
     } catch {
       addToast('error', 'リアクションの操作に失敗しました');
+    }
+  };
+
+  const handleConvertToActionItem = async () => {
+    if (!board || !participant) return;
+    try {
+      await api.createActionItem(board.slug, card.content, participant.id, card.id);
+      addToast('success', 'アクションアイテムに変換しました');
+    } catch {
+      addToast('error', 'アクションアイテムへの変換に失敗しました');
     }
   };
 
@@ -255,6 +265,18 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
         )}
 
         <div className="flex items-center gap-1">
+          {/* Convert to action item */}
+          {(phase === 'DISCUSSION' || phase === 'ACTION_ITEMS') && (
+            <button
+              onClick={handleConvertToActionItem}
+              className="p-1 text-gray-400 hover:text-purple-600 rounded"
+              aria-label="アクションアイテムに変換"
+              title="アクションアイテムに変換"
+            >
+              <ListTodo size={14} />
+            </button>
+          )}
+
           {/* Reaction picker */}
           <ReactionPicker onSelect={handleReactionToggle} disabled={loading} />
 

@@ -3,7 +3,7 @@ import { render, screen, act, waitFor } from '@testing-library/react'
 import { BoardView } from './BoardView'
 import { useBoardStore } from '../store/boardStore'
 import { api } from '../api/client'
-import { createBoard, createCard, createColumn, createParticipant } from '../test/fixtures'
+import { createActionItem, createBoard, createCard, createColumn, createParticipant } from '../test/fixtures'
 import { capturedDndCallbacks } from '../test/dnd-mocks'
 
 vi.mock('../store/boardStore')
@@ -17,6 +17,11 @@ vi.mock('../api/client', () => ({
     moveCard: vi.fn(),
     getBoard: vi.fn(),
     createMemo: vi.fn(),
+    getActionItems: vi.fn().mockResolvedValue([]),
+    createActionItem: vi.fn(),
+    updateActionItem: vi.fn(),
+    updateActionItemStatus: vi.fn(),
+    deleteActionItem: vi.fn(),
   },
 }))
 vi.mock('@dnd-kit/core', async () => {
@@ -43,6 +48,8 @@ describe('BoardView', () => {
       participant: null,
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
+      actionItems: [],
+      setActionItems: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
     const { container } = render(<BoardView />)
@@ -65,6 +72,8 @@ describe('BoardView', () => {
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
+      actionItems: [],
+      setActionItems: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
     render(<BoardView />)
@@ -89,6 +98,8 @@ describe('BoardView', () => {
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
+      actionItems: [],
+      setActionItems: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
     render(<BoardView />)
@@ -111,6 +122,8 @@ describe('BoardView', () => {
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
+      actionItems: [],
+      setActionItems: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
     render(<BoardView />)
@@ -124,6 +137,8 @@ describe('BoardView', () => {
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
+      actionItems: [],
+      setActionItems: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
     render(<BoardView />)
@@ -145,6 +160,8 @@ describe('BoardView', () => {
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
+      actionItems: [],
+      setActionItems: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
     render(<BoardView />)
@@ -234,6 +251,8 @@ describe('BoardView', () => {
       participant: createParticipant({ id: 'p-1' }),
       handleCardMoved: vi.fn(),
       setBoard,
+      actionItems: [],
+      setActionItems: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
     vi.mocked(api.moveCard).mockRejectedValue(new Error('Network error'))
@@ -267,6 +286,8 @@ describe('BoardView', () => {
       participant: createParticipant({ id: 'p-1' }),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
+      actionItems: [],
+      setActionItems: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
     vi.mocked(api.moveCard).mockRejectedValue(new Error('Network error'))
@@ -344,5 +365,83 @@ describe('BoardView', () => {
     })
 
     expect(handleCardMoved).not.toHaveBeenCalled()
+  })
+
+  it('shows ActionItemList in ACTION_ITEMS phase', () => {
+    const board = createBoard({
+      phase: 'ACTION_ITEMS',
+      columns: [createColumn({ id: 'col-1', name: 'Keep' })],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board,
+      participant: createParticipant({ id: 'p-1', isFacilitator: true }),
+      handleCardMoved: vi.fn(),
+      setBoard: vi.fn(),
+      actionItems: [createActionItem({ content: 'テストアクション' })],
+      setActionItems: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<BoardView />)
+
+    expect(screen.getByText('アクションアイテム')).toBeInTheDocument()
+    expect(screen.getByText('テストアクション')).toBeInTheDocument()
+  })
+
+  it('shows ActionItemList in CLOSED phase', () => {
+    const board = createBoard({
+      phase: 'CLOSED',
+      columns: [createColumn({ id: 'col-1', name: 'Keep' })],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board,
+      participant: createParticipant({ id: 'p-1', isFacilitator: true }),
+      handleCardMoved: vi.fn(),
+      setBoard: vi.fn(),
+      actionItems: [],
+      setActionItems: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<BoardView />)
+
+    expect(screen.getByText('アクションアイテム')).toBeInTheDocument()
+  })
+
+  it('does NOT show ActionItemList in WRITING phase', () => {
+    const board = createBoard({
+      phase: 'WRITING',
+      columns: [createColumn({ id: 'col-1', name: 'Keep' })],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board,
+      participant: createParticipant(),
+      handleCardMoved: vi.fn(),
+      setBoard: vi.fn(),
+      actionItems: [],
+      setActionItems: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<BoardView />)
+
+    expect(screen.queryByText('アクションアイテム')).not.toBeInTheDocument()
+  })
+
+  it('calls api.getActionItems when board slug is available', () => {
+    const board = createBoard({ slug: 'test-slug', phase: 'ACTION_ITEMS' })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board,
+      participant: createParticipant(),
+      handleCardMoved: vi.fn(),
+      setBoard: vi.fn(),
+      actionItems: [],
+      setActionItems: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<BoardView />)
+
+    expect(api.getActionItems).toHaveBeenCalledWith('test-slug')
   })
 })

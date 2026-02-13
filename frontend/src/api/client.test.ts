@@ -348,6 +348,111 @@ describe('api client', () => {
     });
   });
 
+  // --- getActionItems ---
+
+  it('getActionItems sends GET to correct URL', async () => {
+    const items = [{ id: 'ai-1', content: 'Do something' }];
+    mockResponse(items);
+
+    const result = await api.getActionItems('slug1');
+
+    expect(result).toEqual(items);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/action-items', {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+
+  // --- createActionItem ---
+
+  it('createActionItem sends POST with content and participantId', async () => {
+    const item = { id: 'ai-1', content: 'Do something' };
+    mockResponse(item, 201);
+
+    const result = await api.createActionItem('slug1', 'Do something', 'p-1');
+
+    expect(result).toEqual(item);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/action-items', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: 'Do something', participantId: 'p-1', cardId: undefined, assigneeId: undefined, dueDate: undefined }),
+    });
+  });
+
+  it('createActionItem sends POST with all optional fields', async () => {
+    const item = { id: 'ai-1', content: 'Do something', cardId: 'card-1', assigneeId: 'p-2', dueDate: '2025-12-31' };
+    mockResponse(item, 201);
+
+    const result = await api.createActionItem('slug1', 'Do something', 'p-1', 'card-1', 'p-2', '2025-12-31');
+
+    expect(result).toEqual(item);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/action-items', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: 'Do something', participantId: 'p-1', cardId: 'card-1', assigneeId: 'p-2', dueDate: '2025-12-31' }),
+    });
+  });
+
+  // --- updateActionItem ---
+
+  it('updateActionItem sends PUT with content and participantId', async () => {
+    const item = { id: 'ai-1', content: 'Updated action' };
+    mockResponse(item);
+
+    const result = await api.updateActionItem('slug1', 'ai-1', 'Updated action', 'p-1');
+
+    expect(result).toEqual(item);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/action-items/ai-1', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: 'Updated action', participantId: 'p-1', assigneeId: undefined, dueDate: undefined }),
+    });
+  });
+
+  it('updateActionItem sends PUT with all optional fields', async () => {
+    const item = { id: 'ai-1', content: 'Updated action', assigneeId: 'p-2', dueDate: '2025-12-31' };
+    mockResponse(item);
+
+    const result = await api.updateActionItem('slug1', 'ai-1', 'Updated action', 'p-1', 'p-2', '2025-12-31');
+
+    expect(result).toEqual(item);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/action-items/ai-1', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: 'Updated action', participantId: 'p-1', assigneeId: 'p-2', dueDate: '2025-12-31' }),
+    });
+  });
+
+  // --- updateActionItemStatus ---
+
+  it('updateActionItemStatus sends PATCH with status and participantId', async () => {
+    const item = { id: 'ai-1', status: 'IN_PROGRESS' };
+    mockResponse(item);
+
+    const result = await api.updateActionItemStatus('slug1', 'ai-1', 'IN_PROGRESS', 'p-1');
+
+    expect(result).toEqual(item);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/action-items/ai-1/status', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'IN_PROGRESS', participantId: 'p-1' }),
+    });
+  });
+
+  // --- deleteActionItem ---
+
+  it('deleteActionItem sends DELETE with participantId', async () => {
+    mock204();
+
+    const result = await api.deleteActionItem('slug1', 'ai-1', 'p-1');
+
+    expect(result).toBeUndefined();
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/action-items/ai-1', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participantId: 'p-1' }),
+    });
+  });
+
   // --- Error handling ---
 
   it('HTTP error throws Error with message from response', async () => {

@@ -13,6 +13,7 @@ import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
 import { ColumnView } from './ColumnView';
 import { CardItem } from './CardItem';
+import { ActionItemList } from './ActionItemList';
 import type { Board, Card, Column } from '../types';
 
 const DRAG_ACTIVATION_DISTANCE = 8;
@@ -56,10 +57,17 @@ function calculateSortOrder(
 }
 
 export function BoardView() {
-  const { board, participant, handleCardMoved, setBoard } = useBoardStore();
+  const { board, participant, handleCardMoved, setBoard, actionItems, setActionItems } = useBoardStore();
   const [activeCard, setActiveCard] = useState<Card | null>(null);
   const [activeColumnColor, setActiveColumnColor] = useState('#000');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Load action items when board loads or phase changes
+  useEffect(() => {
+    if (board?.slug) {
+      api.getActionItems(board.slug).then(setActionItems).catch(() => {});
+    }
+  }, [board?.slug, board?.phase, setActionItems]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -187,6 +195,14 @@ export function BoardView() {
         </DndContext>
       ) : (
         columnsContent
+      )}
+
+      {(board.phase === 'ACTION_ITEMS' || board.phase === 'CLOSED') && (
+        <ActionItemList
+          actionItems={actionItems}
+          slug={board.slug}
+          participants={board.participants}
+        />
       )}
     </>
   );

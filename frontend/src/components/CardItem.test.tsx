@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { CardItem } from './CardItem'
 import { useBoardStore } from '../store/boardStore'
 import { api } from '../api/client'
-import { createBoard, createCard, createParticipant, createReaction, createRemainingVotes, createVote } from '../test/fixtures'
+import { createActionItem, createBoard, createCard, createParticipant, createReaction, createRemainingVotes, createVote } from '../test/fixtures'
 
 vi.mock('../store/boardStore')
 vi.mock('../api/client', () => ({
@@ -15,6 +15,7 @@ vi.mock('../api/client', () => ({
     deleteCard: vi.fn(),
     addReaction: vi.fn(),
     removeReaction: vi.fn(),
+    createActionItem: vi.fn(),
   },
 }))
 vi.mock('@dnd-kit/sortable', async () => {
@@ -500,5 +501,72 @@ describe('CardItem', () => {
     await user.click(screen.getByLabelText('リアクション 👍'))
 
     expect(api.removeReaction).toHaveBeenCalledWith('react-slug', 'card-1', 'p-1', '👍')
+  })
+
+  it('shows convert to action item button in DISCUSSION phase', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={defaultCard} columnColor="#22c55e" />)
+
+    expect(screen.getByLabelText('アクションアイテムに変換')).toBeInTheDocument()
+  })
+
+  it('shows convert to action item button in ACTION_ITEMS phase', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'ACTION_ITEMS' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={defaultCard} columnColor="#22c55e" />)
+
+    expect(screen.getByLabelText('アクションアイテムに変換')).toBeInTheDocument()
+  })
+
+  it('does NOT show convert to action item button in WRITING phase', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={defaultCard} columnColor="#22c55e" />)
+
+    expect(screen.queryByLabelText('アクションアイテムに変換')).not.toBeInTheDocument()
+  })
+
+  it('does NOT show convert to action item button in VOTING phase', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'VOTING' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: createRemainingVotes({ remaining: 5 }),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={defaultCard} columnColor="#22c55e" />)
+
+    expect(screen.queryByLabelText('アクションアイテムに変換')).not.toBeInTheDocument()
+  })
+
+  it('clicking convert to action item button calls api.createActionItem', async () => {
+    const user = userEvent.setup()
+    const card = createCard({ id: 'card-1', content: '変換テスト', participantId: 'p-1' })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ slug: 'convert-slug', phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    vi.mocked(api.createActionItem).mockResolvedValue(createActionItem())
+
+    render(<CardItem card={card} columnColor="#22c55e" />)
+
+    await user.click(screen.getByLabelText('アクションアイテムに変換'))
+
+    expect(api.createActionItem).toHaveBeenCalledWith('convert-slug', '変換テスト', 'p-1', 'card-1')
   })
 })

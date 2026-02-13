@@ -1,5 +1,7 @@
 package com.retra
 
+import com.retra.actionitem.domain.ActionItem
+import com.retra.actionitem.domain.ActionItemStatus
 import com.retra.board.domain.Board
 import com.retra.board.domain.BoardColumn
 import com.retra.board.domain.Participant
@@ -8,6 +10,7 @@ import com.retra.card.domain.Reaction
 import com.retra.card.domain.Vote
 import com.retra.board.domain.Framework
 import com.retra.board.domain.Phase
+import com.retra.history.domain.BoardSnapshot
 import java.time.Instant
 import java.util.UUID
 
@@ -112,6 +115,58 @@ object TestFixtures {
         board = board,
         participant = participant,
         emoji = emoji,
+        createdAt = createdAt
+    )
+
+    fun actionItem(
+        id: String = UUID.randomUUID().toString(),
+        board: Board = board(),
+        card: Card? = null,
+        content: String = "サンプルアクションアイテム",
+        assignee: Participant? = null,
+        dueDate: String? = null,
+        status: ActionItemStatus = ActionItemStatus.OPEN,
+        sortOrder: Int = 0,
+        createdAt: String = Instant.now().toString(),
+        updatedAt: String = Instant.now().toString()
+    ): ActionItem = ActionItem(
+        id = id,
+        board = board,
+        card = card,
+        content = content,
+        assignee = assignee,
+        dueDate = dueDate,
+        status = status,
+        sortOrder = sortOrder,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
+
+    fun boardSnapshot(
+        id: String = UUID.randomUUID().toString(),
+        boardId: String = UUID.randomUUID().toString(),
+        teamName: String = "Test Team",
+        framework: String = "KPT",
+        closedAt: String = Instant.now().toString(),
+        totalCards: Int = 5,
+        totalVotes: Int = 10,
+        totalParticipants: Int = 3,
+        actionItemsTotal: Int = 2,
+        actionItemsDone: Int = 1,
+        snapshotData: String = """{"columns":[]}""",
+        createdAt: String = Instant.now().toString()
+    ): BoardSnapshot = BoardSnapshot(
+        id = id,
+        boardId = boardId,
+        teamName = teamName,
+        framework = framework,
+        closedAt = closedAt,
+        totalCards = totalCards,
+        totalVotes = totalVotes,
+        totalParticipants = totalParticipants,
+        actionItemsTotal = actionItemsTotal,
+        actionItemsDone = actionItemsDone,
+        snapshotData = snapshotData,
         createdAt = createdAt
     )
 }

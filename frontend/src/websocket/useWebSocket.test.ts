@@ -51,6 +51,10 @@ function mockStoreHandlers() {
     handleMemoDeleted: vi.fn(),
     handleReactionAdded: vi.fn(),
     handleReactionRemoved: vi.fn(),
+    handleActionItemCreated: vi.fn(),
+    handleActionItemUpdated: vi.fn(),
+    handleActionItemStatusChanged: vi.fn(),
+    handleActionItemDeleted: vi.fn(),
   }
   vi.mocked(useBoardStore).mockReturnValue(handlers as unknown as ReturnType<typeof useBoardStore>)
   return handlers
@@ -88,7 +92,7 @@ describe('useWebSocket', () => {
     expect(capturedConfig.brokerURL).toContain('/ws')
   })
 
-  it('on connect: sets connected, registers session, and subscribes to 7 topics', () => {
+  it('on connect: sets connected, registers session, and subscribes to 8 topics', () => {
     const handlers = mockStoreHandlers()
 
     renderHook(() => useWebSocket('test1234', 'p-1'))
@@ -101,7 +105,7 @@ describe('useWebSocket', () => {
       destination: '/app/board/test1234/register',
       body: JSON.stringify({ participantId: 'p-1' }),
     })
-    expect(mockSubscribe).toHaveBeenCalledTimes(7)
+    expect(mockSubscribe).toHaveBeenCalledTimes(8)
     // Verify subscription destinations
     const destinations = mockSubscribe.mock.calls.map((call) => call[0])
     expect(destinations).toContain('/topic/board/test1234/cards')
@@ -111,6 +115,7 @@ describe('useWebSocket', () => {
     expect(destinations).toContain('/topic/board/test1234/memos')
     expect(destinations).toContain('/topic/board/test1234/reactions')
     expect(destinations).toContain('/topic/board/test1234/participants')
+    expect(destinations).toContain('/topic/board/test1234/action-items')
   })
 
   it('calls correct handlers for each WebSocket message type', () => {
@@ -229,6 +234,34 @@ describe('useWebSocket', () => {
       body: JSON.stringify({ type: 'REACTION_REMOVED', payload: reactionRemovedPayload }),
     })
     expect(handlers.handleReactionRemoved).toHaveBeenCalledWith(reactionRemovedPayload)
+
+    // ACTION_ITEM_CREATED
+    const actionItemCreatedPayload = { id: 'ai-1', boardId: 'board-1', content: 'New action', status: 'OPEN' }
+    callbackMap['/topic/board/test1234/action-items']({
+      body: JSON.stringify({ type: 'ACTION_ITEM_CREATED', payload: actionItemCreatedPayload }),
+    })
+    expect(handlers.handleActionItemCreated).toHaveBeenCalledWith(actionItemCreatedPayload)
+
+    // ACTION_ITEM_UPDATED
+    const actionItemUpdatedPayload = { id: 'ai-1', boardId: 'board-1', content: 'Updated action', status: 'OPEN' }
+    callbackMap['/topic/board/test1234/action-items']({
+      body: JSON.stringify({ type: 'ACTION_ITEM_UPDATED', payload: actionItemUpdatedPayload }),
+    })
+    expect(handlers.handleActionItemUpdated).toHaveBeenCalledWith(actionItemUpdatedPayload)
+
+    // ACTION_ITEM_STATUS_CHANGED
+    const actionItemStatusPayload = { actionItemId: 'ai-1', boardSlug: 'test1234', newStatus: 'DONE' }
+    callbackMap['/topic/board/test1234/action-items']({
+      body: JSON.stringify({ type: 'ACTION_ITEM_STATUS_CHANGED', payload: actionItemStatusPayload }),
+    })
+    expect(handlers.handleActionItemStatusChanged).toHaveBeenCalledWith(actionItemStatusPayload)
+
+    // ACTION_ITEM_DELETED
+    const actionItemDeletedPayload = { actionItemId: 'ai-1' }
+    callbackMap['/topic/board/test1234/action-items']({
+      body: JSON.stringify({ type: 'ACTION_ITEM_DELETED', payload: actionItemDeletedPayload }),
+    })
+    expect(handlers.handleActionItemDeleted).toHaveBeenCalledWith(actionItemDeletedPayload)
   })
 
   it('sets connected false on disconnect', () => {

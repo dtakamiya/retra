@@ -154,8 +154,10 @@ Flyway で管理。マイグレーションファイルは `backend/src/main/res
 | `V6__add_card_sort_order.sql` | カードの並べ替え用 sort_order カラム追加 |
 | `V7__create_memos.sql` | メモテーブル作成 |
 | `V8__create_reactions.sql` | リアクションテーブル作成 |
+| `V9__create_action_items.sql` | アクションアイテムテーブル作成 |
+| `V10__create_board_snapshots.sql` | ボードスナップショットテーブル作成 |
 
-新しいマイグレーションを追加する場合は `V9__description.sql` のように命名してください。
+新しいマイグレーションを追加する場合は `V11__description.sql` のように命名してください。
 
 ### SQLite の制約
 
@@ -231,3 +233,4 @@ Conventional Commits 形式を使用:
 | Lucide React | ^0.563.0 | アイコン |
 | @dnd-kit/core | ^6.3.1 | ドラッグ&ドロップ (コア) |
 | @dnd-kit/sortable | ^10.0.0 | ドラッグ&ドロップ (ソート) |
+| Recharts | ^2.x | ダッシュボード用チャート |

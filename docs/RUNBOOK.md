@@ -154,6 +154,8 @@ curl http://localhost:8080/api/v1/boards
 | V6 | カードの並べ替え用 sort_order カラム追加 |
 | V7 | メモテーブル (memos) 作成 |
 | V8 | リアクションテーブル (reactions) 作成 |
+| V9 | アクションアイテムテーブル (action_items) 作成 |
+| V10 | ボードスナップショットテーブル (board_snapshots) 作成 |
 
 ```bash
 # 開発環境のみ: DB リセット

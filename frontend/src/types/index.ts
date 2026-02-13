@@ -125,3 +125,60 @@ export interface ReactionRemovedPayload {
 }
 
 export type ExportFormat = 'CSV' | 'MARKDOWN';
+
+// Dashboard / History types
+export interface SnapshotSummary {
+  id: string;
+  teamName: string;
+  framework: string;
+  closedAt: string;
+  totalCards: number;
+  totalVotes: number;
+  totalParticipants: number;
+  actionItemsTotal: number;
+  actionItemsDone: number;
+}
+
+export interface SnapshotDetail extends SnapshotSummary {
+  snapshotData: string;
+}
+
+export interface TrendPoint {
+  closedAt: string;
+  totalCards: number;
+  totalVotes: number;
+  totalParticipants: number;
+  actionItemsTotal: number;
+  actionItemsDone: number;
+  actionItemCompletionRate: number;
+}
+
+export interface TrendData {
+  snapshots: TrendPoint[];
+}
+
+export type ActionItemStatus = 'OPEN' | 'IN_PROGRESS' | 'DONE';
+
+export interface ActionItem {
+  id: string;
+  boardId: string;
+  cardId: string | null;
+  content: string;
+  assigneeId: string | null;
+  assigneeNickname: string | null;
+  dueDate: string | null;
+  status: ActionItemStatus;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ActionItemDeletedPayload {
+  actionItemId: string;
+}
+
+export interface ActionItemStatusChangedPayload {
+  actionItemId: string;
+  boardSlug: string;
+  newStatus: ActionItemStatus;
+}
