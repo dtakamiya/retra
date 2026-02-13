@@ -3,10 +3,12 @@ package com.retra.card.gateway.controller
 import com.retra.card.usecase.CardResponse
 import com.retra.card.usecase.CreateCardRequest
 import com.retra.card.usecase.DeleteCardRequest
+import com.retra.card.usecase.MarkCardDiscussedRequest
 import com.retra.card.usecase.MoveCardRequest
 import com.retra.card.usecase.UpdateCardRequest
 import com.retra.card.usecase.CreateCardUseCase
 import com.retra.card.usecase.DeleteCardUseCase
+import com.retra.card.usecase.MarkCardDiscussedUseCase
 import com.retra.card.usecase.MoveCardUseCase
 import com.retra.card.usecase.UpdateCardUseCase
 import org.springframework.http.HttpStatus
@@ -18,7 +20,8 @@ class CardController(
     private val createCardUseCase: CreateCardUseCase,
     private val updateCardUseCase: UpdateCardUseCase,
     private val deleteCardUseCase: DeleteCardUseCase,
-    private val moveCardUseCase: MoveCardUseCase
+    private val moveCardUseCase: MoveCardUseCase,
+    private val markCardDiscussedUseCase: MarkCardDiscussedUseCase
 ) {
 
     @PostMapping
@@ -57,5 +60,14 @@ class CardController(
         @RequestBody request: MoveCardRequest
     ) {
         moveCardUseCase.execute(slug, cardId, request)
+    }
+
+    @PatchMapping("/{cardId}/discussed")
+    fun markDiscussed(
+        @PathVariable slug: String,
+        @PathVariable cardId: String,
+        @RequestBody request: MarkCardDiscussedRequest
+    ): CardResponse {
+        return markCardDiscussedUseCase.execute(slug, cardId, request)
     }
 }

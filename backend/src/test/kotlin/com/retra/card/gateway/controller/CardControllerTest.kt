@@ -6,6 +6,8 @@ import com.retra.card.usecase.CreateCardRequest
 import com.retra.card.usecase.CreateCardUseCase
 import com.retra.card.usecase.DeleteCardRequest
 import com.retra.card.usecase.DeleteCardUseCase
+import com.retra.card.usecase.MarkCardDiscussedRequest
+import com.retra.card.usecase.MarkCardDiscussedUseCase
 import com.retra.card.usecase.MoveCardRequest
 import com.retra.card.usecase.MoveCardUseCase
 import com.retra.card.usecase.UpdateCardRequest
@@ -42,6 +44,9 @@ class CardControllerTest {
 
     @MockBean
     private lateinit var moveCardUseCase: MoveCardUseCase
+
+    @MockBean
+    private lateinit var markCardDiscussedUseCase: MarkCardDiscussedUseCase
 
     private fun cardResponse() = CardResponse(
         id = "card-1",

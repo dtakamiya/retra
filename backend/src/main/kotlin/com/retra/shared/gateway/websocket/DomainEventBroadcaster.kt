@@ -70,6 +70,17 @@ class DomainEventBroadcaster(
     }
 
     @EventListener
+    fun handleCardDiscussionMarked(event: CardEvent.CardDiscussionMarked) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.boardSlug}/cards",
+            WebSocketMessage("CARD_DISCUSSION_MARKED", mapOf(
+                "cardId" to event.cardId,
+                "isDiscussed" to event.isDiscussed
+            ))
+        )
+    }
+
+    @EventListener
     fun handleCardDeleted(event: CardEvent.CardDeleted) {
         messagingTemplate.convertAndSend(
             "/topic/board/${event.slug}/cards",
