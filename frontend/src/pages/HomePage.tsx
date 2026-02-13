@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, Users } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { LayoutGrid, Users, BarChart3 } from 'lucide-react';
 import { api } from '../api/client';
 import { useToastStore } from '../store/toastStore';
 import type { Framework } from '../types';
@@ -54,6 +54,13 @@ export function HomePage() {
           <p className="text-lg text-gray-600">
             スクラムチームのためのレトロスペクティブボード
           </p>
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm mt-4"
+          >
+            <BarChart3 size={16} />
+            チームダッシュボード
+          </Link>
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg p-8">

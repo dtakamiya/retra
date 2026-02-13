@@ -10,6 +10,14 @@ vi.mock('./pages/BoardPage', () => ({
   BoardPage: () => <div data-testid="board-page">BoardPage</div>,
 }))
 
+vi.mock('./pages/TeamDashboardPage', () => ({
+  TeamDashboardPage: () => <div data-testid="team-dashboard-page">TeamDashboardPage</div>,
+}))
+
+vi.mock('./pages/SnapshotDetailPage', () => ({
+  SnapshotDetailPage: () => <div data-testid="snapshot-detail-page">SnapshotDetailPage</div>,
+}))
+
 vi.mock('./pages/NotFoundPage', () => ({
   NotFoundPage: () => <div data-testid="not-found-page">NotFoundPage</div>,
 }))
