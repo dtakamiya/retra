@@ -41,6 +41,11 @@ export function ColumnView({ column }: Props) {
 
   const isPostVoting = board?.phase === 'DISCUSSION' || board?.phase === 'ACTION_ITEMS' || board?.phase === 'CLOSED';
 
+  const maxVoteCount = useMemo(() => {
+    if (!board) return 0;
+    return Math.max(0, ...board.columns.flatMap((col) => col.cards.map((c) => c.voteCount)));
+  }, [board]);
+
   const sortedCards = useMemo(() => {
     const cards = [...column.cards];
     if (isPostVoting) {
@@ -92,7 +97,7 @@ export function ColumnView({ column }: Props) {
         )}
         <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
           {sortedCards.map((card) => (
-            <CardItem key={card.id} card={card} columnColor={column.color} />
+            <CardItem key={card.id} card={card} columnColor={column.color} maxVoteCount={maxVoteCount} />
           ))}
         </SortableContext>
         {column.cards.length === 0 && !showForm && (

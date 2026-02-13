@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -68,6 +68,11 @@ export function BoardView() {
       api.getActionItems(board.slug).then(setActionItems).catch(() => {});
     }
   }, [board?.slug, board?.phase, setActionItems]);
+
+  const maxVoteCount = useMemo(() => {
+    if (!board) return 0;
+    return Math.max(0, ...board.columns.flatMap((col) => col.cards.map((c) => c.voteCount)));
+  }, [board]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -189,7 +194,7 @@ export function BoardView() {
           {columnsContent}
           <DragOverlay>
             {activeCard ? (
-              <CardItem card={activeCard} columnColor={activeColumnColor} isOverlay />
+              <CardItem card={activeCard} columnColor={activeColumnColor} isOverlay maxVoteCount={maxVoteCount} />
             ) : null}
           </DragOverlay>
         </DndContext>

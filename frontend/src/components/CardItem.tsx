@@ -8,15 +8,17 @@ import { useToastStore } from '../store/toastStore';
 import { MemoList } from './MemoList';
 import { ReactionList } from './ReactionList';
 import { ReactionPicker } from './ReactionPicker';
+import { VoteProgressBar } from './VoteProgressBar';
 import type { Card } from '../types';
 
 interface Props {
   card: Card;
   columnColor: string;
   isOverlay?: boolean;
+  maxVoteCount?: number;
 }
 
-export function CardItem({ card, columnColor, isOverlay }: Props) {
+export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) {
   const { board, participant, remainingVotes } = useBoardStore();
   const addToast = useToastStore((s) => s.addToast);
   const [editing, setEditing] = useState(false);
@@ -31,6 +33,11 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
   const isWriting = phase === 'WRITING';
   const isDiscussionLike = phase === 'DISCUSSION' || phase === 'ACTION_ITEMS';
   const showMemos = isDiscussionLike || phase === 'CLOSED';
+
+  const isPostWriting = phase !== 'WRITING';
+  const hasMyVoteHighlight = isPostWriting && participant
+    ? card.votedParticipantIds.includes(participant.id)
+    : false;
 
   const isDndEnabled =
     (isWriting && isAuthor) || (isDiscussionLike && isFacilitator);
@@ -198,7 +205,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
       {...safeAttributes}
       className={`bg-white rounded-lg shadow-sm border border-gray-200 p-3 group ${
         isOverlay ? 'shadow-lg ring-2 ring-indigo-300' : ''
-      } ${card.isDiscussed ? 'opacity-50' : ''}`}
+      } ${card.isDiscussed ? 'opacity-50' : ''} ${hasMyVoteHighlight ? 'border-l-3 border-l-indigo-500' : ''}`}
     >
       <div className="flex gap-2">
         {isDndEnabled && (
@@ -316,6 +323,11 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
           )}
         </div>
       </div>
+
+      {/* Vote progress bar */}
+      {isPostWriting && card.voteCount > 0 && (
+        <VoteProgressBar voteCount={card.voteCount} maxVoteCount={maxVoteCount ?? 0} />
+      )}
 
       {/* Reactions */}
       {card.reactions.length > 0 && (
