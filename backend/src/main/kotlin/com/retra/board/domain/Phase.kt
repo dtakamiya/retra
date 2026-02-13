@@ -36,6 +36,8 @@ enum class Phase {
 
     fun canCreateMemo(): Boolean = this in listOf(DISCUSSION, ACTION_ITEMS)
 
+    fun canCreateActionItem(): Boolean = this == ACTION_ITEMS
+
     companion object {
         private val validTransitions = mapOf(
             WRITING to VOTING,

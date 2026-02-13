@@ -1,5 +1,7 @@
 package com.retra
 
+import com.retra.actionitem.domain.ActionItem
+import com.retra.actionitem.domain.ActionItemStatus
 import com.retra.board.domain.Board
 import com.retra.board.domain.BoardColumn
 import com.retra.board.domain.Participant
@@ -113,5 +115,29 @@ object TestFixtures {
         participant = participant,
         emoji = emoji,
         createdAt = createdAt
+    )
+
+    fun actionItem(
+        id: String = UUID.randomUUID().toString(),
+        board: Board = board(),
+        card: Card? = null,
+        content: String = "サンプルアクションアイテム",
+        assignee: Participant? = null,
+        dueDate: String? = null,
+        status: ActionItemStatus = ActionItemStatus.OPEN,
+        sortOrder: Int = 0,
+        createdAt: String = Instant.now().toString(),
+        updatedAt: String = Instant.now().toString()
+    ): ActionItem = ActionItem(
+        id = id,
+        board = board,
+        card = card,
+        content = content,
+        assignee = assignee,
+        dueDate = dueDate,
+        status = status,
+        sortOrder = sortOrder,
+        createdAt = createdAt,
+        updatedAt = updatedAt
     )
 }
