@@ -1,6 +1,7 @@
 package com.retra
 
 import com.retra.actionitem.domain.ActionItem
+import com.retra.actionitem.domain.ActionItemPriority
 import com.retra.actionitem.domain.ActionItemStatus
 import com.retra.board.domain.Board
 import com.retra.board.domain.BoardColumn
@@ -128,6 +129,7 @@ object TestFixtures {
         assignee: Participant? = null,
         dueDate: String? = null,
         status: ActionItemStatus = ActionItemStatus.OPEN,
+        priority: ActionItemPriority = ActionItemPriority.MEDIUM,
         sortOrder: Int = 0,
         createdAt: String = Instant.now().toString(),
         updatedAt: String = Instant.now().toString()
@@ -139,6 +141,7 @@ object TestFixtures {
         assignee = assignee,
         dueDate = dueDate,
         status = status,
+        priority = priority,
         sortOrder = sortOrder,
         createdAt = createdAt,
         updatedAt = updatedAt

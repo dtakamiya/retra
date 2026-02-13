@@ -1,5 +1,6 @@
 package com.retra.actionitem.usecase
 
+import com.retra.actionitem.domain.ActionItemPriority
 import com.retra.actionitem.domain.ActionItemRepository
 import com.retra.board.domain.BoardRepository
 import com.retra.shared.domain.BadRequestException
@@ -46,7 +47,15 @@ class UpdateActionItemUseCase(
             null
         }
 
-        actionItem.update(request.content, assignee, request.dueDate, executor)
+        val priority = request.priority?.let {
+            try {
+                ActionItemPriority.valueOf(it)
+            } catch (e: IllegalArgumentException) {
+                null
+            }
+        }
+
+        actionItem.update(request.content, assignee, request.dueDate, executor, priority)
         actionItemRepository.save(actionItem)
 
         eventPublisher.publishAll(actionItem.getDomainEvents())

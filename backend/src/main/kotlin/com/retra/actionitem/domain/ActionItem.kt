@@ -37,6 +37,10 @@ open class ActionItem(
     @Enumerated(EnumType.STRING)
     open var status: ActionItemStatus = ActionItemStatus.OPEN,
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    open var priority: ActionItemPriority = ActionItemPriority.MEDIUM,
+
     @Column(name = "sort_order", nullable = false)
     open var sortOrder: Int = 0,
 
@@ -63,13 +67,16 @@ open class ActionItem(
         return canBeModifiedBy(participant)
     }
 
-    fun update(content: String, assignee: Participant?, dueDate: String?, executor: Participant) {
+    fun update(content: String, assignee: Participant?, dueDate: String?, executor: Participant, priority: ActionItemPriority? = null) {
         if (!canBeModifiedBy(executor)) {
             throw ForbiddenException("Only the facilitator or assignee can modify this action item")
         }
         this.content = content
         this.assignee = assignee
         this.dueDate = dueDate
+        if (priority != null) {
+            this.priority = priority
+        }
         this.updatedAt = Instant.now().toString()
         _domainEvents.add(
             ActionItemEvent.ActionItemUpdated(
@@ -101,7 +108,8 @@ open class ActionItem(
             content: String,
             assignee: Participant?,
             dueDate: String?,
-            sortOrder: Int
+            sortOrder: Int,
+            priority: ActionItemPriority = ActionItemPriority.MEDIUM
         ): ActionItem {
             val now = Instant.now().toString()
             val actionItem = ActionItem(
@@ -112,6 +120,7 @@ open class ActionItem(
                 assignee = assignee,
                 dueDate = dueDate,
                 status = ActionItemStatus.OPEN,
+                priority = priority,
                 sortOrder = sortOrder,
                 createdAt = now,
                 updatedAt = now

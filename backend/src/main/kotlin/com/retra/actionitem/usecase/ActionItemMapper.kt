@@ -14,6 +14,7 @@ object ActionItemMapper {
             assigneeNickname = actionItem.assignee?.nickname,
             dueDate = actionItem.dueDate,
             status = actionItem.status.name,
+            priority = actionItem.priority.name,
             sortOrder = actionItem.sortOrder,
             createdAt = actionItem.createdAt,
             updatedAt = actionItem.updatedAt

@@ -56,6 +56,7 @@ class ActionItemControllerTest {
         assigneeNickname = "Alice",
         dueDate = "2024-01-15",
         status = "OPEN",
+        priority = "MEDIUM",
         sortOrder = 0,
         createdAt = "2024-01-01T00:00:00Z",
         updatedAt = "2024-01-01T00:00:00Z"
