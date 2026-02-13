@@ -178,17 +178,17 @@ export const api = {
     return request<ActionItem[]>(`/boards/${slug}/action-items`);
   },
 
-  createActionItem(slug: string, content: string, participantId: string, cardId?: string, assigneeId?: string, dueDate?: string): Promise<ActionItem> {
+  createActionItem(slug: string, content: string, participantId: string, cardId?: string, assigneeId?: string, dueDate?: string, priority?: string): Promise<ActionItem> {
     return request<ActionItem>(`/boards/${slug}/action-items`, {
       method: 'POST',
-      body: JSON.stringify({ content, participantId, cardId, assigneeId, dueDate }),
+      body: JSON.stringify({ content, participantId, cardId, assigneeId, dueDate, priority }),
     });
   },
 
-  updateActionItem(slug: string, id: string, content: string, participantId: string, assigneeId?: string, dueDate?: string): Promise<ActionItem> {
+  updateActionItem(slug: string, id: string, content: string, participantId: string, assigneeId?: string, dueDate?: string, priority?: string): Promise<ActionItem> {
     return request<ActionItem>(`/boards/${slug}/action-items/${id}`, {
       method: 'PUT',
-      body: JSON.stringify({ content, participantId, assigneeId, dueDate }),
+      body: JSON.stringify({ content, participantId, assigneeId, dueDate, priority }),
     });
   },
 

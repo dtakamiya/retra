@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
 import { useToastStore } from '../store/toastStore';
-import type { Participant } from '../types';
+import type { ActionItemPriority, Participant } from '../types';
 
 interface Props {
   slug: string;
@@ -17,6 +17,7 @@ export function ActionItemForm({ slug, participants, cardId, initialContent = ''
   const [content, setContent] = useState(initialContent);
   const [assigneeId, setAssigneeId] = useState<string>('');
   const [dueDate, setDueDate] = useState('');
+  const [priority, setPriority] = useState<ActionItemPriority>('MEDIUM');
   const [loading, setLoading] = useState(false);
   const addToast = useToastStore((s) => s.addToast);
 
@@ -32,11 +33,13 @@ export function ActionItemForm({ slug, participants, cardId, initialContent = ''
         participant.id,
         cardId || undefined,
         assigneeId || undefined,
-        dueDate || undefined
+        dueDate || undefined,
+        priority
       );
       setContent('');
       setAssigneeId('');
       setDueDate('');
+      setPriority('MEDIUM');
     } catch {
       addToast('error', 'アクションアイテムの追加に失敗しました');
     } finally {
@@ -81,6 +84,16 @@ export function ActionItemForm({ slug, participants, cardId, initialContent = ''
           className="text-xs border border-gray-200 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-300"
           aria-label="期限を設定"
         />
+        <select
+          value={priority}
+          onChange={(e) => setPriority(e.target.value as ActionItemPriority)}
+          className="text-xs border border-gray-200 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-300"
+          aria-label="優先度を選択"
+        >
+          <option value="HIGH">高</option>
+          <option value="MEDIUM">中</option>
+          <option value="LOW">低</option>
+        </select>
         <button
           onClick={handleSubmit}
           disabled={loading || !content.trim()}

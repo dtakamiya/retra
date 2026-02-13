@@ -2,7 +2,7 @@ import { ListTodo } from 'lucide-react';
 import { useBoardStore } from '../store/boardStore';
 import { ActionItemCard } from './ActionItemCard';
 import { ActionItemForm } from './ActionItemForm';
-import type { ActionItem, Participant } from '../types';
+import type { ActionItem, ActionItemPriority, Participant } from '../types';
 
 interface Props {
   actionItems: ActionItem[];
@@ -35,9 +35,14 @@ export function ActionItemList({ actionItems, slug, participants }: Props) {
 
   const canAdd = board.phase === 'ACTION_ITEMS';
 
-  const openItems = actionItems.filter((ai) => ai.status === 'OPEN');
-  const inProgressItems = actionItems.filter((ai) => ai.status === 'IN_PROGRESS');
-  const doneItems = actionItems.filter((ai) => ai.status === 'DONE');
+  const priorityOrder: Record<ActionItemPriority, number> = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+
+  const sortByPriority = (items: ActionItem[]) =>
+    [...items].sort((a, b) => (priorityOrder[a.priority] ?? 1) - (priorityOrder[b.priority] ?? 1));
+
+  const openItems = sortByPriority(actionItems.filter((ai) => ai.status === 'OPEN'));
+  const inProgressItems = sortByPriority(actionItems.filter((ai) => ai.status === 'IN_PROGRESS'));
+  const doneItems = sortByPriority(actionItems.filter((ai) => ai.status === 'DONE'));
 
   return (
     <div className="mt-6 border-t border-gray-200 pt-4 px-4">
