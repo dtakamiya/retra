@@ -64,3 +64,6 @@ docs/codemaps/
 
 # Everything Claude Code (external tool)
 everything-claude-code/
+
+# Git worktrees
+.worktrees/
