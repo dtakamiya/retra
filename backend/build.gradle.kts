@@ -62,7 +62,9 @@ val jacocoExcludes = listOf(
     "com/retra/RetraApplicationKt*",
     "com/retra/config/**",
     "com/retra/board/gateway/db/**",
-    "com/retra/card/gateway/db/**"
+    "com/retra/card/gateway/db/**",
+    "com/retra/actionitem/gateway/db/**",
+    "com/retra/history/gateway/db/**"
 )
 
 tasks.jacocoTestReport {

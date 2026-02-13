@@ -1,5 +1,7 @@
 package com.retra.shared.gateway.websocket
 
+import com.retra.actionitem.domain.ActionItemEvent
+import com.retra.actionitem.domain.ActionItemStatus
 import com.retra.board.domain.BoardEvent
 import com.retra.card.domain.CardEvent
 import com.retra.card.domain.MemoEvent
@@ -234,6 +236,62 @@ class DomainEventBroadcasterTest {
             messagingTemplate.convertAndSend(
                 "/topic/board/test1234/reactions",
                 match<WebSocketMessage> { it.type == "REACTION_REMOVED" }
+            )
+        }
+    }
+
+    @Test
+    fun `ActionItemCreated イベントで action-items トピックに送信`() {
+        val event = ActionItemEvent.ActionItemCreated("ai-1", "test1234", "board-1")
+
+        broadcaster.handleActionItemCreated(event)
+
+        verify {
+            messagingTemplate.convertAndSend(
+                "/topic/board/test1234/action-items",
+                match<WebSocketMessage> { it.type == "ACTION_ITEM_CREATED" }
+            )
+        }
+    }
+
+    @Test
+    fun `ActionItemUpdated イベントで action-items トピックに送信`() {
+        val event = ActionItemEvent.ActionItemUpdated("ai-1", "test1234")
+
+        broadcaster.handleActionItemUpdated(event)
+
+        verify {
+            messagingTemplate.convertAndSend(
+                "/topic/board/test1234/action-items",
+                match<WebSocketMessage> { it.type == "ACTION_ITEM_UPDATED" }
+            )
+        }
+    }
+
+    @Test
+    fun `ActionItemStatusChanged イベントで action-items トピックに送信`() {
+        val event = ActionItemEvent.ActionItemStatusChanged("ai-1", "test1234", ActionItemStatus.IN_PROGRESS)
+
+        broadcaster.handleActionItemStatusChanged(event)
+
+        verify {
+            messagingTemplate.convertAndSend(
+                "/topic/board/test1234/action-items",
+                match<WebSocketMessage> { it.type == "ACTION_ITEM_STATUS_CHANGED" }
+            )
+        }
+    }
+
+    @Test
+    fun `ActionItemDeleted イベントで action-items トピックに送信`() {
+        val event = ActionItemEvent.ActionItemDeleted("ai-1", "test1234")
+
+        broadcaster.handleActionItemDeleted(event)
+
+        verify {
+            messagingTemplate.convertAndSend(
+                "/topic/board/test1234/action-items",
+                match<WebSocketMessage> { it.type == "ACTION_ITEM_DELETED" }
             )
         }
     }
