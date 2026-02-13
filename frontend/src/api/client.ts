@@ -9,8 +9,11 @@ import type {
   Phase,
   Reaction,
   RemainingVotes,
+  SnapshotDetail,
+  SnapshotSummary,
   TimerAction,
   TimerState,
+  TrendData,
   Vote,
 } from '../types';
 
@@ -192,6 +195,21 @@ export const api = {
       method: 'DELETE',
       body: JSON.stringify({ participantId }),
     });
+  },
+
+  // History / Dashboard
+  getHistory(teamName?: string): Promise<SnapshotSummary[]> {
+    const params = teamName ? `?teamName=${encodeURIComponent(teamName)}` : '';
+    return request<SnapshotSummary[]>(`/history${params}`);
+  },
+
+  getSnapshot(snapshotId: string): Promise<SnapshotDetail> {
+    return request<SnapshotDetail>(`/history/${snapshotId}`);
+  },
+
+  getTrends(teamName?: string): Promise<TrendData> {
+    const params = teamName ? `?teamName=${encodeURIComponent(teamName)}` : '';
+    return request<TrendData>(`/history/trends${params}`);
   },
 
   // Export
