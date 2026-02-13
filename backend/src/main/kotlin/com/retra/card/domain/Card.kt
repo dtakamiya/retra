@@ -44,6 +44,12 @@ open class Card(
     @Column(name = "updated_at", nullable = false)
     open var updatedAt: String = Instant.now().toString(),
 
+    @Column(name = "is_discussed", nullable = false)
+    open var isDiscussed: Boolean = false,
+
+    @Column(name = "discussion_order", nullable = false)
+    open var discussionOrder: Int = 0,
+
     @OneToMany(mappedBy = "card", cascade = [CascadeType.ALL], orphanRemoval = true)
     open var votes: MutableList<Vote> = mutableListOf(),
 
@@ -97,6 +103,26 @@ open class Card(
                 targetColumnId = targetColumn.id,
                 sortOrder = newSortOrder
             )
+        )
+    }
+
+    fun markAsDiscussed(): CardEvent.CardDiscussionMarked {
+        this.isDiscussed = true
+        this.updatedAt = Instant.now().toString()
+        return CardEvent.CardDiscussionMarked(
+            boardSlug = board!!.slug,
+            cardId = id,
+            isDiscussed = true
+        )
+    }
+
+    fun unmarkAsDiscussed(): CardEvent.CardDiscussionMarked {
+        this.isDiscussed = false
+        this.updatedAt = Instant.now().toString()
+        return CardEvent.CardDiscussionMarked(
+            boardSlug = board!!.slug,
+            cardId = id,
+            isDiscussed = false
         )
     }
 

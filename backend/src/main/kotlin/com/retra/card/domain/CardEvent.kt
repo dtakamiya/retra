@@ -43,4 +43,10 @@ sealed class CardEvent : DomainEvent {
         val targetColumnId: String,
         val sortOrder: Int
     ) : CardEvent()
+
+    data class CardDiscussionMarked(
+        val boardSlug: String,
+        val cardId: String,
+        val isDiscussed: Boolean
+    ) : CardEvent()
 }

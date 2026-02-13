@@ -38,6 +38,8 @@ enum class Phase {
 
     fun canCreateActionItem(): Boolean = this == ACTION_ITEMS
 
+    fun canMarkDiscussed(): Boolean = this == DISCUSSION || this == ACTION_ITEMS
+
     companion object {
         private val validTransitions = mapOf(
             WRITING to VOTING,
