@@ -41,15 +41,16 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export const api = {
   // Board
-  createBoard(title: string, framework: Framework, maxVotesPerPerson: number = 5): Promise<Board> {
+  createBoard(title: string, framework: Framework, maxVotesPerPerson: number = 5, isAnonymous: boolean = false): Promise<Board> {
     return request('/boards', {
       method: 'POST',
-      body: JSON.stringify({ title, framework, maxVotesPerPerson }),
+      body: JSON.stringify({ title, framework, maxVotesPerPerson, isAnonymous }),
     });
   },
 
-  getBoard(slug: string): Promise<Board> {
-    return request(`/boards/${slug}`);
+  getBoard(slug: string, participantId?: string): Promise<Board> {
+    const params = participantId ? `?participantId=${encodeURIComponent(participantId)}` : '';
+    return request(`/boards/${slug}${params}`);
   },
 
   changePhase(slug: string, phase: Phase, participantId: string): Promise<Board> {

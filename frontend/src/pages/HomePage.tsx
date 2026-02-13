@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { LayoutGrid, Users, BarChart3 } from 'lucide-react';
+import { LayoutGrid, Users, BarChart3, EyeOff } from 'lucide-react';
 import { api } from '../api/client';
 import { useToastStore } from '../store/toastStore';
 import type { Framework } from '../types';
@@ -20,6 +20,7 @@ export function HomePage() {
   const [framework, setFramework] = useState<Framework>('KPT');
   const [maxVotes, setMaxVotes] = useState(5);
   const [joinSlug, setJoinSlug] = useState('');
+  const [isAnonymous, setIsAnonymous] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -29,7 +30,7 @@ export function HomePage() {
     setLoading(true);
     setError('');
     try {
-      const board = await api.createBoard(title.trim(), framework, maxVotes);
+      const board = await api.createBoard(title.trim(), framework, maxVotes, isAnonymous);
       addToast('success', 'ボードを作成しました');
       navigate(`/board/${board.slug}`);
     } catch (err) {
@@ -147,6 +148,32 @@ export function HomePage() {
                   max={20}
                   className="w-24 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
                 />
+              </div>
+
+              <div>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <div
+                    role="switch"
+                    aria-checked={isAnonymous}
+                    tabIndex={0}
+                    onClick={() => setIsAnonymous(!isAnonymous)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsAnonymous(!isAnonymous); } }}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${
+                      isAnonymous ? 'bg-indigo-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                        isAnonymous ? 'translate-x-5' : ''
+                      }`}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <EyeOff size={16} className="text-gray-500" />
+                    <span className="text-sm font-medium text-gray-700">匿名モード</span>
+                  </div>
+                </label>
+                <p className="text-xs text-gray-500 mt-1 ml-14">カードの作成者名を非表示にします（作成後は変更不可）</p>
               </div>
 
               <button

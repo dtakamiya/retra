@@ -9,6 +9,7 @@ export interface Board {
   framework: Framework;
   phase: Phase;
   maxVotesPerPerson: number;
+  isAnonymous: boolean;
   columns: Column[];
   participants: Participant[];
   createdAt: string;

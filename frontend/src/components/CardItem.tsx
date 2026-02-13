@@ -267,9 +267,11 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
             </span>
           ) : null}
 
-          {card.authorNickname && (
+          {card.authorNickname ? (
             <span className="text-xs text-gray-400">{card.authorNickname}</span>
-          )}
+          ) : board.isAnonymous ? (
+            <span className="text-xs text-gray-400 italic">匿名</span>
+          ) : null}
         </div>
 
         {/* Edit/Delete buttons */}

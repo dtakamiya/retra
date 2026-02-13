@@ -1,4 +1,4 @@
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { useBoardStore } from '../store/boardStore';
 import { ExportMenu } from './ExportMenu';
@@ -25,6 +25,11 @@ export function BoardHeader() {
           <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded">
             {board.framework.replace(/_/g, ' ')}
           </span>
+          {board.isAnonymous && (
+            <span className="flex items-center gap-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+              <EyeOff size={12} /> 匿名モード
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-3">

@@ -74,6 +74,7 @@ export function createBoard(overrides: Partial<Board> = {}): Board {
     framework: 'KPT',
     phase: 'WRITING',
     maxVotesPerPerson: 5,
+    isAnonymous: false,
     columns: [
       createColumn({ id: 'col-1', name: 'Keep', sortOrder: 0, color: '#22c55e' }),
       createColumn({ id: 'col-2', name: 'Problem', sortOrder: 1, color: '#ef4444', cards: [] }),

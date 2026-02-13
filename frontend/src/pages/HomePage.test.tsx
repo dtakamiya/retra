@@ -98,7 +98,7 @@ describe('HomePage', () => {
     const submitButton = submitButtons[submitButtons.length - 1]
     await user.click(submitButton)
 
-    expect(api.createBoard).toHaveBeenCalledWith('テストボード', 'KPT', 5)
+    expect(api.createBoard).toHaveBeenCalledWith('テストボード', 'KPT', 5, false)
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/board/new-slug')
     })
@@ -146,7 +146,7 @@ describe('HomePage', () => {
     const submitButtons = screen.getAllByText('ボードを作成')
     await user.click(submitButtons[submitButtons.length - 1])
 
-    expect(api.createBoard).toHaveBeenCalledWith('テスト', 'FUN_DONE_LEARN', 3)
+    expect(api.createBoard).toHaveBeenCalledWith('テスト', 'FUN_DONE_LEARN', 3, false)
   })
 
   it('create form: shows error when api.createBoard rejects', async () => {
