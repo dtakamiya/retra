@@ -44,7 +44,14 @@ export function ColumnView({ column }: Props) {
   const sortedCards = useMemo(() => {
     const cards = [...column.cards];
     if (isPostVoting) {
-      cards.sort((a, b) => b.voteCount - a.voteCount || a.sortOrder - b.sortOrder);
+      cards.sort((a, b) => {
+        // 未議論カードを先に表示
+        const aDiscussed = a.isDiscussed ? 1 : 0;
+        const bDiscussed = b.isDiscussed ? 1 : 0;
+        if (aDiscussed !== bDiscussed) return aDiscussed - bDiscussed;
+        // 投票数の多い順
+        return b.voteCount - a.voteCount || a.sortOrder - b.sortOrder;
+      });
     } else {
       cards.sort((a, b) => a.sortOrder - b.sortOrder);
     }

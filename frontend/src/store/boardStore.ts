@@ -6,6 +6,7 @@ import type {
   Board,
   Card,
   CardDeletedPayload,
+  CardDiscussionMarkedPayload,
   CardMovedPayload,
   Memo,
   MemoDeletedPayload,
@@ -40,6 +41,7 @@ interface BoardState {
   handleCardUpdated: (card: Card) => void;
   handleCardDeleted: (payload: CardDeletedPayload) => void;
   handleCardMoved: (payload: CardMovedPayload) => void;
+  handleCardDiscussionMarked: (payload: CardDiscussionMarkedPayload) => void;
   handleVoteAdded: (vote: Vote) => void;
   handleVoteRemoved: (payload: VoteRemovedPayload) => void;
   handlePhaseChanged: (phase: Phase) => void;
@@ -80,6 +82,8 @@ export const useBoardStore = create<BoardState>((set) => ({
         votedParticipantIds: card.votedParticipantIds ?? [],
         memos: card.memos ?? [],
         reactions: card.reactions ?? [],
+        isDiscussed: card.isDiscussed ?? false,
+        discussionOrder: card.discussionOrder ?? 0,
       };
       const columns = state.board.columns.map((col) => {
         if (col.id === cardWithDefaults.columnId) {
@@ -142,6 +146,18 @@ export const useBoardStore = create<BoardState>((set) => ({
         return col;
       });
 
+      return { board: { ...state.board, columns } };
+    }),
+
+  handleCardDiscussionMarked: (payload) =>
+    set((state) => {
+      if (!state.board) return state;
+      const columns = state.board.columns.map((col) => ({
+        ...col,
+        cards: col.cards.map((c) =>
+          c.id === payload.cardId ? { ...c, isDiscussed: payload.isDiscussed } : c
+        ),
+      }));
       return { board: { ...state.board, columns } };
     }),
 

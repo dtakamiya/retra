@@ -54,6 +54,8 @@ export interface Card {
   updatedAt: string;
   memos: Memo[];
   reactions: Reaction[];
+  isDiscussed: boolean;
+  discussionOrder: number;
 }
 
 export interface Participant {
@@ -116,6 +118,11 @@ export interface CardMovedPayload {
 export interface MemoDeletedPayload {
   cardId: string;
   memoId: string;
+}
+
+export interface CardDiscussionMarkedPayload {
+  cardId: string;
+  isDiscussed: boolean;
 }
 
 export interface ReactionRemovedPayload {

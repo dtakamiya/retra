@@ -164,6 +164,14 @@ export const api = {
     });
   },
 
+  // Discussion mark
+  markCardDiscussed(slug: string, cardId: string, participantId: string, isDiscussed: boolean): Promise<Card> {
+    return request<Card>(`/boards/${slug}/cards/${cardId}/discussed`, {
+      method: 'PATCH',
+      body: JSON.stringify({ participantId, isDiscussed }),
+    });
+  },
+
   // Action Items
   getActionItems(slug: string): Promise<ActionItem[]> {
     return request<ActionItem[]>(`/boards/${slug}/action-items`);

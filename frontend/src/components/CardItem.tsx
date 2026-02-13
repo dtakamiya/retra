@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ThumbsUp, Pencil, Trash2, GripVertical, MessageSquare, ListTodo } from 'lucide-react';
+import { ThumbsUp, Pencil, Trash2, GripVertical, MessageSquare, ListTodo, CheckCircle } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { api } from '../api/client';
@@ -128,6 +128,15 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
     }
   };
 
+  const handleMarkDiscussed = async () => {
+    if (!board || !participant) return;
+    try {
+      await api.markCardDiscussed(board.slug, card.id, participant.id, !card.isDiscussed);
+    } catch {
+      addToast('error', '議論済みマークの変更に失敗しました');
+    }
+  };
+
   const handleConvertToActionItem = async () => {
     if (!board || !participant) return;
     try {
@@ -189,7 +198,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
       {...safeAttributes}
       className={`bg-white rounded-lg shadow-sm border border-gray-200 p-3 group ${
         isOverlay ? 'shadow-lg ring-2 ring-indigo-300' : ''
-      }`}
+      } ${card.isDiscussed ? 'opacity-50' : ''}`}
     >
       <div className="flex gap-2">
         {isDndEnabled && (
@@ -199,6 +208,20 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
             aria-label="ドラッグして並べ替え"
           >
             <GripVertical size={14} />
+          </button>
+        )}
+        {(phase === 'DISCUSSION' || phase === 'ACTION_ITEMS') && (
+          <button
+            onClick={isFacilitator ? handleMarkDiscussed : undefined}
+            className={`flex-shrink-0 mt-0.5 ${
+              card.isDiscussed
+                ? 'text-green-500'
+                : 'text-gray-300'
+            } ${isFacilitator ? 'cursor-pointer hover:text-green-400' : 'cursor-default'}`}
+            aria-label={card.isDiscussed ? '議論済みを解除' : '議論済みにする'}
+            disabled={!isFacilitator}
+          >
+            <CheckCircle size={16} />
           </button>
         )}
         <p className="text-sm text-gray-800 whitespace-pre-wrap break-words flex-1">{card.content}</p>
