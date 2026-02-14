@@ -126,7 +126,7 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 | Package | Purpose |
 |---------|---------|
 | `history/domain/` | `BoardSnapshot`, `BoardSnapshotRepository` |
-| `history/usecase/` | `CreateSnapshotUseCase`, `GetSnapshotUseCase`, `GetTeamHistoryUseCase`, DTOs (`SnapshotDtos`, `TrendDtos`), Mapper (`SnapshotMapper`) |
+| `history/usecase/` | `CreateSnapshotUseCase`, `GetSnapshotUseCase`, `GetTeamHistoryUseCase`, DTOs (`SnapshotDtos` incl. `TrendPoint` with engagement metrics: `cardsPerParticipant`, `votesPerParticipant`, `votesPerCard`, `actionItemRate`), Mapper (`SnapshotMapper` with `safeDiv` helper) |
 | `history/gateway/controller/` | `HistoryController` (REST) |
 | `history/gateway/db/` | JPA repository implementations (`JpaBoardSnapshotRepository`) + Spring Data interfaces (`SpringDataBoardSnapshotRepository`) |
 
