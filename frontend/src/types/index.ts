@@ -161,6 +161,10 @@ export interface TrendPoint {
   actionItemsTotal: number;
   actionItemsDone: number;
   actionItemCompletionRate: number;
+  cardsPerParticipant: number;
+  votesPerParticipant: number;
+  votesPerCard: number;
+  actionItemRate: number;
 }
 
 export interface TrendData {

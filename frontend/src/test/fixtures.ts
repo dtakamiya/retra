@@ -155,6 +155,10 @@ export function createTrendPoint(overrides: Partial<TrendPoint> = {}): TrendPoin
     actionItemsTotal: 4,
     actionItemsDone: 2,
     actionItemCompletionRate: 50,
+    cardsPerParticipant: 2.4,
+    votesPerParticipant: 6.0,
+    votesPerCard: 2.5,
+    actionItemRate: 33.33,
     ...overrides,
   }
 }
@@ -162,8 +166,8 @@ export function createTrendPoint(overrides: Partial<TrendPoint> = {}): TrendPoin
 export function createTrendData(overrides: Partial<TrendData> = {}): TrendData {
   return {
     snapshots: [
-      createTrendPoint({ closedAt: '2024-03-01T10:00:00Z', totalCards: 10, actionItemCompletionRate: 40 }),
-      createTrendPoint({ closedAt: '2024-03-15T10:00:00Z', totalCards: 12, actionItemCompletionRate: 50 }),
+      createTrendPoint({ closedAt: '2024-03-01T10:00:00Z', totalCards: 10, actionItemCompletionRate: 40, cardsPerParticipant: 2.0, votesPerParticipant: 6.0, votesPerCard: 3.0, actionItemRate: 40 }),
+      createTrendPoint({ closedAt: '2024-03-15T10:00:00Z', totalCards: 12, actionItemCompletionRate: 50, cardsPerParticipant: 2.4, votesPerParticipant: 6.0, votesPerCard: 2.5, actionItemRate: 33.33 }),
     ],
     ...overrides,
   }
