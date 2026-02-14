@@ -77,7 +77,7 @@ export function TeamDashboardPage() {
             {/* Trend Chart */}
             {trends && trends.snapshots.length > 1 && (
               <div className="bg-white rounded-lg shadow p-6 mb-8">
-                <h2 className="text-lg font-semibold mb-4">トレンド</h2>
+                <h2 className="text-lg font-semibold mb-4">トレンド & エンゲージメント</h2>
                 <TrendChart data={trends.snapshots} />
               </div>
             )}

@@ -87,7 +87,7 @@ describe('TeamDashboardPage', () => {
     await waitFor(() => {
       expect(screen.getByTestId('trend-chart')).toBeInTheDocument()
     })
-    expect(screen.getByText('トレンド')).toBeInTheDocument()
+    expect(screen.getByText('トレンド & エンゲージメント')).toBeInTheDocument()
   })
 
   it('does not display trend chart when only 1 snapshot', async () => {
