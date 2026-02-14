@@ -20,6 +20,7 @@ export function HomePage() {
   const [framework, setFramework] = useState<Framework>('KPT');
   const [maxVotes, setMaxVotes] = useState(5);
   const [joinSlug, setJoinSlug] = useState('');
+  const [teamName, setTeamName] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -30,7 +31,7 @@ export function HomePage() {
     setLoading(true);
     setError('');
     try {
-      const board = await api.createBoard(title.trim(), framework, maxVotes, isAnonymous);
+      const board = await api.createBoard(title.trim(), framework, maxVotes, isAnonymous, teamName.trim() || undefined);
       addToast('success', 'ボードを作成しました');
       navigate(`/board/${board.slug}`);
     } catch (err) {
@@ -148,6 +149,21 @@ export function HomePage() {
                   max={20}
                   className="w-24 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
                 />
+              </div>
+
+              <div>
+                <label htmlFor="teamName" className="block text-sm font-medium text-gray-700 mb-2">
+                  チーム名（オプション）
+                </label>
+                <input
+                  id="teamName"
+                  type="text"
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                  placeholder="チーム Alpha"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                />
+                <p className="text-xs text-gray-500 mt-1">同じチーム名のレトロから前回のアクションアイテムを引き継ぎます</p>
               </div>
 
               <div>

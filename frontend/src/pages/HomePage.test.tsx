@@ -98,7 +98,7 @@ describe('HomePage', () => {
     const submitButton = submitButtons[submitButtons.length - 1]
     await user.click(submitButton)
 
-    expect(api.createBoard).toHaveBeenCalledWith('テストボード', 'KPT', 5, false)
+    expect(api.createBoard).toHaveBeenCalledWith('テストボード', 'KPT', 5, false, undefined)
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/board/new-slug')
     })
@@ -146,7 +146,37 @@ describe('HomePage', () => {
     const submitButtons = screen.getAllByText('ボードを作成')
     await user.click(submitButtons[submitButtons.length - 1])
 
-    expect(api.createBoard).toHaveBeenCalledWith('テスト', 'FUN_DONE_LEARN', 3, false)
+    expect(api.createBoard).toHaveBeenCalledWith('テスト', 'FUN_DONE_LEARN', 3, false, undefined)
+  })
+
+  it('チーム名入力欄を表示する', () => {
+    render(<HomePage />)
+    expect(screen.getByLabelText('チーム名（オプション）')).toBeInTheDocument()
+  })
+
+  it('チーム名を入力してボードを作成するとteamNameが渡される', async () => {
+    const user = userEvent.setup()
+    vi.mocked(api.createBoard).mockResolvedValue(createBoard({ slug: 'team-slug' }))
+
+    render(<HomePage />)
+
+    // Fill in the title
+    const titleInput = screen.getByPlaceholderText('スプリント42 ふりかえり')
+    await user.type(titleInput, 'テストボード')
+
+    // Fill in the team name
+    const teamNameInput = screen.getByLabelText('チーム名（オプション）')
+    await user.type(teamNameInput, 'Team Alpha')
+
+    // Submit
+    const submitButtons = screen.getAllByText('ボードを作成')
+    const submitButton = submitButtons[submitButtons.length - 1]
+    await user.click(submitButton)
+
+    expect(api.createBoard).toHaveBeenCalledWith('テストボード', 'KPT', 5, false, 'Team Alpha')
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/board/team-slug')
+    })
   })
 
   it('create form: shows error when api.createBoard rejects', async () => {
