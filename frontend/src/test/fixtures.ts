@@ -38,6 +38,8 @@ export function createCard(overrides: Partial<Card> = {}): Card {
     updatedAt: '2024-01-01T00:00:00Z',
     memos: [],
     reactions: [],
+    isDiscussed: false,
+    discussionOrder: 0,
     ...overrides,
   }
 }
@@ -72,6 +74,7 @@ export function createBoard(overrides: Partial<Board> = {}): Board {
     framework: 'KPT',
     phase: 'WRITING',
     maxVotesPerPerson: 5,
+    isAnonymous: false,
     columns: [
       createColumn({ id: 'col-1', name: 'Keep', sortOrder: 0, color: '#22c55e' }),
       createColumn({ id: 'col-2', name: 'Problem', sortOrder: 1, color: '#ef4444', cards: [] }),
@@ -175,6 +178,7 @@ export function createActionItem(overrides: Partial<ActionItem> = {}): ActionIte
     assigneeNickname: null,
     dueDate: null,
     status: 'OPEN',
+    priority: 'MEDIUM',
     sortOrder: 0,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',

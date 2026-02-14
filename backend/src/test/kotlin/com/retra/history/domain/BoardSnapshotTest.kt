@@ -89,4 +89,37 @@ class BoardSnapshotTest {
 
         assertNotEquals(snapshot1.id, snapshot2.id)
     }
+
+    @Test
+    fun `properties can be updated`() {
+        val snapshot = BoardSnapshot()
+
+        snapshot.boardId = "new-board"
+        snapshot.teamName = "New Team"
+        snapshot.framework = "FDL"
+        snapshot.closedAt = "2025-06-01T00:00:00Z"
+        snapshot.totalCards = 20
+        snapshot.totalVotes = 50
+        snapshot.totalParticipants = 10
+        snapshot.actionItemsTotal = 5
+        snapshot.actionItemsDone = 3
+        snapshot.snapshotData = """{"columns":[{"name":"Keep"}]}"""
+
+        assertEquals("new-board", snapshot.boardId)
+        assertEquals("New Team", snapshot.teamName)
+        assertEquals("FDL", snapshot.framework)
+        assertEquals("2025-06-01T00:00:00Z", snapshot.closedAt)
+        assertEquals(20, snapshot.totalCards)
+        assertEquals(50, snapshot.totalVotes)
+        assertEquals(10, snapshot.totalParticipants)
+        assertEquals(5, snapshot.actionItemsTotal)
+        assertEquals(3, snapshot.actionItemsDone)
+        assertEquals("""{"columns":[{"name":"Keep"}]}""", snapshot.snapshotData)
+    }
+
+    @Test
+    fun `constructor with custom id preserves it`() {
+        val snapshot = BoardSnapshot(id = "custom-id")
+        assertEquals("custom-id", snapshot.id)
+    }
 }

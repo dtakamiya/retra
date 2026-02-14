@@ -5,14 +5,16 @@ data class CreateActionItemRequest(
     val participantId: String,
     val cardId: String? = null,
     val assigneeId: String? = null,
-    val dueDate: String? = null
+    val dueDate: String? = null,
+    val priority: String = "MEDIUM"
 )
 
 data class UpdateActionItemRequest(
     val content: String,
     val participantId: String,
     val assigneeId: String? = null,
-    val dueDate: String? = null
+    val dueDate: String? = null,
+    val priority: String? = null
 )
 
 data class UpdateActionItemStatusRequest(
@@ -33,6 +35,7 @@ data class ActionItemResponse(
     val assigneeNickname: String?,
     val dueDate: String?,
     val status: String,
+    val priority: String,
     val sortOrder: Int,
     val createdAt: String,
     val updatedAt: String

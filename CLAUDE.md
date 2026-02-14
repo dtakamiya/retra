@@ -11,7 +11,7 @@ Retra is a real-time retrospective board for Scrum teams. It supports multiple f
 
 - **Backend:** Spring Boot 3.4.1 + Kotlin 2.0.21 (`backend/`)
 - **Frontend:** React 19.2 + TypeScript 5.9 + Vite 7 + Zustand 5 + TailwindCSS v4 (`frontend/`)
-- **Database:** SQLite with Flyway migrations (V1-V10)
+- **Database:** SQLite with Flyway migrations (V1-V11)
 - **CI/CD:** なし（GitHub Actions、Docker等の設定は未導入）
 - **Realtime:** WebSocket via STOMP protocol (`@stomp/stompjs`)
 - **Drag & Drop:** @dnd-kit (core, sortable, utilities)
@@ -167,6 +167,7 @@ All REST endpoints are under `/api/v1`:
 - `PUT /boards/{slug}/cards/{id}` - Update card (author only)
 - `DELETE /boards/{slug}/cards/{id}` - Delete card (author or facilitator)
 - `PATCH /boards/{slug}/cards/{id}/move` - Move card between columns (drag & drop)
+- `PATCH /boards/{slug}/cards/{id}/discussed` - Toggle discussed mark (facilitator only, DISCUSSION/ACTION_ITEMS phase)
 - `POST /boards/{slug}/votes` - Add vote (VOTING phase only)
 - `DELETE /boards/{slug}/votes` - Remove vote (VOTING phase only)
 - `GET /boards/{slug}/votes/remaining?participantId=` - Get remaining votes
@@ -190,7 +191,7 @@ All REST endpoints are under `/api/v1`:
 ### WebSocket Events
 
 STOMP topics under `/topic/board/{slug}/`:
-- `cards` - `CARD_CREATED`, `CARD_UPDATED`, `CARD_MOVED`, `CARD_DELETED`
+- `cards` - `CARD_CREATED`, `CARD_UPDATED`, `CARD_MOVED`, `CARD_DELETED`, `CARD_DISCUSSION_MARKED`
 - `votes` - `VOTE_ADDED`, `VOTE_REMOVED`
 - `reactions` - `REACTION_ADDED`, `REACTION_REMOVED`
 - `memos` - `MEMO_CREATED`, `MEMO_UPDATED`, `MEMO_DELETED`
@@ -205,7 +206,9 @@ Business rules are enforced in the usecase layer:
 - Card move: drag & drop between columns with sort order
 - Votes: add/remove only in VOTING phase; max votes per person enforced
 - Memos: create/edit/delete in DISCUSSION and ACTION_ITEMS phases
-- Action Items: create/edit/delete only in ACTION_ITEMS phase; view in CLOSED phase
+- Action Items: create/edit/delete only in ACTION_ITEMS phase; view in CLOSED phase; priority (HIGH/MEDIUM/LOW)
+- Discussion mark: facilitator only, toggle in DISCUSSION/ACTION_ITEMS phases; discussed cards grayed out and sorted to bottom
+- Anonymous mode: set at board creation, cannot be changed; hides author names from other participants (self visible)
 - Phase transitions: facilitator only, must follow sequential order
 - Timer: facilitator only
 - Auto-snapshot: created automatically when board transitions to CLOSED phase
@@ -254,7 +257,7 @@ Business rules are enforced in the usecase layer:
 - **SQLite single-writer:** HikariCP `maximum-pool-size=1`, WAL mode, `busy_timeout=5000ms`, `foreign_keys=ON`
 - **Kotlin JPA entities** use `open class` (not data class) due to `allOpen` plugin with `@Entity`, `@MappedSuperclass`, `@Embeddable` annotations
 - **TailwindCSS v4:** Uses `@tailwindcss/vite` plugin with `@import "tailwindcss"` syntax. No `tailwind.config.js`.
-- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V10, do not modify existing migrations)
+- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V11, do not modify existing migrations)
 - **SPA fallback:** `SpaConfig.kt` serves `index.html` for non-API, non-static routes in production
 - **Vite proxy:** Dev server proxies `/api` to `http://localhost:8080` and `/ws` to `ws://localhost:8080`
 - **TypeScript strict mode:** `noUnusedLocals`, `noUnusedParameters`, `erasableSyntaxOnly`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports` all enabled

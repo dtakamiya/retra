@@ -9,6 +9,7 @@ export interface Board {
   framework: Framework;
   phase: Phase;
   maxVotesPerPerson: number;
+  isAnonymous: boolean;
   columns: Column[];
   participants: Participant[];
   createdAt: string;
@@ -54,6 +55,8 @@ export interface Card {
   updatedAt: string;
   memos: Memo[];
   reactions: Reaction[];
+  isDiscussed: boolean;
+  discussionOrder: number;
 }
 
 export interface Participant {
@@ -118,6 +121,12 @@ export interface MemoDeletedPayload {
   memoId: string;
 }
 
+export interface CardDiscussionMarkedPayload {
+  cardId: string;
+  isDiscussed: boolean;
+  discussionOrder?: number;
+}
+
 export interface ReactionRemovedPayload {
   cardId: string;
   participantId: string;
@@ -159,6 +168,8 @@ export interface TrendData {
 
 export type ActionItemStatus = 'OPEN' | 'IN_PROGRESS' | 'DONE';
 
+export type ActionItemPriority = 'HIGH' | 'MEDIUM' | 'LOW';
+
 export interface ActionItem {
   id: string;
   boardId: string;
@@ -168,6 +179,7 @@ export interface ActionItem {
   assigneeNickname: string | null;
   dueDate: string | null;
   status: ActionItemStatus;
+  priority: ActionItemPriority;
   sortOrder: number;
   createdAt: string;
   updatedAt: string;

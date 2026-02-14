@@ -41,15 +41,16 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export const api = {
   // Board
-  createBoard(title: string, framework: Framework, maxVotesPerPerson: number = 5): Promise<Board> {
+  createBoard(title: string, framework: Framework, maxVotesPerPerson: number = 5, isAnonymous: boolean = false): Promise<Board> {
     return request('/boards', {
       method: 'POST',
-      body: JSON.stringify({ title, framework, maxVotesPerPerson }),
+      body: JSON.stringify({ title, framework, maxVotesPerPerson, isAnonymous }),
     });
   },
 
-  getBoard(slug: string): Promise<Board> {
-    return request(`/boards/${slug}`);
+  getBoard(slug: string, participantId?: string): Promise<Board> {
+    const params = participantId ? `?participantId=${encodeURIComponent(participantId)}` : '';
+    return request(`/boards/${slug}${params}`);
   },
 
   changePhase(slug: string, phase: Phase, participantId: string): Promise<Board> {
@@ -164,22 +165,30 @@ export const api = {
     });
   },
 
+  // Discussion mark
+  markCardDiscussed(slug: string, cardId: string, participantId: string, isDiscussed: boolean): Promise<Card> {
+    return request<Card>(`/boards/${slug}/cards/${cardId}/discussed`, {
+      method: 'PATCH',
+      body: JSON.stringify({ participantId, isDiscussed }),
+    });
+  },
+
   // Action Items
   getActionItems(slug: string): Promise<ActionItem[]> {
     return request<ActionItem[]>(`/boards/${slug}/action-items`);
   },
 
-  createActionItem(slug: string, content: string, participantId: string, cardId?: string, assigneeId?: string, dueDate?: string): Promise<ActionItem> {
+  createActionItem(slug: string, content: string, participantId: string, cardId?: string, assigneeId?: string, dueDate?: string, priority?: string): Promise<ActionItem> {
     return request<ActionItem>(`/boards/${slug}/action-items`, {
       method: 'POST',
-      body: JSON.stringify({ content, participantId, cardId, assigneeId, dueDate }),
+      body: JSON.stringify({ content, participantId, cardId, assigneeId, dueDate, priority }),
     });
   },
 
-  updateActionItem(slug: string, id: string, content: string, participantId: string, assigneeId?: string, dueDate?: string): Promise<ActionItem> {
+  updateActionItem(slug: string, id: string, content: string, participantId: string, assigneeId?: string, dueDate?: string, priority?: string): Promise<ActionItem> {
     return request<ActionItem>(`/boards/${slug}/action-items/${id}`, {
       method: 'PUT',
-      body: JSON.stringify({ content, participantId, assigneeId, dueDate }),
+      body: JSON.stringify({ content, participantId, assigneeId, dueDate, priority }),
     });
   },
 

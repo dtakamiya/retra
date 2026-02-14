@@ -7,6 +7,7 @@ import com.retra.shared.domain.NotFoundException
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class CardTest {
@@ -98,5 +99,104 @@ class CardTest {
         assertEquals("col-2", card.column?.id)
         assertEquals(0, card.sortOrder)
         assertTrue(card.getDomainEvents().isNotEmpty())
+    }
+
+    @Test
+    fun `clearDomainEvents でイベントがクリアされる`() {
+        val board = TestFixtures.board()
+        val column = TestFixtures.boardColumn(board = board)
+        val author = TestFixtures.participant(id = "p-1")
+        val card = Card.create(board, column, "content", author, 0)
+
+        assertTrue(card.getDomainEvents().isNotEmpty())
+        card.clearDomainEvents()
+        assertTrue(card.getDomainEvents().isEmpty())
+    }
+
+    @Test
+    fun `updateContent でboardやcolumnがnullでもイベントが生成される`() {
+        val participant = TestFixtures.participant(id = "p-1")
+        val card = TestFixtures.card(
+            board = null,
+            column = null,
+            participant = participant
+        )
+
+        card.updateContent("Updated", "p-1")
+
+        val event = card.getDomainEvents().first() as CardEvent.CardUpdated
+        assertEquals("", event.slug)
+        assertEquals("", event.columnId)
+        assertEquals(false, event.isAnonymous)
+    }
+
+    @Test
+    fun `moveTo でcolumnがnullでもイベントのsourceColumnIdが空文字`() {
+        val col2 = TestFixtures.boardColumn(id = "col-2")
+        val card = TestFixtures.card(column = null)
+
+        card.moveTo(col2, 1)
+
+        val event = card.getDomainEvents().first() as CardEvent.CardMoved
+        assertEquals("", event.sourceColumnId)
+        assertEquals("col-2", event.targetColumnId)
+    }
+
+    @Test
+    fun `markAsDiscussed でboardがnullの場合はIllegalStateException`() {
+        val card = TestFixtures.card(board = null)
+
+        assertFailsWith<IllegalStateException> {
+            card.markAsDiscussed()
+        }
+    }
+
+    @Test
+    fun `unmarkAsDiscussed でboardがnullの場合はIllegalStateException`() {
+        val card = TestFixtures.card(board = null)
+
+        assertFailsWith<IllegalStateException> {
+            card.unmarkAsDiscussed()
+        }
+    }
+
+    @Test
+    fun `デフォルトコンストラクタでプロパティが初期化される`() {
+        val card = Card()
+        assertNotNull(card.id)
+        assertEquals("", card.content)
+        assertEquals(0, card.sortOrder)
+        assertEquals(false, card.isDiscussed)
+        assertEquals(0, card.discussionOrder)
+        assertTrue(card.votes.isEmpty())
+        assertTrue(card.memos.isEmpty())
+        assertTrue(card.reactions.isEmpty())
+    }
+
+    @Test
+    fun `create で匿名ボードの場合はisAnonymousがtrueのイベント`() {
+        val board = TestFixtures.board(isAnonymous = true)
+        val column = TestFixtures.boardColumn(board = board)
+        val author = TestFixtures.participant(id = "p-1", nickname = "Alice")
+
+        val card = Card.create(board, column, "content", author, 0)
+
+        val event = card.getDomainEvents().first() as CardEvent.CardCreated
+        assertTrue(event.isAnonymous)
+    }
+
+    @Test
+    fun `updateContent で投票数がイベントに含まれる`() {
+        val board = TestFixtures.board()
+        val column = TestFixtures.boardColumn(board = board)
+        val participant = TestFixtures.participant(id = "p-1")
+        val card = TestFixtures.card(board = board, column = column, participant = participant)
+        val voter = TestFixtures.participant(id = "v-1")
+        card.addVote(voter)
+
+        card.updateContent("Updated", "p-1")
+
+        val event = card.getDomainEvents().first() as CardEvent.CardUpdated
+        assertEquals(1, event.voteCount)
     }
 }

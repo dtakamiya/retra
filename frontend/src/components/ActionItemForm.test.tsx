@@ -92,7 +92,8 @@ describe('ActionItemForm', () => {
       'p-1',
       undefined,
       undefined,
-      undefined
+      undefined,
+      'MEDIUM'
     )
     expect(textarea).toHaveValue('')
   })
@@ -120,7 +121,8 @@ describe('ActionItemForm', () => {
       'p-1',
       undefined,
       'p-2',
-      '2024-03-15'
+      '2024-03-15',
+      'MEDIUM'
     )
   })
 
@@ -143,7 +145,8 @@ describe('ActionItemForm', () => {
       'p-1',
       undefined,
       undefined,
-      undefined
+      undefined,
+      'MEDIUM'
     )
   })
 
@@ -166,7 +169,8 @@ describe('ActionItemForm', () => {
       'p-1',
       'card-1',
       undefined,
-      undefined
+      undefined,
+      'MEDIUM'
     )
   })
 

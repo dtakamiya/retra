@@ -7,6 +7,8 @@ import java.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class MemoTest {
@@ -123,5 +125,87 @@ class MemoTest {
         )
 
         assertFalse(memo.canBeDeletedBy(other))
+    }
+
+    @Test
+    fun `clearDomainEvents でイベントがクリアされる`() {
+        val board = TestFixtures.board()
+        val column = TestFixtures.boardColumn(board = board)
+        val card = TestFixtures.card(board = board, column = column)
+        val author = TestFixtures.participant(id = "p-1", nickname = "Alice")
+
+        val memo = Memo.create(card, board, "Test memo", author)
+        assertTrue(memo.getDomainEvents().isNotEmpty())
+
+        memo.clearDomainEvents()
+        assertTrue(memo.getDomainEvents().isEmpty())
+    }
+
+    @Test
+    fun `デフォルトコンストラクタでプロパティが初期化される`() {
+        val memo = Memo()
+        assertNotNull(memo.id)
+        assertEquals("", memo.content)
+        assertNull(memo.authorNickname)
+        assertNull(memo.participant)
+        assertNotNull(memo.createdAt)
+        assertNotNull(memo.updatedAt)
+    }
+
+    @Test
+    fun `updateContent でboardやcardがnullでもイベントが生成される`() {
+        val participant = TestFixtures.participant(id = "p-1")
+        val memo = Memo(
+            id = "memo-1",
+            card = null,
+            board = null,
+            content = "Original",
+            authorNickname = "Alice",
+            participant = participant,
+            createdAt = Instant.now().toString(),
+            updatedAt = Instant.now().toString()
+        )
+
+        memo.updateContent("Updated", "p-1")
+
+        assertEquals("Updated", memo.content)
+        val event = memo.getDomainEvents().first() as MemoEvent.MemoUpdated
+        assertEquals("", event.slug)
+        assertEquals("", event.cardId)
+    }
+
+    @Test
+    fun `canBeDeletedBy でparticipantがnullの場合は false`() {
+        val other = TestFixtures.participant(id = "p-3")
+        val memo = Memo(
+            id = "memo-1",
+            card = TestFixtures.card(),
+            board = TestFixtures.board(),
+            content = "Test",
+            authorNickname = null,
+            participant = null,
+            createdAt = Instant.now().toString(),
+            updatedAt = Instant.now().toString()
+        )
+
+        assertFalse(memo.canBeDeletedBy(other))
+    }
+
+    @Test
+    fun `updateContent でparticipantがnullの場合は ForbiddenException`() {
+        val memo = Memo(
+            id = "memo-1",
+            card = TestFixtures.card(),
+            board = TestFixtures.board(),
+            content = "Original",
+            authorNickname = null,
+            participant = null,
+            createdAt = Instant.now().toString(),
+            updatedAt = Instant.now().toString()
+        )
+
+        assertFailsWith<ForbiddenException> {
+            memo.updateContent("Updated", "p-1")
+        }
     }
 }

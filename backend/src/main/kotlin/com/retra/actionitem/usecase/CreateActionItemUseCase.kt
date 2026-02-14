@@ -1,6 +1,7 @@
 package com.retra.actionitem.usecase
 
 import com.retra.actionitem.domain.ActionItem
+import com.retra.actionitem.domain.ActionItemPriority
 import com.retra.actionitem.domain.ActionItemRepository
 import com.retra.board.domain.BoardRepository
 import com.retra.card.domain.CardRepository
@@ -55,13 +56,20 @@ class CreateActionItemUseCase(
 
         val sortOrder = actionItemRepository.countByBoardId(board.id)
 
+        val priority = try {
+            ActionItemPriority.valueOf(request.priority.uppercase())
+        } catch (e: IllegalArgumentException) {
+            throw BadRequestException("Invalid priority: ${request.priority}. Must be one of: HIGH, MEDIUM, LOW")
+        }
+
         val actionItem = ActionItem.create(
             board = board,
             card = card,
             content = request.content,
             assignee = assignee,
             dueDate = request.dueDate,
-            sortOrder = sortOrder
+            sortOrder = sortOrder,
+            priority = priority
         )
 
         actionItemRepository.save(actionItem)

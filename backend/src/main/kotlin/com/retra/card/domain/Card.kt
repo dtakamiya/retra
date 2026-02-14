@@ -44,6 +44,12 @@ open class Card(
     @Column(name = "updated_at", nullable = false)
     open var updatedAt: String = Instant.now().toString(),
 
+    @Column(name = "is_discussed", nullable = false)
+    open var isDiscussed: Boolean = false,
+
+    @Column(name = "discussion_order", nullable = false)
+    open var discussionOrder: Int = 0,
+
     @OneToMany(mappedBy = "card", cascade = [CascadeType.ALL], orphanRemoval = true)
     open var votes: MutableList<Vote> = mutableListOf(),
 
@@ -78,6 +84,7 @@ open class Card(
                 participantId = participant?.id,
                 voteCount = votes.size,
                 sortOrder = sortOrder,
+                isAnonymous = board?.isAnonymous ?: false,
                 createdAt = createdAt,
                 updatedAt = updatedAt
             )
@@ -97,6 +104,30 @@ open class Card(
                 targetColumnId = targetColumn.id,
                 sortOrder = newSortOrder
             )
+        )
+    }
+
+    fun markAsDiscussed(): CardEvent.CardDiscussionMarked {
+        this.isDiscussed = true
+        this.updatedAt = Instant.now().toString()
+        val boardSlug = board?.slug ?: throw IllegalStateException("Card must belong to a board")
+        return CardEvent.CardDiscussionMarked(
+            boardSlug = boardSlug,
+            cardId = id,
+            isDiscussed = true,
+            discussionOrder = discussionOrder
+        )
+    }
+
+    fun unmarkAsDiscussed(): CardEvent.CardDiscussionMarked {
+        this.isDiscussed = false
+        this.updatedAt = Instant.now().toString()
+        val boardSlug = board?.slug ?: throw IllegalStateException("Card must belong to a board")
+        return CardEvent.CardDiscussionMarked(
+            boardSlug = boardSlug,
+            cardId = id,
+            isDiscussed = false,
+            discussionOrder = discussionOrder
         )
     }
 
@@ -152,6 +183,7 @@ open class Card(
                     participantId = author.id,
                     voteCount = 0,
                     sortOrder = sortOrder,
+                    isAnonymous = board.isAnonymous,
                     createdAt = now,
                     updatedAt = now
                 )

@@ -31,6 +31,11 @@ data class RemoveVoteRequest(
     val participantId: String
 )
 
+data class MarkCardDiscussedRequest(
+    val participantId: String,
+    val isDiscussed: Boolean
+)
+
 data class CardResponse(
     val id: String,
     val columnId: String,
@@ -40,6 +45,8 @@ data class CardResponse(
     val voteCount: Int,
     val votedParticipantIds: List<String> = emptyList(),
     val sortOrder: Int,
+    val isDiscussed: Boolean = false,
+    val discussionOrder: Int = 0,
     val createdAt: String,
     val updatedAt: String,
     val memos: List<MemoResponse> = emptyList(),

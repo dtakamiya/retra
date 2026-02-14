@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ThumbsUp, Pencil, Trash2, GripVertical, MessageSquare, ListTodo } from 'lucide-react';
+import { ThumbsUp, Pencil, Trash2, GripVertical, MessageSquare, ListTodo, CheckCircle } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { api } from '../api/client';
@@ -8,15 +8,17 @@ import { useToastStore } from '../store/toastStore';
 import { MemoList } from './MemoList';
 import { ReactionList } from './ReactionList';
 import { ReactionPicker } from './ReactionPicker';
+import { VoteProgressBar } from './VoteProgressBar';
 import type { Card } from '../types';
 
 interface Props {
   card: Card;
   columnColor: string;
   isOverlay?: boolean;
+  maxVoteCount?: number;
 }
 
-export function CardItem({ card, columnColor, isOverlay }: Props) {
+export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) {
   const { board, participant, remainingVotes } = useBoardStore();
   const addToast = useToastStore((s) => s.addToast);
   const [editing, setEditing] = useState(false);
@@ -31,6 +33,11 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
   const isWriting = phase === 'WRITING';
   const isDiscussionLike = phase === 'DISCUSSION' || phase === 'ACTION_ITEMS';
   const showMemos = isDiscussionLike || phase === 'CLOSED';
+
+  const isPostWriting = phase !== 'WRITING';
+  const hasMyVoteHighlight = isPostWriting && participant
+    ? card.votedParticipantIds.includes(participant.id)
+    : false;
 
   const isDndEnabled =
     (isWriting && isAuthor) || (isDiscussionLike && isFacilitator);
@@ -128,6 +135,15 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
     }
   };
 
+  const handleMarkDiscussed = async () => {
+    if (!board || !participant) return;
+    try {
+      await api.markCardDiscussed(board.slug, card.id, participant.id, !card.isDiscussed);
+    } catch {
+      addToast('error', '議論済みマークの変更に失敗しました');
+    }
+  };
+
   const handleConvertToActionItem = async () => {
     if (!board || !participant) return;
     try {
@@ -189,7 +205,7 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
       {...safeAttributes}
       className={`bg-white rounded-lg shadow-sm border border-gray-200 p-3 group ${
         isOverlay ? 'shadow-lg ring-2 ring-indigo-300' : ''
-      }`}
+      } ${card.isDiscussed ? 'opacity-50' : ''} ${hasMyVoteHighlight ? 'border-l-3 border-l-indigo-500' : ''}`}
     >
       <div className="flex gap-2">
         {isDndEnabled && (
@@ -199,6 +215,20 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
             aria-label="ドラッグして並べ替え"
           >
             <GripVertical size={14} />
+          </button>
+        )}
+        {(phase === 'DISCUSSION' || phase === 'ACTION_ITEMS') && (
+          <button
+            onClick={isFacilitator ? handleMarkDiscussed : undefined}
+            className={`flex-shrink-0 mt-0.5 ${
+              card.isDiscussed
+                ? 'text-green-500'
+                : 'text-gray-300'
+            } ${isFacilitator ? 'cursor-pointer hover:text-green-400' : 'cursor-default'}`}
+            aria-label={card.isDiscussed ? '未議論に戻す' : '議論済みにマーク'}
+            disabled={!isFacilitator}
+          >
+            <CheckCircle size={16} />
           </button>
         )}
         <p className="text-sm text-gray-800 whitespace-pre-wrap break-words flex-1">{card.content}</p>
@@ -237,9 +267,11 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
             </span>
           ) : null}
 
-          {card.authorNickname && (
+          {card.authorNickname ? (
             <span className="text-xs text-gray-400">{card.authorNickname}</span>
-          )}
+          ) : board.isAnonymous ? (
+            <span className="text-xs text-gray-400 italic">匿名</span>
+          ) : null}
         </div>
 
         {/* Edit/Delete buttons */}
@@ -293,6 +325,11 @@ export function CardItem({ card, columnColor, isOverlay }: Props) {
           )}
         </div>
       </div>
+
+      {/* Vote progress bar */}
+      {isPostWriting && card.voteCount > 0 && (
+        <VoteProgressBar voteCount={card.voteCount} maxVoteCount={maxVoteCount ?? 0} />
+      )}
 
       {/* Reactions */}
       {card.reactions.length > 0 && (

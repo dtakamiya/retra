@@ -7,6 +7,7 @@ import type {
   ActionItemStatusChangedPayload,
   Card,
   CardDeletedPayload,
+  CardDiscussionMarkedPayload,
   CardMovedPayload,
   Memo,
   MemoDeletedPayload,
@@ -29,6 +30,7 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleCardUpdated,
     handleCardDeleted,
     handleCardMoved,
+    handleCardDiscussionMarked,
     handleVoteAdded,
     handleVoteRemoved,
     handlePhaseChanged,
@@ -80,6 +82,9 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
               break;
             case 'CARD_MOVED':
               handleCardMoved(data.payload as CardMovedPayload);
+              break;
+            case 'CARD_DISCUSSION_MARKED':
+              handleCardDiscussionMarked(data.payload as CardDiscussionMarkedPayload);
               break;
           }
         });
@@ -197,6 +202,7 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleCardUpdated,
     handleCardDeleted,
     handleCardMoved,
+    handleCardDiscussionMarked,
     handleVoteAdded,
     handleVoteRemoved,
     handlePhaseChanged,

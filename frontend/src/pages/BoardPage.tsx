@@ -27,11 +27,10 @@ export function BoardPage() {
   const loadBoard = useCallback(async () => {
     if (!slug) return;
     try {
-      const boardData = await api.getBoard(slug);
+      const savedParticipantId = localStorage.getItem(`retra-participant-${slug}`);
+      const boardData = await api.getBoard(slug, savedParticipantId ?? undefined);
       setBoard(boardData);
 
-      // Check localStorage for existing participant
-      const savedParticipantId = localStorage.getItem(`retra-participant-${slug}`);
       if (savedParticipantId) {
         const existing = boardData.participants.find((p) => p.id === savedParticipantId);
         if (existing) {
@@ -73,7 +72,7 @@ export function BoardPage() {
       localStorage.setItem(`retra-participant-${slug}`, p.id);
       setShowNicknameModal(false);
       // Reload board to get updated participants
-      const boardData = await api.getBoard(slug);
+      const boardData = await api.getBoard(slug, p.id);
       setBoard(boardData);
       addToast('success', `${nickname} としてボードに参加しました`);
     } catch {

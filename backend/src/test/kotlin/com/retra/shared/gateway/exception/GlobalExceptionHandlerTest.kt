@@ -44,4 +44,43 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
         assertEquals(400, response.body?.status)
     }
+
+    @Test
+    fun `ErrorResponse のプロパティが正しく設定される`() {
+        val errorResponse = ErrorResponse(status = 500, error = "Internal", message = "Something went wrong")
+        assertEquals(500, errorResponse.status)
+        assertEquals("Internal", errorResponse.error)
+        assertEquals("Something went wrong", errorResponse.message)
+    }
+
+    @Test
+    fun `NotFoundException のレスポンスにerrorフィールドが含まれる`() {
+        val response = handler.handleNotFound(NotFoundException("test"))
+        assertEquals("Not Found", response.body?.error)
+    }
+
+    @Test
+    fun `BadRequestException のレスポンスにerrorフィールドが含まれる`() {
+        val response = handler.handleBadRequest(BadRequestException("test"))
+        assertEquals("Bad Request", response.body?.error)
+    }
+
+    @Test
+    fun `ForbiddenException のレスポンスにerrorフィールドが含まれる`() {
+        val response = handler.handleForbidden(ForbiddenException("test"))
+        assertEquals("Forbidden", response.body?.error)
+    }
+
+    @Test
+    fun `ConflictException のレスポンスにerrorフィールドが含まれる`() {
+        val response = handler.handleConflict(ConflictException("test"))
+        assertEquals("Conflict", response.body?.error)
+    }
+
+    @Test
+    fun `InvalidPhaseTransitionException のレスポンスにerrorフィールドが含まれる`() {
+        val response = handler.handleInvalidPhaseTransition(InvalidPhaseTransitionException("test"))
+        assertEquals("Bad Request", response.body?.error)
+        assertEquals("test", response.body?.message)
+    }
 }

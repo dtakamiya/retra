@@ -7,6 +7,7 @@ import java.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class ActionItemTest {
@@ -329,5 +330,112 @@ class ActionItemTest {
         assertTrue(actionItem.getDomainEvents().isNotEmpty())
         actionItem.clearDomainEvents()
         assertTrue(actionItem.getDomainEvents().isEmpty())
+    }
+
+    @Test
+    fun `update でpriorityがnullの場合は既存のpriorityが維持される`() {
+        val board = TestFixtures.board()
+        val assignee = TestFixtures.participant(id = "p-1")
+        val actionItem = ActionItem(
+            id = "ai-1",
+            board = board,
+            content = "Original",
+            assignee = assignee,
+            status = ActionItemStatus.OPEN,
+            priority = ActionItemPriority.HIGH,
+            sortOrder = 0,
+            createdAt = Instant.now().toString(),
+            updatedAt = Instant.now().toString()
+        )
+
+        actionItem.update("Updated", assignee, null, assignee, priority = null)
+
+        assertEquals(ActionItemPriority.HIGH, actionItem.priority)
+    }
+
+    @Test
+    fun `update でpriorityが指定された場合はpriorityが変更される`() {
+        val board = TestFixtures.board()
+        val assignee = TestFixtures.participant(id = "p-1")
+        val actionItem = ActionItem(
+            id = "ai-1",
+            board = board,
+            content = "Original",
+            assignee = assignee,
+            status = ActionItemStatus.OPEN,
+            priority = ActionItemPriority.MEDIUM,
+            sortOrder = 0,
+            createdAt = Instant.now().toString(),
+            updatedAt = Instant.now().toString()
+        )
+
+        actionItem.update("Updated", assignee, null, assignee, priority = ActionItemPriority.LOW)
+
+        assertEquals(ActionItemPriority.LOW, actionItem.priority)
+    }
+
+    @Test
+    fun `create でpriorityを指定できる`() {
+        val board = TestFixtures.board()
+
+        val actionItem = ActionItem.create(board, null, "High priority task", null, null, 0, ActionItemPriority.HIGH)
+
+        assertEquals(ActionItemPriority.HIGH, actionItem.priority)
+    }
+
+    @Test
+    fun `create でpriorityのデフォルトはMEDIUM`() {
+        val board = TestFixtures.board()
+
+        val actionItem = ActionItem.create(board, null, "Default priority task", null, null, 0)
+
+        assertEquals(ActionItemPriority.MEDIUM, actionItem.priority)
+    }
+
+    @Test
+    fun `canBeModifiedBy でassigneeがnullの場合は非ファシリテーターにfalse`() {
+        val board = TestFixtures.board()
+        val other = TestFixtures.participant(id = "p-3", isFacilitator = false)
+        val actionItem = ActionItem(
+            id = "ai-1",
+            board = board,
+            content = "Task",
+            assignee = null,
+            status = ActionItemStatus.OPEN,
+            sortOrder = 0,
+            createdAt = Instant.now().toString(),
+            updatedAt = Instant.now().toString()
+        )
+
+        assertFalse(actionItem.canBeModifiedBy(other))
+    }
+
+    @Test
+    fun `canBeModifiedBy でassigneeがnullの場合でもファシリテーターはtrue`() {
+        val board = TestFixtures.board()
+        val facilitator = TestFixtures.participant(id = "p-2", isFacilitator = true)
+        val actionItem = ActionItem(
+            id = "ai-1",
+            board = board,
+            content = "Task",
+            assignee = null,
+            status = ActionItemStatus.OPEN,
+            sortOrder = 0,
+            createdAt = Instant.now().toString(),
+            updatedAt = Instant.now().toString()
+        )
+
+        assertTrue(actionItem.canBeModifiedBy(facilitator))
+    }
+
+    @Test
+    fun `デフォルトコンストラクタでプロパティが初期化される`() {
+        val actionItem = ActionItem()
+
+        assertNotNull(actionItem.id)
+        assertEquals("", actionItem.content)
+        assertEquals(ActionItemStatus.OPEN, actionItem.status)
+        assertEquals(ActionItemPriority.MEDIUM, actionItem.priority)
+        assertEquals(0, actionItem.sortOrder)
     }
 }

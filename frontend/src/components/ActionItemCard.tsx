@@ -4,6 +4,7 @@ import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
 import { useToastStore } from '../store/toastStore';
 import { ActionItemStatusBadge } from './ActionItemStatusBadge';
+import { ActionItemPriorityBadge } from './ActionItemPriorityBadge';
 import type { ActionItem, ActionItemStatus } from '../types';
 
 interface Props {
@@ -113,6 +114,7 @@ export function ActionItemCard({ actionItem }: Props) {
           <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">{actionItem.content}</p>
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
             <ActionItemStatusBadge status={actionItem.status} />
+            <ActionItemPriorityBadge priority={actionItem.priority} />
             {actionItem.assigneeNickname && (
               <span className="flex items-center gap-1 text-xs text-gray-500">
                 <User size={10} />

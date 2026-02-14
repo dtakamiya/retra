@@ -17,7 +17,8 @@ class CreateBoardUseCase(
         val board = Board.create(
             title = request.title,
             framework = request.framework,
-            maxVotesPerPerson = request.maxVotesPerPerson
+            maxVotesPerPerson = request.maxVotesPerPerson,
+            isAnonymous = request.isAnonymous
         )
 
         boardRepository.save(board)
