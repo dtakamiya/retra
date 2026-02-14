@@ -2,6 +2,7 @@ import type {
   ActionItem,
   Board,
   Card,
+  CarryOverItemsResponse,
   ExportFormat,
   Framework,
   Memo,
@@ -41,10 +42,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export const api = {
   // Board
-  createBoard(title: string, framework: Framework, maxVotesPerPerson: number = 5, isAnonymous: boolean = false): Promise<Board> {
+  createBoard(title: string, framework: Framework, maxVotesPerPerson: number = 5, isAnonymous: boolean = false, teamName?: string): Promise<Board> {
     return request('/boards', {
       method: 'POST',
-      body: JSON.stringify({ title, framework, maxVotesPerPerson, isAnonymous }),
+      body: JSON.stringify({ title, framework, maxVotesPerPerson, isAnonymous, teamName }),
     });
   },
 
@@ -203,6 +204,18 @@ export const api = {
     return request<void>(`/boards/${slug}/action-items/${id}`, {
       method: 'DELETE',
       body: JSON.stringify({ participantId }),
+    });
+  },
+
+  // Carry-over Items
+  getCarryOverItems(slug: string): Promise<CarryOverItemsResponse> {
+    return request<CarryOverItemsResponse>(`/boards/${slug}/carry-over-items`);
+  },
+
+  updateCarryOverItemStatus(slug: string, actionItemId: string, status: string, participantId: string): Promise<void> {
+    return request<void>(`/boards/${slug}/carry-over-items/${actionItemId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status, participantId }),
     });
   },
 

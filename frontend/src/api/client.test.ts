@@ -57,6 +57,20 @@ describe('api client', () => {
     });
   });
 
+  it('createBoard sends POST with teamName when provided', async () => {
+    const board = { id: 'b-1', slug: 'abc' };
+    mockResponse(board);
+
+    const result = await api.createBoard('My Retro', 'KPT', 5, false, 'Team Alpha');
+
+    expect(result).toEqual(board);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: 'My Retro', framework: 'KPT', maxVotesPerPerson: 5, isAnonymous: false, teamName: 'Team Alpha' }),
+    });
+  });
+
   // --- getBoard ---
 
   it('getBoard sends GET to correct URL', async () => {
@@ -450,6 +464,34 @@ describe('api client', () => {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ participantId: 'p-1' }),
+    });
+  });
+
+  // --- getCarryOverItems ---
+
+  describe('getCarryOverItems', () => {
+    it('should GET /boards/{slug}/carry-over-items', async () => {
+      const response = { items: [], teamName: 'Team Alpha' };
+      mockResponse(response);
+      const result = await api.getCarryOverItems('test-slug');
+      expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/test-slug/carry-over-items', expect.any(Object));
+      expect(result).toEqual(response);
+    });
+  });
+
+  // --- updateCarryOverItemStatus ---
+
+  describe('updateCarryOverItemStatus', () => {
+    it('should PATCH /boards/{slug}/carry-over-items/{id}/status', async () => {
+      mock204();
+      await api.updateCarryOverItemStatus('test-slug', 'ai-1', 'DONE', 'p-1');
+      expect(mockFetch).toHaveBeenCalledWith(
+        '/api/v1/boards/test-slug/carry-over-items/ai-1/status',
+        expect.objectContaining({
+          method: 'PATCH',
+          body: JSON.stringify({ status: 'DONE', participantId: 'p-1' }),
+        })
+      );
     });
   });
 

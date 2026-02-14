@@ -1,4 +1,4 @@
-import type { ActionItem, Board, Card, Column, Memo, Participant, Reaction, RemainingVotes, SnapshotDetail, SnapshotSummary, TimerState, TrendData, TrendPoint, Vote } from '../types'
+import type { ActionItem, Board, Card, CarryOverItem, Column, Memo, Participant, Reaction, RemainingVotes, SnapshotDetail, SnapshotSummary, TimerState, TrendData, TrendPoint, Vote } from '../types'
 
 export function createParticipant(overrides: Partial<Participant> = {}): Participant {
   return {
@@ -71,6 +71,7 @@ export function createBoard(overrides: Partial<Board> = {}): Board {
     id: 'board-1',
     slug: 'test1234',
     title: 'Test Retro',
+    teamName: null,
     framework: 'KPT',
     phase: 'WRITING',
     maxVotesPerPerson: 5,
@@ -182,6 +183,21 @@ export function createActionItem(overrides: Partial<ActionItem> = {}): ActionIte
     sortOrder: 0,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
+    ...overrides,
+  }
+}
+
+export function createCarryOverItem(overrides: Partial<CarryOverItem> = {}): CarryOverItem {
+  return {
+    id: 'co-1',
+    content: 'Test carry-over item',
+    assigneeNickname: null,
+    dueDate: null,
+    status: 'OPEN',
+    priority: 'MEDIUM',
+    sourceBoardTitle: 'Sprint 42 Retro',
+    sourceBoardClosedAt: '2024-01-01T00:00:00Z',
+    sourceBoardSlug: 'prev-slug',
     ...overrides,
   }
 }

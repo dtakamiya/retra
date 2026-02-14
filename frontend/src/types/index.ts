@@ -6,6 +6,7 @@ export interface Board {
   id: string;
   slug: string;
   title: string;
+  teamName: string | null;
   framework: Framework;
   phase: Phase;
   maxVotesPerPerson: number;
@@ -193,4 +194,21 @@ export interface ActionItemStatusChangedPayload {
   actionItemId: string;
   boardSlug: string;
   newStatus: ActionItemStatus;
+}
+
+export interface CarryOverItem {
+  id: string;
+  content: string;
+  assigneeNickname: string | null;
+  dueDate: string | null;
+  status: ActionItemStatus;
+  priority: ActionItemPriority;
+  sourceBoardTitle: string;
+  sourceBoardClosedAt: string;
+  sourceBoardSlug: string;
+}
+
+export interface CarryOverItemsResponse {
+  items: CarryOverItem[];
+  teamName: string;
 }
