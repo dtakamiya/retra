@@ -46,9 +46,6 @@ async function completeFullRetro(page: import('@playwright/test').Page, title: s
     await createBoardAndJoin(page, title);
     await addCard(page, 'テストカード1');
     await addCard(page, 'テストカード2');
-    await advanceToPhase(page, 'VOTING');
-    await advanceToPhase(page, 'DISCUSSION');
-    await advanceToPhase(page, 'ACTION_ITEMS');
     await advanceToPhase(page, 'CLOSED');
     // CLOSEDフェーズに到達するとスナップショットが自動作成される
 }
@@ -201,6 +198,24 @@ test.describe('スナップショット詳細', () => {
         // カードの内容が表示される
         await expect(page.getByText('テストカード1')).toBeVisible();
         await expect(page.getByText('テストカード2')).toBeVisible();
+    });
+});
+
+test.describe('トレンドチャートの表示', () => {
+    test('複数のレトロが完了するとトレンドチャートが表示される', async ({ page }) => {
+        // 2つのレトロスペクティブを完了させてスナップショットを2件作成
+        await completeFullRetro(page, 'トレンドテスト1回目');
+        await completeFullRetro(page, 'トレンドテスト2回目');
+
+        // ダッシュボードに遷移
+        await page.goto('/dashboard');
+        await expect(page.getByText('読み込み中...')).not.toBeVisible({ timeout: 10000 });
+
+        // トレンド & エンゲージメントセクションが表示される
+        await expect(page.getByRole('heading', { name: 'トレンド & エンゲージメント' })).toBeVisible();
+
+        // エンゲージメントセクションのラベルが表示される
+        await expect(page.getByRole('heading', { name: 'エンゲージメント', exact: true })).toBeVisible();
     });
 });
 
