@@ -38,7 +38,7 @@ export function ActionItemList({ actionItems, slug, participants }: Props) {
   const priorityOrder: Record<ActionItemPriority, number> = { HIGH: 0, MEDIUM: 1, LOW: 2 };
 
   const sortByPriority = (items: ActionItem[]) =>
-    [...items].sort((a, b) => (priorityOrder[a.priority] ?? 1) - (priorityOrder[b.priority] ?? 1));
+    [...items].sort((a, b) => (priorityOrder[a.priority] ?? 999) - (priorityOrder[b.priority] ?? 999));
 
   const openItems = sortByPriority(actionItems.filter((ai) => ai.status === 'OPEN'));
   const inProgressItems = sortByPriority(actionItems.filter((ai) => ai.status === 'IN_PROGRESS'));

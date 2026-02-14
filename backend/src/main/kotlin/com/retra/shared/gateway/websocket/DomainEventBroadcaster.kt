@@ -28,8 +28,8 @@ class DomainEventBroadcaster(
                 "id" to event.cardId,
                 "columnId" to event.columnId,
                 "content" to event.content,
-                "authorNickname" to event.authorNickname,
-                "participantId" to event.participantId,
+                "authorNickname" to if (event.isAnonymous) null else event.authorNickname,
+                "participantId" to if (event.isAnonymous) null else event.participantId,
                 "voteCount" to event.voteCount,
                 "sortOrder" to event.sortOrder,
                 "createdAt" to event.createdAt,
@@ -46,8 +46,8 @@ class DomainEventBroadcaster(
                 "id" to event.cardId,
                 "columnId" to event.columnId,
                 "content" to event.content,
-                "authorNickname" to event.authorNickname,
-                "participantId" to event.participantId,
+                "authorNickname" to if (event.isAnonymous) null else event.authorNickname,
+                "participantId" to if (event.isAnonymous) null else event.participantId,
                 "voteCount" to event.voteCount,
                 "sortOrder" to event.sortOrder,
                 "createdAt" to event.createdAt,
@@ -75,7 +75,8 @@ class DomainEventBroadcaster(
             "/topic/board/${event.boardSlug}/cards",
             WebSocketMessage("CARD_DISCUSSION_MARKED", mapOf(
                 "cardId" to event.cardId,
-                "isDiscussed" to event.isDiscussed
+                "isDiscussed" to event.isDiscussed,
+                "discussionOrder" to event.discussionOrder
             ))
         )
     }

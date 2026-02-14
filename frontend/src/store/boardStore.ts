@@ -155,7 +155,7 @@ export const useBoardStore = create<BoardState>((set) => ({
       const columns = state.board.columns.map((col) => ({
         ...col,
         cards: col.cards.map((c) =>
-          c.id === payload.cardId ? { ...c, isDiscussed: payload.isDiscussed } : c
+          c.id === payload.cardId ? { ...c, isDiscussed: payload.isDiscussed, discussionOrder: payload.discussionOrder ?? c.discussionOrder } : c
         ),
       }));
       return { board: { ...state.board, columns } };

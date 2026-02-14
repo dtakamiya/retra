@@ -26,7 +26,7 @@ class ExportBoardUseCase(
             throw ForbiddenException("Only facilitator can export board")
         }
 
-        val boardResponse = BoardMapper.toBoardResponse(board)
+        val boardResponse = BoardMapper.toBoardResponse(board, request.participantId)
 
         // WRITINGフェーズでは自分のカードのみ
         val filteredResponse = if (board.phase == Phase.WRITING) {

@@ -31,7 +31,7 @@ open class Board(
     @Column(name = "max_votes_per_person", nullable = false)
     open var maxVotesPerPerson: Int = 5,
 
-    @Column(name = "is_anonymous", nullable = false)
+    @Column(name = "is_anonymous", nullable = false, updatable = false)
     open var isAnonymous: Boolean = false,
 
     @Column(name = "created_at", nullable = false)

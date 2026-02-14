@@ -57,9 +57,9 @@ class CreateActionItemUseCase(
         val sortOrder = actionItemRepository.countByBoardId(board.id)
 
         val priority = try {
-            ActionItemPriority.valueOf(request.priority)
+            ActionItemPriority.valueOf(request.priority.uppercase())
         } catch (e: IllegalArgumentException) {
-            ActionItemPriority.MEDIUM
+            throw BadRequestException("Invalid priority: ${request.priority}. Must be one of: HIGH, MEDIUM, LOW")
         }
 
         val actionItem = ActionItem.create(

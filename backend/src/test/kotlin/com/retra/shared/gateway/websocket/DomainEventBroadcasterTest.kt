@@ -8,9 +8,12 @@ import com.retra.card.domain.MemoEvent
 import com.retra.card.domain.ReactionEvent
 import com.retra.card.domain.VoteEvent
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.springframework.messaging.simp.SimpMessagingTemplate
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class DomainEventBroadcasterTest {
 
@@ -22,17 +25,47 @@ class DomainEventBroadcasterTest {
         val event = CardEvent.CardCreated(
             slug = "test1234", cardId = "c-1", columnId = "col-1",
             content = "Test", authorNickname = "Alice", participantId = "p-1",
-            voteCount = 0, sortOrder = 0, createdAt = "2024-01-01", updatedAt = "2024-01-01"
+            voteCount = 0, sortOrder = 0, isAnonymous = false,
+            createdAt = "2024-01-01", updatedAt = "2024-01-01"
         )
 
         broadcaster.handleCardCreated(event)
 
+        val msgSlot = slot<WebSocketMessage>()
         verify {
             messagingTemplate.convertAndSend(
-                "/topic/board/test1234/cards",
-                match<WebSocketMessage> { it.type == "CARD_CREATED" }
+                eq("/topic/board/test1234/cards"),
+                capture(msgSlot)
             )
         }
+        assertEquals("CARD_CREATED", msgSlot.captured.type)
+        val payload = msgSlot.captured.payload as Map<*, *>
+        assertEquals("Alice", payload["authorNickname"])
+        assertEquals("p-1", payload["participantId"])
+    }
+
+    @Test
+    fun `CardCreated 匿名モードではauthorNicknameとparticipantIdがnullになる`() {
+        val event = CardEvent.CardCreated(
+            slug = "test1234", cardId = "c-1", columnId = "col-1",
+            content = "Test", authorNickname = "Alice", participantId = "p-1",
+            voteCount = 0, sortOrder = 0, isAnonymous = true,
+            createdAt = "2024-01-01", updatedAt = "2024-01-01"
+        )
+
+        broadcaster.handleCardCreated(event)
+
+        val msgSlot = slot<WebSocketMessage>()
+        verify {
+            messagingTemplate.convertAndSend(
+                eq("/topic/board/test1234/cards"),
+                capture(msgSlot)
+            )
+        }
+        assertEquals("CARD_CREATED", msgSlot.captured.type)
+        val payload = msgSlot.captured.payload as Map<*, *>
+        assertNull(payload["authorNickname"])
+        assertNull(payload["participantId"])
     }
 
     @Test
@@ -40,17 +73,46 @@ class DomainEventBroadcasterTest {
         val event = CardEvent.CardUpdated(
             slug = "test1234", cardId = "c-1", columnId = "col-1",
             content = "Updated content", authorNickname = "Alice", participantId = "p-1",
-            voteCount = 2, sortOrder = 1, createdAt = "2024-01-01", updatedAt = "2024-01-02"
+            voteCount = 2, sortOrder = 1, isAnonymous = false,
+            createdAt = "2024-01-01", updatedAt = "2024-01-02"
         )
 
         broadcaster.handleCardUpdated(event)
 
+        val msgSlot = slot<WebSocketMessage>()
         verify {
             messagingTemplate.convertAndSend(
-                "/topic/board/test1234/cards",
-                match<WebSocketMessage> { it.type == "CARD_UPDATED" }
+                eq("/topic/board/test1234/cards"),
+                capture(msgSlot)
             )
         }
+        assertEquals("CARD_UPDATED", msgSlot.captured.type)
+        val payload = msgSlot.captured.payload as Map<*, *>
+        assertEquals("Alice", payload["authorNickname"])
+    }
+
+    @Test
+    fun `CardUpdated 匿名モードではauthorNicknameとparticipantIdがnullになる`() {
+        val event = CardEvent.CardUpdated(
+            slug = "test1234", cardId = "c-1", columnId = "col-1",
+            content = "Updated content", authorNickname = "Alice", participantId = "p-1",
+            voteCount = 2, sortOrder = 1, isAnonymous = true,
+            createdAt = "2024-01-01", updatedAt = "2024-01-02"
+        )
+
+        broadcaster.handleCardUpdated(event)
+
+        val msgSlot = slot<WebSocketMessage>()
+        verify {
+            messagingTemplate.convertAndSend(
+                eq("/topic/board/test1234/cards"),
+                capture(msgSlot)
+            )
+        }
+        assertEquals("CARD_UPDATED", msgSlot.captured.type)
+        val payload = msgSlot.captured.payload as Map<*, *>
+        assertNull(payload["authorNickname"])
+        assertNull(payload["participantId"])
     }
 
     @Test

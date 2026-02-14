@@ -53,14 +53,12 @@ class CardDiscussionTest {
     fun `unmarkAsDiscussed で updatedAt が更新される`() {
         val board = TestFixtures.board()
         val column = TestFixtures.boardColumn(board = board)
-        val card = TestFixtures.card(board = board, column = column)
-        card.markAsDiscussed()
-        val afterMark = card.updatedAt
+        val card = TestFixtures.card(board = board, column = column, updatedAt = "2024-01-01T00:00:00Z")
 
-        Thread.sleep(10)
+        card.markAsDiscussed()
         card.unmarkAsDiscussed()
 
-        assertTrue(card.updatedAt != afterMark)
+        assertTrue(card.updatedAt > "2024-01-01T00:00:00Z")
     }
 
     @Test

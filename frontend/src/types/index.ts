@@ -124,6 +124,7 @@ export interface MemoDeletedPayload {
 export interface CardDiscussionMarkedPayload {
   cardId: string;
   isDiscussed: boolean;
+  discussionOrder?: number;
 }
 
 export interface ReactionRemovedPayload {

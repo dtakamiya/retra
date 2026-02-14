@@ -49,9 +49,9 @@ class UpdateActionItemUseCase(
 
         val priority = request.priority?.let {
             try {
-                ActionItemPriority.valueOf(it)
+                ActionItemPriority.valueOf(it.uppercase())
             } catch (e: IllegalArgumentException) {
-                null
+                throw BadRequestException("Invalid priority: $it. Must be one of: HIGH, MEDIUM, LOW")
             }
         }
 

@@ -84,6 +84,7 @@ open class Card(
                 participantId = participant?.id,
                 voteCount = votes.size,
                 sortOrder = sortOrder,
+                isAnonymous = board?.isAnonymous ?: false,
                 createdAt = createdAt,
                 updatedAt = updatedAt
             )
@@ -109,20 +110,24 @@ open class Card(
     fun markAsDiscussed(): CardEvent.CardDiscussionMarked {
         this.isDiscussed = true
         this.updatedAt = Instant.now().toString()
+        val boardSlug = board?.slug ?: throw IllegalStateException("Card must belong to a board")
         return CardEvent.CardDiscussionMarked(
-            boardSlug = board!!.slug,
+            boardSlug = boardSlug,
             cardId = id,
-            isDiscussed = true
+            isDiscussed = true,
+            discussionOrder = discussionOrder
         )
     }
 
     fun unmarkAsDiscussed(): CardEvent.CardDiscussionMarked {
         this.isDiscussed = false
         this.updatedAt = Instant.now().toString()
+        val boardSlug = board?.slug ?: throw IllegalStateException("Card must belong to a board")
         return CardEvent.CardDiscussionMarked(
-            boardSlug = board!!.slug,
+            boardSlug = boardSlug,
             cardId = id,
-            isDiscussed = false
+            isDiscussed = false,
+            discussionOrder = discussionOrder
         )
     }
 
@@ -178,6 +183,7 @@ open class Card(
                     participantId = author.id,
                     voteCount = 0,
                     sortOrder = sortOrder,
+                    isAnonymous = board.isAnonymous,
                     createdAt = now,
                     updatedAt = now
                 )

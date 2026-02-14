@@ -65,7 +65,9 @@ export function BoardView() {
   // Load action items when board loads or phase changes
   useEffect(() => {
     if (board?.slug) {
-      api.getActionItems(board.slug).then(setActionItems).catch(() => {});
+      api.getActionItems(board.slug).then(setActionItems).catch((err) => {
+        console.error('Failed to load action items:', err);
+      });
     }
   }, [board?.slug, board?.phase, setActionItems]);
 

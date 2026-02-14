@@ -225,7 +225,7 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
                 ? 'text-green-500'
                 : 'text-gray-300'
             } ${isFacilitator ? 'cursor-pointer hover:text-green-400' : 'cursor-default'}`}
-            aria-label={card.isDiscussed ? '議論済みを解除' : '議論済みにする'}
+            aria-label={card.isDiscussed ? '未議論に戻す' : '議論済みにマーク'}
             disabled={!isFacilitator}
           >
             <CheckCircle size={16} />

@@ -13,6 +13,7 @@ sealed class CardEvent : DomainEvent {
         val participantId: String?,
         val voteCount: Int,
         val sortOrder: Int,
+        val isAnonymous: Boolean,
         val createdAt: String,
         val updatedAt: String
     ) : CardEvent()
@@ -26,6 +27,7 @@ sealed class CardEvent : DomainEvent {
         val participantId: String?,
         val voteCount: Int,
         val sortOrder: Int,
+        val isAnonymous: Boolean,
         val createdAt: String,
         val updatedAt: String
     ) : CardEvent()
@@ -47,6 +49,7 @@ sealed class CardEvent : DomainEvent {
     data class CardDiscussionMarked(
         val boardSlug: String,
         val cardId: String,
-        val isDiscussed: Boolean
+        val isDiscussed: Boolean,
+        val discussionOrder: Int
     ) : CardEvent()
 }
