@@ -2,12 +2,15 @@ import { create } from 'zustand';
 import type {
   ActionItem,
   ActionItemDeletedPayload,
+  ActionItemStatus,
   ActionItemStatusChangedPayload,
   Board,
   Card,
   CardDeletedPayload,
   CardDiscussionMarkedPayload,
   CardMovedPayload,
+  CarryOverItem,
+  CarryOverItemsResponse,
   Memo,
   MemoDeletedPayload,
   Participant,
@@ -28,6 +31,8 @@ interface BoardState {
   timer: TimerState;
   isConnected: boolean;
   actionItems: ActionItem[];
+  carryOverItems: CarryOverItem[];
+  carryOverTeamName: string;
 
   setBoard: (board: Board) => void;
   setParticipant: (participant: Participant) => void;
@@ -35,6 +40,8 @@ interface BoardState {
   setTimer: (timer: TimerState) => void;
   setConnected: (connected: boolean) => void;
   setActionItems: (items: ActionItem[]) => void;
+  setCarryOverItems: (response: CarryOverItemsResponse) => void;
+  updateCarryOverItemStatus: (actionItemId: string, newStatus: ActionItemStatus) => void;
 
   // WebSocket event handlers
   handleCardCreated: (card: Card) => void;
@@ -66,6 +73,8 @@ export const useBoardStore = create<BoardState>((set) => ({
   timer: { isRunning: false, remainingSeconds: 0, totalSeconds: 0 },
   isConnected: false,
   actionItems: [],
+  carryOverItems: [],
+  carryOverTeamName: '',
 
   setBoard: (board) => set({ board }),
   setParticipant: (participant) => set({ participant }),
@@ -73,6 +82,12 @@ export const useBoardStore = create<BoardState>((set) => ({
   setTimer: (timer) => set({ timer }),
   setConnected: (connected) => set({ isConnected: connected }),
   setActionItems: (items) => set({ actionItems: items }),
+  setCarryOverItems: (response) => set({ carryOverItems: response.items, carryOverTeamName: response.teamName }),
+  updateCarryOverItemStatus: (actionItemId, newStatus) => set((state) => ({
+    carryOverItems: state.carryOverItems.map((item) =>
+      item.id === actionItemId ? { ...item, status: newStatus } : item
+    ),
+  })),
 
   handleCardCreated: (card) =>
     set((state) => {

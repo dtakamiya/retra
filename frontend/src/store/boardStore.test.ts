@@ -4,6 +4,7 @@ import {
   createActionItem,
   createBoard,
   createCard,
+  createCarryOverItem,
   createColumn,
   createMemo,
   createParticipant,
@@ -21,6 +22,8 @@ describe('boardStore', () => {
       timer: { isRunning: false, remainingSeconds: 0, totalSeconds: 0 },
       isConnected: false,
       actionItems: [],
+      carryOverItems: [],
+      carryOverTeamName: '',
     });
   });
 
@@ -617,5 +620,46 @@ describe('boardStore', () => {
     const state = useBoardStore.getState();
     expect(state.actionItems).toHaveLength(1);
     expect(state.actionItems[0].id).toBe('ai-1');
+  });
+
+  // --- setCarryOverItems ---
+
+  it('setCarryOverItems sets carry-over items and team name', () => {
+    const items = [
+      createCarryOverItem({ id: 'co-1', content: 'Item 1' }),
+      createCarryOverItem({ id: 'co-2', content: 'Item 2' }),
+    ];
+    useBoardStore.getState().setCarryOverItems({ items, teamName: 'Team Alpha' });
+
+    const state = useBoardStore.getState();
+    expect(state.carryOverItems).toEqual(items);
+    expect(state.carryOverTeamName).toBe('Team Alpha');
+  });
+
+  // --- updateCarryOverItemStatus ---
+
+  it('updateCarryOverItemStatus updates status for matching item', () => {
+    const items = [
+      createCarryOverItem({ id: 'co-1', status: 'OPEN' }),
+      createCarryOverItem({ id: 'co-2', status: 'OPEN' }),
+    ];
+    useBoardStore.setState({ carryOverItems: items });
+
+    useBoardStore.getState().updateCarryOverItemStatus('co-1', 'DONE');
+
+    const state = useBoardStore.getState();
+    expect(state.carryOverItems[0].status).toBe('DONE');
+    expect(state.carryOverItems[1].status).toBe('OPEN');
+  });
+
+  it('updateCarryOverItemStatus with non-existent id leaves list unchanged', () => {
+    const items = [createCarryOverItem({ id: 'co-1', status: 'OPEN' })];
+    useBoardStore.setState({ carryOverItems: items });
+
+    useBoardStore.getState().updateCarryOverItemStatus('non-existent', 'DONE');
+
+    const state = useBoardStore.getState();
+    expect(state.carryOverItems).toHaveLength(1);
+    expect(state.carryOverItems[0].status).toBe('OPEN');
   });
 });
