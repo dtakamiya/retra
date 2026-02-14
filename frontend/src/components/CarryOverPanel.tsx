@@ -91,6 +91,7 @@ export function CarryOverPanel() {
                           value={item.status}
                           onChange={(e) => handleStatusChange(item, e.target.value as ActionItemStatus)}
                           className="text-xs border border-gray-200 rounded px-1 py-0.5"
+                          aria-label="ステータスを変更"
                         >
                           {STATUS_OPTIONS.map((opt) => (
                             <option key={opt.value} value={opt.value}>{opt.label}</option>
