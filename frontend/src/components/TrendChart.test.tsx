@@ -56,4 +56,31 @@ describe('TrendChart', () => {
     expect(getByText('投票数')).toBeInTheDocument()
     expect(getByText('AI完了率(%)')).toBeInTheDocument()
   })
+
+  it('renders engagement chart section', () => {
+    const data = [createTrendPoint()]
+    const { getAllByTestId } = render(<TrendChart data={data} />)
+
+    // 2つのチャート（基本トレンド + エンゲージメント）
+    const charts = getAllByTestId('line-chart')
+    expect(charts).toHaveLength(2)
+  })
+
+  it('renders engagement metric line names', () => {
+    const data = [createTrendPoint()]
+    const { getByText } = render(<TrendChart data={data} />)
+
+    expect(getByText('カード数/人')).toBeInTheDocument()
+    expect(getByText('投票数/人')).toBeInTheDocument()
+    expect(getByText('投票数/カード')).toBeInTheDocument()
+    expect(getByText('アクション化率(%)')).toBeInTheDocument()
+  })
+
+  it('renders section headings', () => {
+    const data = [createTrendPoint()]
+    const { getByText } = render(<TrendChart data={data} />)
+
+    expect(getByText('基本トレンド')).toBeInTheDocument()
+    expect(getByText('エンゲージメント')).toBeInTheDocument()
+  })
 })
