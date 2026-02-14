@@ -25,6 +25,7 @@ object TestFixtures {
         phase: Phase = Phase.WRITING,
         maxVotesPerPerson: Int = 5,
         isAnonymous: Boolean = false,
+        teamName: String? = null,
         createdAt: String = Instant.now().toString(),
         updatedAt: String = Instant.now().toString()
     ): Board = Board(
@@ -35,6 +36,7 @@ object TestFixtures {
         phase = phase,
         maxVotesPerPerson = maxVotesPerPerson,
         isAnonymous = isAnonymous,
+        teamName = teamName,
         createdAt = createdAt,
         updatedAt = updatedAt
     )

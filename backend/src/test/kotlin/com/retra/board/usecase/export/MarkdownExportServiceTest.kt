@@ -24,6 +24,7 @@ class MarkdownExportServiceTest {
         id = "board-1",
         slug = "test1234",
         title = "Test Retro",
+        teamName = null,
         framework = Framework.KPT,
         phase = Phase.DISCUSSION,
         maxVotesPerPerson = 5,

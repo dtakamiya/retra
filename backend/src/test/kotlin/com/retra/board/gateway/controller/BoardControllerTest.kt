@@ -44,6 +44,7 @@ class BoardControllerTest {
         id = "board-1",
         slug = "test1234",
         title = "My Retro",
+        teamName = null,
         framework = Framework.KPT,
         phase = Phase.WRITING,
         maxVotesPerPerson = 5,

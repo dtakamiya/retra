@@ -18,7 +18,8 @@ class CreateBoardUseCase(
             title = request.title,
             framework = request.framework,
             maxVotesPerPerson = request.maxVotesPerPerson,
-            isAnonymous = request.isAnonymous
+            isAnonymous = request.isAnonymous,
+            teamName = request.teamName
         )
 
         boardRepository.save(board)

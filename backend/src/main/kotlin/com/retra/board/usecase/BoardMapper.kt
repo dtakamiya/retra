@@ -11,6 +11,7 @@ object BoardMapper {
             id = board.id,
             slug = board.slug,
             title = board.title,
+            teamName = board.teamName,
             framework = board.framework,
             phase = board.phase,
             maxVotesPerPerson = board.maxVotesPerPerson,

@@ -8,7 +8,8 @@ data class CreateBoardRequest(
     val title: String,
     val framework: Framework = Framework.KPT,
     val maxVotesPerPerson: Int = 5,
-    val isAnonymous: Boolean = false
+    val isAnonymous: Boolean = false,
+    val teamName: String? = null
 )
 
 data class ChangePhaseRequest(
@@ -24,6 +25,7 @@ data class BoardResponse(
     val id: String,
     val slug: String,
     val title: String,
+    val teamName: String?,
     val framework: Framework,
     val phase: Phase,
     val maxVotesPerPerson: Int,
