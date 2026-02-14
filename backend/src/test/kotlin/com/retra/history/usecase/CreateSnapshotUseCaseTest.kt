@@ -126,6 +126,52 @@ class CreateSnapshotUseCaseTest {
     }
 
     @Test
+    fun `teamNameが設定されている場合はteamNameを使用する`() {
+        val board = TestFixtures.board(phase = Phase.CLOSED, teamName = "チーム Alpha")
+        val column = TestFixtures.boardColumn(id = "col-1", board = board, name = "Keep")
+        board.columns.add(column)
+
+        val participant = TestFixtures.participant(id = "p-1", board = board)
+        board.participants.add(participant)
+
+        val card = TestFixtures.card(id = "c-1", column = column, board = board)
+        board.cards.add(card)
+
+        every { actionItemRepository.findByBoardId(board.id) } returns emptyList()
+        val snapshotSlot = slot<BoardSnapshot>()
+        every { snapshotRepository.save(capture(snapshotSlot)) } answers { firstArg() }
+
+        useCase.execute(board)
+
+        verify(exactly = 1) { snapshotRepository.save(any()) }
+        val savedSnapshot = snapshotSlot.captured
+        assertEquals("チーム Alpha", savedSnapshot.teamName)
+    }
+
+    @Test
+    fun `teamNameが未設定の場合はtitleを使用する`() {
+        val board = TestFixtures.board(phase = Phase.CLOSED, title = "Sprint 42 Retro", teamName = null)
+        val column = TestFixtures.boardColumn(id = "col-1", board = board, name = "Keep")
+        board.columns.add(column)
+
+        val participant = TestFixtures.participant(id = "p-1", board = board)
+        board.participants.add(participant)
+
+        val card = TestFixtures.card(id = "c-1", column = column, board = board)
+        board.cards.add(card)
+
+        every { actionItemRepository.findByBoardId(board.id) } returns emptyList()
+        val snapshotSlot = slot<BoardSnapshot>()
+        every { snapshotRepository.save(capture(snapshotSlot)) } answers { firstArg() }
+
+        useCase.execute(board)
+
+        verify(exactly = 1) { snapshotRepository.save(any()) }
+        val savedSnapshot = snapshotSlot.captured
+        assertEquals("Sprint 42 Retro", savedSnapshot.teamName)
+    }
+
+    @Test
     fun `スナップショットデータにカラムとカードの情報が含まれる`() {
         val board = TestFixtures.board(phase = Phase.CLOSED, framework = Framework.KPT)
         val column = TestFixtures.boardColumn(id = "col-1", board = board, name = "Keep", sortOrder = 0)

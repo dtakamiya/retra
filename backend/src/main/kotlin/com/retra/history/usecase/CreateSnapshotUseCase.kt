@@ -31,7 +31,7 @@ class CreateSnapshotUseCase(
 
         val snapshot = BoardSnapshot.create(
             boardId = board.id,
-            teamName = board.title,
+            teamName = board.teamName ?: board.title,
             framework = board.framework.name,
             closedAt = Instant.now().toString(),
             totalCards = totalCards,
