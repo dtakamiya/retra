@@ -18,6 +18,7 @@
 - **投票機能** - 1人あたりの最大投票数を設定可能
 - **フェーズベースのアクセス制御** - 記入フェーズでのみカード作成、投票フェーズでのみ投票など
 - **エクスポート機能** - ボード内容をCSVまたはMarkdown形式でダウンロード
+- **アクションアイテム引き継ぎ** - 同一チームの前回レトロから未完了アクションアイテムを引き継ぎ
 - **自動スナップショット** - ボード完了時に自動でスナップショットを保存
 - **複数人参加** - URLを共有するだけでボードに参加可能
 
@@ -189,7 +190,7 @@ backend/src/main/kotlin/com/retra/
 frontend/src/
 ├── api/                 # REST API クライアント
 ├── pages/               # ページコンポーネント（5ページ）
-├── components/          # UI コンポーネント（25+）
+├── components/          # UI コンポーネント（29）
 ├── store/               # Zustand ストア
 ├── websocket/           # STOMP クライアント
 ├── hooks/               # カスタムフック
@@ -219,6 +220,7 @@ frontend/src/
 | `PUT` | `/boards/{slug}/cards/{id}` | カード更新（投稿者のみ） |
 | `DELETE` | `/boards/{slug}/cards/{id}` | カード削除（投稿者またはファシリテーター） |
 | `PATCH` | `/boards/{slug}/cards/{id}/move` | カード移動（ドラッグ&ドロップ） |
+| `PATCH` | `/boards/{slug}/cards/{id}/discussed` | 議論済みマーク切替（ファシリテーターのみ） |
 
 ### 投票
 
@@ -265,6 +267,13 @@ frontend/src/
 | `PUT` | `/boards/{slug}/action-items/{id}` | アクションアイテム更新 |
 | `PATCH` | `/boards/{slug}/action-items/{id}/status` | アクションアイテムステータス変更 |
 | `DELETE` | `/boards/{slug}/action-items/{id}` | アクションアイテム削除 |
+
+### アクションアイテム引き継ぎ
+
+| メソッド | パス | 説明 |
+|---------|------|------|
+| `GET` | `/boards/{slug}/carry-over-items` | 前回レトロの引き継ぎアクションアイテム取得 |
+| `PATCH` | `/boards/{slug}/carry-over-items/{actionItemId}/status` | 引き継ぎアイテムステータス更新（ファシリテーターのみ） |
 
 ### 履歴・ダッシュボード
 

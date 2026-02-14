@@ -156,8 +156,10 @@ Flyway で管理。マイグレーションファイルは `backend/src/main/res
 | `V8__create_reactions.sql` | リアクションテーブル作成 |
 | `V9__create_action_items.sql` | アクションアイテムテーブル作成 |
 | `V10__create_board_snapshots.sql` | ボードスナップショットテーブル作成 |
+| `V11__add_ux_improvements.sql` | UX 改善（議論マーク等） |
+| `V12__add_team_name_to_boards.sql` | ボードに team_name カラム追加 |
 
-新しいマイグレーションを追加する場合は `V11__description.sql` のように命名してください。
+新しいマイグレーションを追加する場合は `V13__description.sql` のように命名してください。
 
 ### SQLite の制約
 
@@ -233,4 +235,4 @@ Conventional Commits 形式を使用:
 | Lucide React | ^0.563.0 | アイコン |
 | @dnd-kit/core | ^6.3.1 | ドラッグ&ドロップ (コア) |
 | @dnd-kit/sortable | ^10.0.0 | ドラッグ&ドロップ (ソート) |
-| Recharts | ^2.x | ダッシュボード用チャート |
+| Recharts | ^3.7.0 | ダッシュボード用チャート |
