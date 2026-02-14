@@ -10,6 +10,7 @@ import { BoardView } from '../components/BoardView';
 import { ParticipantList } from '../components/ParticipantList';
 import { TimerDisplay } from '../components/TimerDisplay';
 import { ConnectionBanner } from '../components/ConnectionBanner';
+import { CarryOverPanel } from '../components/CarryOverPanel';
 import { useTimerAlert } from '../hooks/useTimerAlert';
 
 export function BoardPage() {
@@ -121,6 +122,7 @@ export function BoardPage() {
           <div className="p-4">
             <TimerDisplay />
             <ParticipantList />
+            <CarryOverPanel />
           </div>
         </div>
       </div>

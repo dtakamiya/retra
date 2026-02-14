@@ -57,7 +57,7 @@ function calculateSortOrder(
 }
 
 export function BoardView() {
-  const { board, participant, handleCardMoved, setBoard, actionItems, setActionItems } = useBoardStore();
+  const { board, participant, handleCardMoved, setBoard, actionItems, setActionItems, setCarryOverItems } = useBoardStore();
   const [activeCard, setActiveCard] = useState<Card | null>(null);
   const [activeColumnColor, setActiveColumnColor] = useState('#000');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -70,6 +70,14 @@ export function BoardView() {
       });
     }
   }, [board?.slug, board?.phase, setActionItems]);
+
+  useEffect(() => {
+    if (board?.slug && board?.teamName) {
+      api.getCarryOverItems(board.slug).then(setCarryOverItems).catch(() => {
+        // carry-over取得失敗は無視
+      });
+    }
+  }, [board?.slug, board?.teamName, setCarryOverItems]);
 
   const maxVoteCount = useMemo(() => {
     if (!board) return 0;
