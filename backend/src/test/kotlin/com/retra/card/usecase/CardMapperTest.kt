@@ -128,27 +128,4 @@ class CardMapperTest {
         assertEquals(3, response.discussionOrder)
     }
 
-    @Test
-    fun `toVoteResponse で正常にマッピングされる`() {
-        val card = TestFixtures.card(id = "card-1")
-        val participant = TestFixtures.participant(id = "p-1")
-        val vote = TestFixtures.vote(id = "vote-1", card = card, participant = participant, createdAt = "2025-01-01T00:00:00Z")
-
-        val response = CardMapper.toVoteResponse(vote)
-
-        assertEquals("vote-1", response.id)
-        assertEquals("card-1", response.cardId)
-        assertEquals("p-1", response.participantId)
-        assertEquals("2025-01-01T00:00:00Z", response.createdAt)
-    }
-
-    @Test
-    fun `toVoteResponse でcardがnullの場合はcardIdが空文字`() {
-        val vote = TestFixtures.vote(card = null, participant = null)
-
-        val response = CardMapper.toVoteResponse(vote)
-
-        assertEquals("", response.cardId)
-        assertEquals("", response.participantId)
-    }
 }

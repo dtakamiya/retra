@@ -1,7 +1,6 @@
 package com.retra.card.usecase
 
 import com.retra.card.domain.Card
-import com.retra.card.domain.Vote
 
 object CardMapper {
 
@@ -26,15 +25,6 @@ object CardMapper {
             updatedAt = card.updatedAt,
             memos = card.memos.map { MemoMapper.toMemoResponse(it) },
             reactions = card.reactions.map { ReactionMapper.toReactionResponse(it) }
-        )
-    }
-
-    fun toVoteResponse(vote: Vote): VoteResponse {
-        return VoteResponse(
-            id = vote.id,
-            cardId = vote.card?.id ?: "",
-            participantId = vote.participant?.id ?: "",
-            createdAt = vote.createdAt
         )
     }
 }
