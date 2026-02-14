@@ -4,6 +4,7 @@ import com.retra.actionitem.usecase.CarryOverItemsResponse
 import com.retra.actionitem.usecase.GetCarryOverItemsUseCase
 import com.retra.actionitem.usecase.UpdateActionItemStatusRequest
 import com.retra.actionitem.usecase.UpdateCarryOverItemStatusUseCase
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -23,7 +24,8 @@ class CarryOverController(
         @PathVariable slug: String,
         @PathVariable actionItemId: String,
         @RequestBody request: UpdateActionItemStatusRequest
-    ) {
+    ): ResponseEntity<Void> {
         updateCarryOverItemStatusUseCase.execute(slug, actionItemId, request)
+        return ResponseEntity.noContent().build()
     }
 }

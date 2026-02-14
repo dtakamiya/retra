@@ -14,6 +14,7 @@ describe('api client', () => {
       ok: status >= 200 && status < 300,
       status,
       json: () => Promise.resolve(body),
+      text: () => Promise.resolve(JSON.stringify(body)),
     });
   }
 
@@ -22,6 +23,16 @@ describe('api client', () => {
       ok: true,
       status: 204,
       json: () => Promise.resolve(null),
+      text: () => Promise.resolve(''),
+    });
+  }
+
+  function mock200Empty() {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: () => Promise.reject(new SyntaxError('Unexpected end of JSON input')),
+      text: () => Promise.resolve(''),
     });
   }
 
@@ -507,5 +518,12 @@ describe('api client', () => {
     mockJsonParseFailure(500);
 
     await expect(api.getBoard('broken')).rejects.toThrow('不明なエラー');
+  });
+
+  it('200 with empty body returns undefined without throwing', async () => {
+    mock200Empty();
+
+    const result = await api.updateCarryOverItemStatus('test-slug', 'ai-1', 'DONE', 'p-1');
+    expect(result).toBeUndefined();
   });
 });

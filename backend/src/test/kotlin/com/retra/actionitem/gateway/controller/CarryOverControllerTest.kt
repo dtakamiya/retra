@@ -66,13 +66,13 @@ class CarryOverControllerTest {
     }
 
     @Test
-    fun `PATCH carry-over-items status returns 200`() {
+    fun `PATCH carry-over-items status returns 204 No Content`() {
         mockMvc.perform(
             patch("/api/v1/boards/test-slug/carry-over-items/ai-1/status")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(mapOf("status" to "DONE", "participantId" to "p-1")))
         )
-            .andExpect(status().isOk)
+            .andExpect(status().isNoContent)
 
         verify(updateCarryOverItemStatusUseCase).execute(eq("test-slug"), eq("ai-1"), any())
     }

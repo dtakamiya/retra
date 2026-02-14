@@ -645,11 +645,27 @@ describe('boardStore', () => {
     ];
     useBoardStore.setState({ carryOverItems: items });
 
+    useBoardStore.getState().updateCarryOverItemStatus('co-1', 'IN_PROGRESS');
+
+    const state = useBoardStore.getState();
+    expect(state.carryOverItems).toHaveLength(2);
+    expect(state.carryOverItems[0].status).toBe('IN_PROGRESS');
+    expect(state.carryOverItems[1].status).toBe('OPEN');
+  });
+
+  it('updateCarryOverItemStatus removes item when changed to DONE', () => {
+    const items = [
+      createCarryOverItem({ id: 'co-1', status: 'OPEN' }),
+      createCarryOverItem({ id: 'co-2', status: 'OPEN' }),
+    ];
+    useBoardStore.setState({ carryOverItems: items });
+
     useBoardStore.getState().updateCarryOverItemStatus('co-1', 'DONE');
 
     const state = useBoardStore.getState();
-    expect(state.carryOverItems[0].status).toBe('DONE');
-    expect(state.carryOverItems[1].status).toBe('OPEN');
+    expect(state.carryOverItems).toHaveLength(1);
+    expect(state.carryOverItems[0].id).toBe('co-2');
+    expect(state.carryOverItems[0].status).toBe('OPEN');
   });
 
   it('updateCarryOverItemStatus with non-existent id leaves list unchanged', () => {

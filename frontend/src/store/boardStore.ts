@@ -84,9 +84,9 @@ export const useBoardStore = create<BoardState>((set) => ({
   setActionItems: (items) => set({ actionItems: items }),
   setCarryOverItems: (response) => set({ carryOverItems: response.items, carryOverTeamName: response.teamName }),
   updateCarryOverItemStatus: (actionItemId, newStatus) => set((state) => ({
-    carryOverItems: state.carryOverItems.map((item) =>
-      item.id === actionItemId ? { ...item, status: newStatus } : item
-    ),
+    carryOverItems: state.carryOverItems
+      .map((item) => item.id === actionItemId ? { ...item, status: newStatus } : item)
+      .filter((item) => item.status !== 'DONE'),
   })),
 
   handleCardCreated: (card) =>
