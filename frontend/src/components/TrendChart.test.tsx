@@ -26,26 +26,26 @@ describe('TrendChart', () => {
     expect(container).toBeTruthy()
   })
 
-  it('renders ResponsiveContainer', () => {
+  it('renders ResponsiveContainers', () => {
     const data = [createTrendPoint()]
-    const { getByTestId } = render(<TrendChart data={data} />)
+    const { getAllByTestId } = render(<TrendChart data={data} />)
 
-    expect(getByTestId('responsive-container')).toBeInTheDocument()
+    expect(getAllByTestId('responsive-container')).toHaveLength(2)
   })
 
-  it('renders LineChart', () => {
+  it('renders LineCharts', () => {
     const data = [createTrendPoint()]
-    const { getByTestId } = render(<TrendChart data={data} />)
+    const { getAllByTestId } = render(<TrendChart data={data} />)
 
-    expect(getByTestId('line-chart')).toBeInTheDocument()
+    expect(getAllByTestId('line-chart')).toHaveLength(2)
   })
 
-  it('renders three lines for cards, votes, and completion rate', () => {
+  it('renders seven lines for all metrics', () => {
     const data = [createTrendPoint()]
     const { getAllByTestId } = render(<TrendChart data={data} />)
 
     const lines = getAllByTestId('line')
-    expect(lines).toHaveLength(3)
+    expect(lines).toHaveLength(7)
   })
 
   it('renders correct line names', () => {
