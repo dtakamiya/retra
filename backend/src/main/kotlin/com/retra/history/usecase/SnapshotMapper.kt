@@ -46,7 +46,14 @@ object SnapshotMapper {
             totalParticipants = snapshot.totalParticipants,
             actionItemsTotal = snapshot.actionItemsTotal,
             actionItemsDone = snapshot.actionItemsDone,
-            actionItemCompletionRate = completionRate
+            actionItemCompletionRate = completionRate,
+            cardsPerParticipant = safeDiv(snapshot.totalCards, snapshot.totalParticipants),
+            votesPerParticipant = safeDiv(snapshot.totalVotes, snapshot.totalParticipants),
+            votesPerCard = safeDiv(snapshot.totalVotes, snapshot.totalCards),
+            actionItemRate = safeDiv(snapshot.actionItemsTotal, snapshot.totalCards) * 100
         )
     }
+
+    private fun safeDiv(numerator: Int, denominator: Int): Double =
+        if (denominator > 0) numerator.toDouble() / denominator else 0.0
 }

@@ -64,7 +64,11 @@ class HistoryControllerTest {
                 totalParticipants = 4,
                 actionItemsTotal = 3,
                 actionItemsDone = 1,
-                actionItemCompletionRate = 33.33
+                actionItemCompletionRate = 33.33,
+                cardsPerParticipant = 3.0,
+                votesPerParticipant = 6.0,
+                votesPerCard = 2.0,
+                actionItemRate = 25.0
             )
         )
     )

@@ -36,5 +36,9 @@ data class TrendPoint(
     val totalParticipants: Int,
     val actionItemsTotal: Int,
     val actionItemsDone: Int,
-    val actionItemCompletionRate: Double
+    val actionItemCompletionRate: Double,
+    val cardsPerParticipant: Double,
+    val votesPerParticipant: Double,
+    val votesPerCard: Double,
+    val actionItemRate: Double
 )
