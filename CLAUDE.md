@@ -11,7 +11,7 @@ Retra is a real-time retrospective board for Scrum teams. It supports multiple f
 
 - **Backend:** Spring Boot 3.4.1 + Kotlin 2.0.21 (`backend/`)
 - **Frontend:** React 19.2 + TypeScript 5.9 + Vite 7 + Zustand 5 + TailwindCSS v4 (`frontend/`)
-- **Database:** SQLite with Flyway migrations (V1-V11)
+- **Database:** SQLite with Flyway migrations (V1-V12)
 - **CI/CD:** なし（GitHub Actions、Docker等の設定は未導入）
 - **Realtime:** WebSocket via STOMP protocol (`@stomp/stompjs`)
 - **Drag & Drop:** @dnd-kit (core, sortable, utilities)
@@ -93,8 +93,8 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 #### `board/` - Board Module
 | Package | Purpose |
 |---------|---------|
-| `board/domain/` | `Board`, `BoardColumn`, `Participant`, `BoardSlug`, `VoteLimit`, `Framework`, `Phase`, `BoardAuthorizationService`, `BoardEvent`, repositories |
-| `board/usecase/` | `CreateBoardUseCase`, `GetBoardUseCase`, `TransitionPhaseUseCase`, `JoinBoardUseCase`, `UpdateOnlineStatusUseCase`, `ExportBoardUseCase`, `BoardDtos`, `ExportDtos`, `BoardMapper` |
+| `board/domain/` | `Board` (includes `teamName`), `BoardColumn`, `Participant`, `BoardSlug`, `VoteLimit`, `Framework`, `Phase`, `BoardAuthorizationService`, `BoardEvent`, repositories |
+| `board/usecase/` | `CreateBoardUseCase` (`CreateBoardRequest` includes `teamName`), `GetBoardUseCase`, `TransitionPhaseUseCase`, `JoinBoardUseCase`, `UpdateOnlineStatusUseCase`, `ExportBoardUseCase`, `BoardDtos`, `ExportDtos`, `BoardMapper` |
 | `board/usecase/export/` | `CsvExportService`, `MarkdownExportService` (CSV/Markdownエクスポート) |
 | `board/gateway/controller/` | `BoardController` (REST) |
 | `board/gateway/db/` | JPA repository implementations (`JpaBoardRepository`, `JpaParticipantRepository`) + Spring Data interfaces (`SpringDataBoardRepository`, `SpringDataParticipantRepository`) |
@@ -145,7 +145,7 @@ Entry point: `RetraApplication.kt`
 |-----------|---------|
 | `api/client.ts` | REST API wrapper (`/api/v1` base) |
 | `pages/` | `HomePage` (create/join), `BoardPage` (main board), `TeamDashboardPage` (history + trends), `SnapshotDetailPage` (snapshot detail), `NotFoundPage` |
-| `components/` | `BoardHeader`, `BoardView`, `ColumnView`, `CardItem`, `CardForm`, `MemoList`, `MemoItem`, `MemoForm`, `ReactionList`, `ReactionPicker`, `ParticipantList`, `PhaseControl`, `TimerDisplay`, `ConnectionBanner`, `NicknameModal`, `ExportMenu`, `ToastContainer`, `ActionItemList`, `ActionItemCard`, `ActionItemForm`, `ActionItemStatusBadge`, `RetroHistoryList`, `RetroSummaryCard`, `TrendChart`, `SnapshotDetailView` |
+| `components/` | `BoardHeader`, `BoardView`, `ColumnView`, `CardItem`, `CardForm`, `MemoList`, `MemoItem`, `MemoForm`, `ReactionList`, `ReactionPicker`, `ParticipantList`, `PhaseControl`, `TimerDisplay`, `ConnectionBanner`, `NicknameModal`, `ExportMenu`, `ToastContainer`, `ActionItemList`, `ActionItemCard`, `ActionItemForm`, `ActionItemStatusBadge`, `CarryOverPanel`, `RetroHistoryList`, `RetroSummaryCard`, `TrendChart`, `SnapshotDetailView` |
 | `store/boardStore.ts` | Zustand store with WebSocket event handlers |
 | `store/toastStore.ts` | Toast notification store (success/error/info, 4秒自動削除) |
 | `websocket/useWebSocket.ts` | STOMP client hook with auto-reconnect |
@@ -184,6 +184,8 @@ All REST endpoints are under `/api/v1`:
 - `PUT /boards/{slug}/action-items/{id}` - Update action item
 - `PATCH /boards/{slug}/action-items/{id}/status` - Change action item status
 - `DELETE /boards/{slug}/action-items/{id}` - Delete action item
+- `GET /boards/{slug}/carry-over-items` - Get carry-over action items from previous retro
+- `PATCH /boards/{slug}/carry-over-items/{actionItemId}/status` - Update carry-over item status (facilitator only)
 - `GET /history` - Get retro history (optional query param: `teamName`)
 - `GET /history/{snapshotId}` - Get snapshot detail
 - `GET /history/trends` - Get trend data (optional query param: `teamName`)
@@ -257,7 +259,7 @@ Business rules are enforced in the usecase layer:
 - **SQLite single-writer:** HikariCP `maximum-pool-size=1`, WAL mode, `busy_timeout=5000ms`, `foreign_keys=ON`
 - **Kotlin JPA entities** use `open class` (not data class) due to `allOpen` plugin with `@Entity`, `@MappedSuperclass`, `@Embeddable` annotations
 - **TailwindCSS v4:** Uses `@tailwindcss/vite` plugin with `@import "tailwindcss"` syntax. No `tailwind.config.js`.
-- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V11, do not modify existing migrations)
+- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V12, do not modify existing migrations)
 - **SPA fallback:** `SpaConfig.kt` serves `index.html` for non-API, non-static routes in production
 - **Vite proxy:** Dev server proxies `/api` to `http://localhost:8080` and `/ws` to `ws://localhost:8080`
 - **TypeScript strict mode:** `noUnusedLocals`, `noUnusedParameters`, `erasableSyntaxOnly`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports` all enabled
