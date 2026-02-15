@@ -9,9 +9,9 @@ const ICON_MAP: Record<ToastType, typeof CheckCircle2> = {
 };
 
 const STYLE_MAP: Record<ToastType, string> = {
-  success: 'bg-white border-green-200 text-green-800',
-  error: 'bg-white border-red-200 text-red-800',
-  info: 'bg-white border-blue-200 text-blue-800',
+  success: 'bg-white border-green-200 text-green-800 dark:bg-slate-800 dark:border-green-700 dark:text-green-300',
+  error: 'bg-white border-red-200 text-red-800 dark:bg-slate-800 dark:border-red-700 dark:text-red-300',
+  info: 'bg-white border-blue-200 text-blue-800 dark:bg-slate-800 dark:border-blue-700 dark:text-blue-300',
 };
 
 const ICON_STYLE_MAP: Record<ToastType, string> = {
@@ -32,7 +32,7 @@ export function ToastContainer() {
         return (
           <div
             key={toast.id}
-            className={`flex items-start gap-2.5 px-4 py-3 border rounded-xl shadow-lg shadow-gray-200/50 animate-[slideIn_0.2s_ease-out] ${STYLE_MAP[toast.type]}`}
+            className={`flex items-start gap-2.5 px-4 py-3 border rounded-xl shadow-lg shadow-gray-200/50 dark:shadow-black/30 animate-[slideIn_0.2s_ease-out] ${STYLE_MAP[toast.type]}`}
             role="alert"
             data-testid="toast"
           >

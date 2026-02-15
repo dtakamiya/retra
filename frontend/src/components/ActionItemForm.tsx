@@ -63,7 +63,7 @@ export function ActionItemForm({ slug, participants, cardId, initialContent = ''
   };
 
   return (
-    <div className="bg-gray-50 rounded-lg p-3 border border-dashed border-gray-300 space-y-2">
+    <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-3 border border-dashed border-gray-300 dark:border-slate-600 space-y-2">
       <textarea
         ref={textareaRef}
         value={content}
@@ -71,14 +71,14 @@ export function ActionItemForm({ slug, participants, cardId, initialContent = ''
         onKeyDown={handleKeyDown}
         placeholder="アクションアイテムを追加...（Escでクリア）"
         maxLength={2000}
-        className="w-full resize-none border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-300 min-h-[40px]"
+        className="w-full resize-none border border-gray-200 dark:border-slate-700 rounded px-2 py-1.5 text-sm text-gray-700 dark:text-slate-200 dark:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-300 min-h-[40px]"
         rows={2}
       />
       <div className="flex gap-2 items-end flex-wrap">
         <select
           value={assigneeId}
           onChange={(e) => setAssigneeId(e.target.value)}
-          className="text-xs border border-gray-200 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-300"
+          className="text-xs border border-gray-200 dark:border-slate-700 rounded px-2 py-1 bg-white dark:bg-slate-800 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-300"
           aria-label="担当者を選択"
         >
           <option value="">担当者（任意）</option>
@@ -90,13 +90,13 @@ export function ActionItemForm({ slug, participants, cardId, initialContent = ''
           type="date"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
-          className="text-xs border border-gray-200 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-300"
+          className="text-xs border border-gray-200 dark:border-slate-700 rounded px-2 py-1 bg-white dark:bg-slate-800 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-300"
           aria-label="期限を設定"
         />
         <select
           value={priority}
           onChange={(e) => setPriority(e.target.value as ActionItemPriority)}
-          className="text-xs border border-gray-200 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-300"
+          className="text-xs border border-gray-200 dark:border-slate-700 rounded px-2 py-1 bg-white dark:bg-slate-800 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-300"
           aria-label="優先度を選択"
         >
           <option value="HIGH">高</option>

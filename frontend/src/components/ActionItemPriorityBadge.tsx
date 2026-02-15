@@ -6,9 +6,9 @@ interface Props {
 }
 
 const PRIORITY_CONFIG = {
-  HIGH: { icon: ArrowUp, label: '高', className: 'text-red-600 bg-red-50' },
-  MEDIUM: { icon: ArrowRight, label: '中', className: 'text-yellow-600 bg-yellow-50' },
-  LOW: { icon: ArrowDown, label: '低', className: 'text-gray-500 bg-gray-50' },
+  HIGH: { icon: ArrowUp, label: '高', className: 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/30' },
+  MEDIUM: { icon: ArrowRight, label: '中', className: 'text-yellow-600 bg-yellow-50 dark:text-yellow-400 dark:bg-yellow-900/30' },
+  LOW: { icon: ArrowDown, label: '低', className: 'text-gray-500 bg-gray-50 dark:text-slate-400 dark:bg-slate-700' },
 } as const;
 
 export function ActionItemPriorityBadge({ priority }: Props) {

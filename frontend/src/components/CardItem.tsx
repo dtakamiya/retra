@@ -167,12 +167,12 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
 
   if (editing) {
     return (
-      <div ref={setNodeRef} style={style} className="bg-white rounded-xl shadow-sm border border-indigo-100 p-3 animate-[scaleFadeIn_0.15s_ease-out]">
+      <div ref={setNodeRef} style={style} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-indigo-100 dark:border-indigo-800/50 p-3 animate-[scaleFadeIn_0.15s_ease-out]">
         <textarea
           value={editContent}
           onChange={(e) => setEditContent(e.target.value)}
           onKeyDown={handleEditKeyDown}
-          className="w-full resize-none border-0 focus:ring-0 outline-none text-sm text-gray-800 min-h-[60px]"
+          className="w-full resize-none border-0 focus:ring-0 outline-none text-sm text-gray-800 dark:text-slate-200 dark:bg-slate-800 min-h-[60px]"
           autoFocus
           rows={3}
         />
@@ -182,7 +182,7 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
               setEditing(false);
               setEditContent(card.content);
             }}
-            className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+            className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
           >
             キャンセル
           </button>
@@ -203,15 +203,15 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
       ref={setNodeRef}
       style={style}
       {...safeAttributes}
-      className={`bg-white rounded-xl border p-3 group transition-all ${
-        isOverlay ? 'shadow-xl ring-2 ring-indigo-300/50 border-indigo-200' : 'shadow-sm hover:shadow-md border-gray-100 hover:border-gray-200'
+      className={`bg-white dark:bg-slate-800 rounded-xl border p-3 group transition-all ${
+        isOverlay ? 'shadow-xl ring-2 ring-indigo-300/50 dark:ring-indigo-500/30 border-indigo-200 dark:border-indigo-600' : 'shadow-sm hover:shadow-md hover:-translate-y-0.5 border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600'
       } ${card.isDiscussed ? 'opacity-50' : ''} ${hasMyVoteHighlight ? 'border-l-[3px] border-l-indigo-500' : ''}`}
     >
       <div className="flex gap-2">
         {isDndEnabled && (
           <button
             {...listeners}
-            className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-400 mt-0.5 transition-colors"
+            className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-400 dark:text-slate-600 dark:hover:text-slate-400 mt-0.5 transition-colors"
             aria-label="ドラッグして並べ替え"
           >
             <GripVertical size={14} />
@@ -231,10 +231,10 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
             <CheckCircle size={16} />
           </button>
         )}
-        <p className="text-sm text-gray-700 whitespace-pre-wrap break-words flex-1 leading-relaxed">{card.content}</p>
+        <p className="text-sm text-gray-700 dark:text-slate-200 whitespace-pre-wrap break-words flex-1 leading-relaxed">{card.content}</p>
       </div>
 
-      <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
+      <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50 dark:border-slate-700">
         <div className="flex items-center gap-2">
           {/* Vote button / count */}
           {isVoting ? (
@@ -244,7 +244,7 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
               className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-all ${
                 hasMyVote
                   ? 'text-white shadow-sm'
-                  : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                  : 'bg-gray-50 text-gray-500 hover:bg-gray-100 dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600'
               }`}
               style={hasMyVote ? { backgroundColor: columnColor } : undefined}
               data-testid="vote-button"
@@ -268,9 +268,9 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
           ) : null}
 
           {card.authorNickname ? (
-            <span className="text-[11px] text-gray-400">{card.authorNickname}</span>
+            <span className="text-[11px] text-gray-400 dark:text-slate-500">{card.authorNickname}</span>
           ) : board.isAnonymous ? (
-            <span className="text-[11px] text-gray-400 italic">匿名</span>
+            <span className="text-[11px] text-gray-400 dark:text-slate-500 italic">匿名</span>
           ) : null}
         </div>
 
@@ -280,7 +280,7 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
             {isAuthor && (
               <button
                 onClick={() => setEditing(true)}
-                className="p-1 text-gray-400 hover:text-gray-600 rounded transition-colors"
+                className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded transition-colors"
                 aria-label="カードを編集"
               >
                 <Pencil size={13} />
@@ -288,7 +288,7 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
             )}
             <button
               onClick={handleDelete}
-              className="p-1 text-gray-400 hover:text-red-500 rounded transition-colors"
+              className="p-1 text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 rounded transition-colors"
               aria-label="カードを削除"
             >
               <Trash2 size={13} />
@@ -301,7 +301,7 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
           {(phase === 'DISCUSSION' || phase === 'ACTION_ITEMS') && (
             <button
               onClick={handleConvertToActionItem}
-              className="p-1 text-gray-400 hover:text-purple-600 rounded transition-colors"
+              className="p-1 text-gray-400 hover:text-purple-600 dark:text-slate-500 dark:hover:text-purple-400 rounded transition-colors"
               aria-label="アクションアイテムに変換"
               title="アクションアイテムに変換"
             >
@@ -317,7 +317,7 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
             <button
               onClick={() => setMemosExpanded(!memosExpanded)}
               className={`flex items-center gap-1 px-1.5 py-0.5 text-xs rounded-md transition-colors ${
-                memosExpanded ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400 hover:text-gray-600'
+                memosExpanded ? 'text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-900/30' : 'text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300'
               }`}
               aria-label="メモを表示"
             >

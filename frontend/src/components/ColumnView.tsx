@@ -100,7 +100,7 @@ export function ColumnView({ column }: Props) {
         )}
       </div>
 
-      <div ref={setNodeRef} className="flex-1 bg-gray-50/80 rounded-b-xl p-2 space-y-2 overflow-y-auto">
+      <div ref={setNodeRef} className="flex-1 bg-gray-50/80 dark:bg-slate-800/30 rounded-b-xl p-2 space-y-2 overflow-y-auto">
         {showForm && isWriting && (
           <CardForm columnId={column.id} onClose={() => setShowForm(false)} />
         )}
@@ -110,13 +110,13 @@ export function ColumnView({ column }: Props) {
           ))}
         </SortableContext>
         {column.cards.length === 0 && !showForm && (
-          <div className="text-center py-10 text-gray-300 text-xs">
+          <div className="text-center py-10 text-gray-300 dark:text-slate-600 text-xs">
             {isWriting ? (
               <button
                 onClick={() => setShowForm(true)}
-                className="flex flex-col items-center gap-2 mx-auto hover:text-gray-400 transition-colors group"
+                className="flex flex-col items-center gap-2 mx-auto hover:text-gray-400 dark:hover:text-slate-500 transition-colors group"
               >
-                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-slate-700 transition-colors">
                   <Plus size={18} className="text-gray-400" />
                 </div>
                 <span>カードを追加</span>

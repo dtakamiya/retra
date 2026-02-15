@@ -189,7 +189,7 @@ export function BoardView() {
       {errorMessage && (
         <div
           role="alert"
-          className="mx-4 mt-2 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg"
+          className="mx-4 mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-300 text-sm rounded-lg"
         >
           {errorMessage}
         </div>

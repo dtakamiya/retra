@@ -51,13 +51,13 @@ export function MemoForm({ cardId }: Props) {
         onKeyDown={handleKeyDown}
         placeholder="メモを追加...（Escでクリア）"
         maxLength={2000}
-        className="flex-1 resize-none border border-gray-200 rounded px-2 py-1 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-300 min-h-[32px]"
+        className="flex-1 resize-none border border-gray-200 dark:border-slate-600 rounded px-2 py-1 text-xs text-gray-700 dark:text-slate-200 dark:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-300 min-h-[32px]"
         rows={1}
       />
       <button
         onClick={handleSubmit}
         disabled={loading || !content.trim()}
-        className="p-1.5 text-indigo-500 hover:text-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed"
+        className="p-1.5 text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 disabled:opacity-30 disabled:cursor-not-allowed"
         aria-label="メモを送信"
       >
         <Send size={14} />

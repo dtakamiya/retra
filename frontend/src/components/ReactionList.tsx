@@ -53,8 +53,8 @@ export function ReactionList({ reactions, myParticipantId, onToggle, disabled }:
           disabled={disabled}
           className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs border transition-colors ${
             group.hasMyReaction
-              ? 'bg-indigo-50 border-indigo-300 text-indigo-700'
-              : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+              ? 'bg-indigo-50 border-indigo-300 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-600 dark:text-indigo-300'
+              : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700'
           } disabled:opacity-50`}
           aria-label={`${group.emoji} ${group.count}件${group.hasMyReaction ? '（リアクション済み）' : ''}`}
         >

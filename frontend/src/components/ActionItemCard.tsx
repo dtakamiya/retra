@@ -73,13 +73,13 @@ export function ActionItemCard({ actionItem }: Props) {
 
   if (editing) {
     return (
-      <div className="bg-white rounded-xl p-3 border border-indigo-100 shadow-sm animate-[scaleFadeIn_0.15s_ease-out]">
+      <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-indigo-100 dark:border-indigo-800/50 shadow-sm animate-[scaleFadeIn_0.15s_ease-out]">
         <textarea
           value={editContent}
           onChange={(e) => setEditContent(e.target.value)}
           onKeyDown={handleKeyDown}
           maxLength={2000}
-          className="w-full resize-none border border-gray-100 rounded-lg px-2.5 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 min-h-[48px]"
+          className="w-full resize-none border border-gray-100 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-sm text-gray-700 dark:text-slate-200 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 min-h-[48px]"
           autoFocus
           rows={2}
         />
@@ -89,7 +89,7 @@ export function ActionItemCard({ actionItem }: Props) {
               setEditing(false);
               setEditContent(actionItem.content);
             }}
-            className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
             aria-label="キャンセル"
           >
             <X size={14} />
@@ -108,10 +108,10 @@ export function ActionItemCard({ actionItem }: Props) {
   }
 
   return (
-    <div className="group bg-white rounded-xl p-3 border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all">
+    <div className="group bg-white dark:bg-slate-800 rounded-xl p-3 border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-gray-200 dark:hover:border-slate-600 transition-all">
       <div className="flex gap-2 items-start">
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-gray-700 whitespace-pre-wrap break-words leading-relaxed">{actionItem.content}</p>
+          <p className="text-sm text-gray-700 dark:text-slate-200 whitespace-pre-wrap break-words leading-relaxed">{actionItem.content}</p>
           <div className="flex items-center gap-2 mt-2 flex-wrap">
             <ActionItemStatusBadge status={actionItem.status} />
             <ActionItemPriorityBadge priority={actionItem.priority} />
@@ -136,7 +136,7 @@ export function ActionItemCard({ actionItem }: Props) {
               value={actionItem.status}
               onChange={(e) => handleStatusChange(e.target.value as ActionItemStatus)}
               disabled={loading}
-              className="text-[11px] border border-gray-150 rounded-lg px-1.5 py-0.5 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-gray-600"
+              className="text-[11px] border border-gray-150 dark:border-slate-700 rounded-lg px-1.5 py-0.5 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-gray-600 dark:text-slate-300"
               aria-label="ステータスを変更"
             >
               <option value="OPEN">未着手</option>
@@ -150,7 +150,7 @@ export function ActionItemCard({ actionItem }: Props) {
               {canModify && (
                 <button
                   onClick={() => { setEditContent(actionItem.content); setEditing(true); }}
-                  className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
                   aria-label="アクションアイテムを編集"
                 >
                   <Pencil size={12} />
@@ -160,7 +160,7 @@ export function ActionItemCard({ actionItem }: Props) {
                 <button
                   onClick={handleDelete}
                   disabled={loading}
-                  className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                  className="p-1 text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 transition-colors"
                   aria-label="アクションアイテムを削除"
                 >
                   <Trash2 size={12} />
