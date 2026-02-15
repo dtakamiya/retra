@@ -36,7 +36,7 @@ describe('MemoForm', () => {
 
     render(<MemoForm cardId="card-1" />)
 
-    expect(screen.getByPlaceholderText('メモを追加...')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('メモを追加...（Escでクリア）')).toBeInTheDocument()
     expect(screen.getByLabelText('メモを送信')).toBeInTheDocument()
   })
 
@@ -65,12 +65,30 @@ describe('MemoForm', () => {
 
     render(<MemoForm cardId="card-1" />)
 
-    const textarea = screen.getByPlaceholderText('メモを追加...')
+    const textarea = screen.getByPlaceholderText('メモを追加...（Escでクリア）')
     await user.type(textarea, 'メモ内容')
     await user.click(screen.getByLabelText('メモを送信'))
 
     expect(api.createMemo).toHaveBeenCalledWith('test-slug', 'card-1', 'メモ内容', 'p-1')
     expect(textarea).toHaveValue('')
+  })
+
+  it('pressing Escape clears content and blurs textarea', async () => {
+    const user = userEvent.setup()
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ slug: 'test-slug', phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1' }),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<MemoForm cardId="card-1" />)
+
+    const textarea = screen.getByPlaceholderText('メモを追加...（Escでクリア）')
+    await user.type(textarea, '入力中のメモ')
+    expect(textarea).toHaveValue('入力中のメモ')
+
+    await user.type(textarea, '{Escape}')
+    expect(textarea).toHaveValue('')
+    expect(textarea).not.toHaveFocus()
   })
 
   it('pressing Enter submits the memo', async () => {
@@ -87,7 +105,7 @@ describe('MemoForm', () => {
 
     render(<MemoForm cardId="card-1" />)
 
-    const textarea = screen.getByPlaceholderText('メモを追加...')
+    const textarea = screen.getByPlaceholderText('メモを追加...（Escでクリア）')
     await user.type(textarea, 'Enter送信')
     await user.type(textarea, '{Enter}')
 

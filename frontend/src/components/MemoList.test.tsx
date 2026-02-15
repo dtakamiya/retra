@@ -50,7 +50,7 @@ describe('MemoList', () => {
 
     render(<MemoList cardId="card-1" memos={[]} />)
 
-    expect(screen.getByPlaceholderText('メモを追加...')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('メモを追加...（Escでクリア）')).toBeInTheDocument()
   })
 
   it('shows MemoForm in ACTION_ITEMS phase', () => {
@@ -61,7 +61,7 @@ describe('MemoList', () => {
 
     render(<MemoList cardId="card-1" memos={[]} />)
 
-    expect(screen.getByPlaceholderText('メモを追加...')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('メモを追加...（Escでクリア）')).toBeInTheDocument()
   })
 
   it('does NOT show MemoForm in CLOSED phase', () => {
@@ -72,6 +72,6 @@ describe('MemoList', () => {
 
     render(<MemoList cardId="card-1" memos={[]} />)
 
-    expect(screen.queryByPlaceholderText('メモを追加...')).not.toBeInTheDocument()
+    expect(screen.queryByPlaceholderText('メモを追加...（Escでクリア）')).not.toBeInTheDocument()
   })
 })
