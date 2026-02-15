@@ -7,6 +7,7 @@ import com.retra.card.usecase.VoteResponse
 import com.retra.card.usecase.AddVoteUseCase
 import com.retra.card.usecase.GetRemainingVotesUseCase
 import com.retra.card.usecase.RemoveVoteUseCase
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
@@ -22,7 +23,7 @@ class VoteController(
     @ResponseStatus(HttpStatus.CREATED)
     fun addVote(
         @PathVariable slug: String,
-        @RequestBody request: VoteRequest
+        @Valid @RequestBody request: VoteRequest
     ): VoteResponse {
         return addVoteUseCase.execute(slug, request)
     }
@@ -31,9 +32,10 @@ class VoteController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun removeVote(
         @PathVariable slug: String,
-        @RequestBody request: RemoveVoteRequest
+        @RequestParam cardId: String,
+        @RequestParam participantId: String
     ) {
-        removeVoteUseCase.execute(slug, request)
+        removeVoteUseCase.execute(slug, RemoveVoteRequest(cardId, participantId))
     }
 
     @GetMapping("/remaining")

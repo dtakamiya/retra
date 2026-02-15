@@ -92,8 +92,7 @@ class CardControllerTest {
     fun `DELETE cards cardId カード削除 204`() {
         mockMvc.perform(
             delete("/api/v1/boards/test1234/cards/card-1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(DeleteCardRequest("p-1")))
+                .param("participantId", "p-1")
         )
             .andExpect(status().isNoContent)
     }

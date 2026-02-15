@@ -153,7 +153,7 @@ class MemoTest {
     }
 
     @Test
-    fun `updateContent でboardやcardがnullでもイベントが生成される`() {
+    fun `updateContent でboardがnullの場合はIllegalStateExceptionが発生する`() {
         val participant = TestFixtures.participant(id = "p-1")
         val memo = Memo(
             id = "memo-1",
@@ -166,12 +166,9 @@ class MemoTest {
             updatedAt = Instant.now().toString()
         )
 
-        memo.updateContent("Updated", "p-1")
-
-        assertEquals("Updated", memo.content)
-        val event = memo.getDomainEvents().first() as MemoEvent.MemoUpdated
-        assertEquals("", event.slug)
-        assertEquals("", event.cardId)
+        assertFailsWith<IllegalStateException> {
+            memo.updateContent("Updated", "p-1")
+        }
     }
 
     @Test

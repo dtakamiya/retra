@@ -3,7 +3,7 @@ package com.retra.actionitem.domain
 import com.retra.board.domain.Board
 import com.retra.board.domain.Participant
 import com.retra.card.domain.Card
-import com.retra.shared.domain.DomainEvent
+import com.retra.shared.domain.AggregateRoot
 import com.retra.shared.domain.ForbiddenException
 import jakarta.persistence.*
 import java.time.Instant
@@ -49,15 +49,7 @@ open class ActionItem(
 
     @Column(name = "updated_at", nullable = false)
     open var updatedAt: String = Instant.now().toString()
-) {
-    @Transient
-    private val _domainEvents: MutableList<DomainEvent> = mutableListOf()
-
-    fun getDomainEvents(): List<DomainEvent> = _domainEvents.toList()
-
-    fun clearDomainEvents() {
-        _domainEvents.clear()
-    }
+) : AggregateRoot() {
 
     fun canBeModifiedBy(participant: Participant): Boolean {
         return participant.isFacilitator || assignee?.id == participant.id
@@ -78,10 +70,10 @@ open class ActionItem(
             this.priority = priority
         }
         this.updatedAt = Instant.now().toString()
-        _domainEvents.add(
+        registerEvent(
             ActionItemEvent.ActionItemUpdated(
                 actionItemId = id,
-                boardSlug = board?.slug ?: ""
+                boardSlug = board?.slug ?: throw IllegalStateException("ActionItem must belong to a board")
             )
         )
     }
@@ -92,10 +84,10 @@ open class ActionItem(
         }
         this.status = newStatus
         this.updatedAt = Instant.now().toString()
-        _domainEvents.add(
+        registerEvent(
             ActionItemEvent.ActionItemStatusChanged(
                 actionItemId = id,
-                boardSlug = board?.slug ?: "",
+                boardSlug = board?.slug ?: throw IllegalStateException("ActionItem must belong to a board"),
                 newStatus = newStatus
             )
         )
@@ -125,7 +117,7 @@ open class ActionItem(
                 createdAt = now,
                 updatedAt = now
             )
-            actionItem._domainEvents.add(
+            actionItem.registerEvent(
                 ActionItemEvent.ActionItemCreated(
                     actionItemId = actionItem.id,
                     boardSlug = board.slug,

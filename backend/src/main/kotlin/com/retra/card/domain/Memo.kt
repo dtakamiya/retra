@@ -2,7 +2,7 @@ package com.retra.card.domain
 
 import com.retra.board.domain.Board
 import com.retra.board.domain.Participant
-import com.retra.shared.domain.DomainEvent
+import com.retra.shared.domain.AggregateRoot
 import com.retra.shared.domain.ForbiddenException
 import jakarta.persistence.*
 import java.time.Instant
@@ -37,15 +37,7 @@ open class Memo(
 
     @Column(name = "updated_at", nullable = false)
     open var updatedAt: String = Instant.now().toString()
-) {
-    @Transient
-    private val _domainEvents: MutableList<DomainEvent> = mutableListOf()
-
-    fun getDomainEvents(): List<DomainEvent> = _domainEvents.toList()
-
-    fun clearDomainEvents() {
-        _domainEvents.clear()
-    }
+) : AggregateRoot() {
 
     fun updateContent(newContent: String, executorId: String) {
         if (participant?.id != executorId) {
@@ -53,10 +45,10 @@ open class Memo(
         }
         content = newContent
         updatedAt = Instant.now().toString()
-        _domainEvents.add(
+        registerEvent(
             MemoEvent.MemoUpdated(
-                slug = board?.slug ?: "",
-                cardId = card?.id ?: "",
+                boardSlug = board?.slug ?: throw IllegalStateException("Memo must belong to a board"),
+                cardId = card?.id ?: throw IllegalStateException("Memo must belong to a card"),
                 memoId = id,
                 content = content,
                 authorNickname = authorNickname,
@@ -89,9 +81,9 @@ open class Memo(
                 createdAt = now,
                 updatedAt = now
             )
-            memo._domainEvents.add(
+            memo.registerEvent(
                 MemoEvent.MemoCreated(
-                    slug = board.slug,
+                    boardSlug = board.slug,
                     cardId = card.id,
                     memoId = memo.id,
                     content = content,

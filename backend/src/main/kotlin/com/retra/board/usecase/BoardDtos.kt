@@ -3,12 +3,20 @@ package com.retra.board.usecase
 import com.retra.board.domain.Framework
 import com.retra.board.domain.Phase
 import com.retra.card.usecase.CardResponse
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
 
 data class CreateBoardRequest(
+    @field:NotBlank(message = "Title is required")
+    @field:Size(max = 200, message = "Title must be 200 characters or less")
     val title: String,
     val framework: Framework = Framework.KPT,
+    @field:Min(1) @field:Max(20)
     val maxVotesPerPerson: Int = 5,
     val isAnonymous: Boolean = false,
+    @field:Size(max = 100)
     val teamName: String? = null
 )
 
@@ -18,6 +26,8 @@ data class ChangePhaseRequest(
 )
 
 data class JoinBoardRequest(
+    @field:NotBlank(message = "Nickname is required")
+    @field:Size(max = 50, message = "Nickname must be 50 characters or less")
     val nickname: String
 )
 

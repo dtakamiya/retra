@@ -47,7 +47,7 @@ class GetCarryOverItemsUseCaseTest {
     fun `同じteamNameのCLOSEDボードがない場合は空リストを返す`() {
         val board = TestFixtures.board(teamName = "チーム Alpha")
         every { boardRepository.findBySlug("test1234") } returns board
-        every { boardRepository.findByTeamNameAndPhaseOrderByUpdatedAtDesc("チーム Alpha", Phase.CLOSED) } returns emptyList()
+        every { boardRepository.findLatestClosedBoardByTeamName("チーム Alpha", board.id) } returns null
 
         val result = useCase.execute("test1234")
 
@@ -77,7 +77,7 @@ class GetCarryOverItemsUseCaseTest {
         )
 
         every { boardRepository.findBySlug("current-slug") } returns currentBoard
-        every { boardRepository.findByTeamNameAndPhaseOrderByUpdatedAtDesc("チーム Alpha", Phase.CLOSED) } returns listOf(prevBoard)
+        every { boardRepository.findLatestClosedBoardByTeamName("チーム Alpha", "current") } returns prevBoard
         every { actionItemRepository.findByBoardId("prev") } returns listOf(openItem, inProgressItem, doneItem)
 
         val result = useCase.execute("current-slug")
@@ -95,7 +95,7 @@ class GetCarryOverItemsUseCaseTest {
     fun `自分自身のボードは対象外`() {
         val board = TestFixtures.board(id = "same-id", slug = "test1234", teamName = "チーム Alpha", phase = Phase.CLOSED)
         every { boardRepository.findBySlug("test1234") } returns board
-        every { boardRepository.findByTeamNameAndPhaseOrderByUpdatedAtDesc("チーム Alpha", Phase.CLOSED) } returns listOf(board)
+        every { boardRepository.findLatestClosedBoardByTeamName("チーム Alpha", "same-id") } returns null
 
         val result = useCase.execute("test1234")
 
@@ -117,7 +117,7 @@ class GetCarryOverItemsUseCaseTest {
         )
 
         every { boardRepository.findBySlug("current-slug") } returns currentBoard
-        every { boardRepository.findByTeamNameAndPhaseOrderByUpdatedAtDesc("チーム Beta", Phase.CLOSED) } returns listOf(prevBoard)
+        every { boardRepository.findLatestClosedBoardByTeamName("チーム Beta", "current") } returns prevBoard
         every { actionItemRepository.findByBoardId("prev") } returns listOf(item)
 
         val result = useCase.execute("current-slug")
@@ -137,18 +137,13 @@ class GetCarryOverItemsUseCaseTest {
             teamName = "チーム Gamma", phase = Phase.CLOSED,
             updatedAt = "2026-02-10T10:00:00Z"
         )
-        val olderClosedBoard = TestFixtures.board(
-            id = "older", slug = "older-slug", title = "Sprint 4",
-            teamName = "チーム Gamma", phase = Phase.CLOSED,
-            updatedAt = "2026-02-03T10:00:00Z"
-        )
         val item = TestFixtures.actionItem(
             id = "ai-1", board = latestClosedBoard, content = "最新のタスク",
             status = ActionItemStatus.OPEN
         )
 
         every { boardRepository.findBySlug("current-slug") } returns currentBoard
-        every { boardRepository.findByTeamNameAndPhaseOrderByUpdatedAtDesc("チーム Gamma", Phase.CLOSED) } returns listOf(latestClosedBoard, olderClosedBoard)
+        every { boardRepository.findLatestClosedBoardByTeamName("チーム Gamma", "current") } returns latestClosedBoard
         every { actionItemRepository.findByBoardId("latest") } returns listOf(item)
 
         val result = useCase.execute("current-slug")
@@ -156,6 +151,5 @@ class GetCarryOverItemsUseCaseTest {
         assertEquals(1, result.items.size)
         assertEquals("最新のタスク", result.items[0].content)
         assertEquals("Sprint 5", result.items[0].sourceBoardTitle)
-        verify(exactly = 0) { actionItemRepository.findByBoardId("older") }
     }
 }

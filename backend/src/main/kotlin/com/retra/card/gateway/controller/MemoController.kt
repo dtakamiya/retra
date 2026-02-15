@@ -7,6 +7,7 @@ import com.retra.card.usecase.DeleteMemoUseCase
 import com.retra.card.usecase.MemoResponse
 import com.retra.card.usecase.UpdateMemoRequest
 import com.retra.card.usecase.UpdateMemoUseCase
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
@@ -23,7 +24,7 @@ class MemoController(
     fun createMemo(
         @PathVariable slug: String,
         @PathVariable cardId: String,
-        @RequestBody request: CreateMemoRequest
+        @Valid @RequestBody request: CreateMemoRequest
     ): MemoResponse {
         return createMemoUseCase.execute(slug, cardId, request)
     }
@@ -33,7 +34,7 @@ class MemoController(
         @PathVariable slug: String,
         @PathVariable cardId: String,
         @PathVariable memoId: String,
-        @RequestBody request: UpdateMemoRequest
+        @Valid @RequestBody request: UpdateMemoRequest
     ): MemoResponse {
         return updateMemoUseCase.execute(slug, cardId, memoId, request)
     }
@@ -44,8 +45,8 @@ class MemoController(
         @PathVariable slug: String,
         @PathVariable cardId: String,
         @PathVariable memoId: String,
-        @RequestBody request: DeleteMemoRequest
+        @RequestParam participantId: String
     ) {
-        deleteMemoUseCase.execute(slug, cardId, memoId, request)
+        deleteMemoUseCase.execute(slug, cardId, memoId, DeleteMemoRequest(participantId))
     }
 }

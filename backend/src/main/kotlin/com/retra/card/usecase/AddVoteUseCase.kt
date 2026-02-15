@@ -51,7 +51,7 @@ class AddVoteUseCase(
         )
         eventPublisher.publish(
             VoteEvent.VoteAdded(
-                slug = slug,
+                boardSlug = slug,
                 voteId = vote.id,
                 cardId = request.cardId,
                 participantId = request.participantId,

@@ -25,8 +25,7 @@ class MarkCardDiscussedUseCase(
             throw BadRequestException("Cannot mark discussed in ${board.phase} phase")
         }
 
-        val participant = board.participants.find { it.id == request.participantId }
-            ?: throw NotFoundException("Participant not found")
+        val participant = board.findParticipantById(request.participantId)
 
         if (!participant.isFacilitator) {
             throw ForbiddenException("Only facilitator can mark discussed")

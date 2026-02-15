@@ -1,6 +1,6 @@
 package com.retra.board.domain
 
-import com.retra.shared.domain.DomainEvent
+import com.retra.shared.domain.AggregateRoot
 import jakarta.persistence.*
 import java.time.Instant
 import java.util.UUID
@@ -29,15 +29,7 @@ open class Participant(
 
     @Column(name = "created_at", nullable = false)
     open var createdAt: String = Instant.now().toString()
-) {
-    @Transient
-    private val _domainEvents: MutableList<DomainEvent> = mutableListOf()
-
-    fun getDomainEvents(): List<DomainEvent> = _domainEvents.toList()
-
-    fun clearDomainEvents() {
-        _domainEvents.clear()
-    }
+) : AggregateRoot() {
 
     fun updateOnlineStatus(online: Boolean, newSessionId: String? = null) {
         isOnline = online
@@ -45,6 +37,6 @@ open class Participant(
             sessionId = newSessionId
         }
         val slug = board?.slug ?: return
-        _domainEvents.add(BoardEvent.ParticipantOnlineChanged(slug, id, online))
+        registerEvent(BoardEvent.ParticipantOnlineChanged(boardSlug = slug, participantId = id, isOnline = online))
     }
 }

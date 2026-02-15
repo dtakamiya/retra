@@ -8,6 +8,7 @@ import com.retra.board.domain.Framework
 import com.retra.board.domain.Phase
 import com.retra.history.domain.BoardSnapshot
 import com.retra.history.domain.BoardSnapshotRepository
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -18,12 +19,13 @@ class CreateSnapshotUseCaseTest {
 
     private val snapshotRepository: BoardSnapshotRepository = mockk()
     private val actionItemRepository: ActionItemRepository = mockk()
+    private val objectMapper: ObjectMapper = ObjectMapper()
     private lateinit var useCase: CreateSnapshotUseCase
 
     @BeforeEach
     fun setUp() {
         clearAllMocks()
-        useCase = CreateSnapshotUseCase(snapshotRepository, actionItemRepository)
+        useCase = CreateSnapshotUseCase(snapshotRepository, actionItemRepository, objectMapper)
     }
 
     @Test

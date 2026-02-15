@@ -2,10 +2,10 @@ package com.retra.card.domain
 
 import com.retra.shared.domain.DomainEvent
 
-sealed class MemoEvent : DomainEvent {
+sealed class MemoEvent : DomainEvent() {
 
     data class MemoCreated(
-        val slug: String,
+        val boardSlug: String,
         val cardId: String,
         val memoId: String,
         val content: String,
@@ -16,7 +16,7 @@ sealed class MemoEvent : DomainEvent {
     ) : MemoEvent()
 
     data class MemoUpdated(
-        val slug: String,
+        val boardSlug: String,
         val cardId: String,
         val memoId: String,
         val content: String,
@@ -27,7 +27,7 @@ sealed class MemoEvent : DomainEvent {
     ) : MemoEvent()
 
     data class MemoDeleted(
-        val slug: String,
+        val boardSlug: String,
         val cardId: String,
         val memoId: String
     ) : MemoEvent()

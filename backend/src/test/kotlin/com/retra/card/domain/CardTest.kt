@@ -27,8 +27,10 @@ class CardTest {
 
     @Test
     fun `updateContent で著者がコンテンツ更新`() {
+        val board = TestFixtures.board()
+        val column = TestFixtures.boardColumn(board = board)
         val participant = TestFixtures.participant(id = "p-1")
-        val card = TestFixtures.card(participant = participant)
+        val card = TestFixtures.card(board = board, column = column, participant = participant)
 
         card.updateContent("Updated", "p-1")
 
@@ -114,7 +116,7 @@ class CardTest {
     }
 
     @Test
-    fun `updateContent でboardやcolumnがnullでもイベントが生成される`() {
+    fun `updateContent でboardがnullの場合はIllegalStateExceptionが発生する`() {
         val participant = TestFixtures.participant(id = "p-1")
         val card = TestFixtures.card(
             board = null,
@@ -122,18 +124,16 @@ class CardTest {
             participant = participant
         )
 
-        card.updateContent("Updated", "p-1")
-
-        val event = card.getDomainEvents().first() as CardEvent.CardUpdated
-        assertEquals("", event.slug)
-        assertEquals("", event.columnId)
-        assertEquals(false, event.isAnonymous)
+        assertFailsWith<IllegalStateException> {
+            card.updateContent("Updated", "p-1")
+        }
     }
 
     @Test
     fun `moveTo でcolumnがnullでもイベントのsourceColumnIdが空文字`() {
+        val board = TestFixtures.board()
         val col2 = TestFixtures.boardColumn(id = "col-2")
-        val card = TestFixtures.card(column = null)
+        val card = TestFixtures.card(board = board, column = null)
 
         card.moveTo(col2, 1)
 

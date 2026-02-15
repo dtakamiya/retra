@@ -11,6 +11,7 @@ import com.retra.card.usecase.DeleteCardUseCase
 import com.retra.card.usecase.MarkCardDiscussedUseCase
 import com.retra.card.usecase.MoveCardUseCase
 import com.retra.card.usecase.UpdateCardUseCase
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
@@ -28,7 +29,7 @@ class CardController(
     @ResponseStatus(HttpStatus.CREATED)
     fun createCard(
         @PathVariable slug: String,
-        @RequestBody request: CreateCardRequest
+        @Valid @RequestBody request: CreateCardRequest
     ): CardResponse {
         return createCardUseCase.execute(slug, request)
     }
@@ -37,7 +38,7 @@ class CardController(
     fun updateCard(
         @PathVariable slug: String,
         @PathVariable cardId: String,
-        @RequestBody request: UpdateCardRequest
+        @Valid @RequestBody request: UpdateCardRequest
     ): CardResponse {
         return updateCardUseCase.execute(slug, cardId, request)
     }
@@ -47,9 +48,9 @@ class CardController(
     fun deleteCard(
         @PathVariable slug: String,
         @PathVariable cardId: String,
-        @RequestBody request: DeleteCardRequest
+        @RequestParam participantId: String
     ) {
-        deleteCardUseCase.execute(slug, cardId, request)
+        deleteCardUseCase.execute(slug, cardId, DeleteCardRequest(participantId))
     }
 
     @PatchMapping("/{cardId}/move")
@@ -57,7 +58,7 @@ class CardController(
     fun moveCard(
         @PathVariable slug: String,
         @PathVariable cardId: String,
-        @RequestBody request: MoveCardRequest
+        @Valid @RequestBody request: MoveCardRequest
     ) {
         moveCardUseCase.execute(slug, cardId, request)
     }
@@ -66,7 +67,7 @@ class CardController(
     fun markDiscussed(
         @PathVariable slug: String,
         @PathVariable cardId: String,
-        @RequestBody request: MarkCardDiscussedRequest
+        @Valid @RequestBody request: MarkCardDiscussedRequest
     ): CardResponse {
         return markCardDiscussedUseCase.execute(slug, cardId, request)
     }

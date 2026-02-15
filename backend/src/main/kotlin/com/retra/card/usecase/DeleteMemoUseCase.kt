@@ -41,6 +41,6 @@ class DeleteMemoUseCase(
 
         memoRepository.delete(memo)
 
-        eventPublisher.publish(MemoEvent.MemoDeleted(slug, cardId, memoId))
+        eventPublisher.publish(MemoEvent.MemoDeleted(boardSlug = slug, cardId = cardId, memoId = memoId))
     }
 }

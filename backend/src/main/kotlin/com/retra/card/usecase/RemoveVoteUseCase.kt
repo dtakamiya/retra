@@ -30,6 +30,6 @@ class RemoveVoteUseCase(
 
         voteRepository.delete(vote)
 
-        eventPublisher.publish(VoteEvent.VoteRemoved(slug, request.cardId, request.participantId))
+        eventPublisher.publish(VoteEvent.VoteRemoved(boardSlug = slug, cardId = request.cardId, participantId = request.participantId))
     }
 }

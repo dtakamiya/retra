@@ -17,4 +17,7 @@ class JpaBoardRepository(
 
     override fun findByTeamNameAndPhaseOrderByUpdatedAtDesc(teamName: String, phase: Phase): List<Board> =
         springDataRepo.findByTeamNameAndPhaseOrderByUpdatedAtDesc(teamName, phase)
+
+    override fun findLatestClosedBoardByTeamName(teamName: String, excludeBoardId: String): Board? =
+        springDataRepo.findFirstByTeamNameAndPhaseAndIdNotOrderByUpdatedAtDesc(teamName, Phase.CLOSED, excludeBoardId)
 }

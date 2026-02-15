@@ -2,10 +2,10 @@ package com.retra.card.domain
 
 import com.retra.shared.domain.DomainEvent
 
-sealed class VoteEvent : DomainEvent {
+sealed class VoteEvent : DomainEvent() {
 
     data class VoteAdded(
-        val slug: String,
+        val boardSlug: String,
         val voteId: String,
         val cardId: String,
         val participantId: String,
@@ -13,7 +13,7 @@ sealed class VoteEvent : DomainEvent {
     ) : VoteEvent()
 
     data class VoteRemoved(
-        val slug: String,
+        val boardSlug: String,
         val cardId: String,
         val participantId: String
     ) : VoteEvent()

@@ -72,10 +72,16 @@ class AddReactionUseCaseTest {
     @Test
     fun `不正な絵文字で BadRequestException`() {
         val board = TestFixtures.board()
+        val participant = TestFixtures.participant(id = "p-1", board = board)
+        board.participants.add(participant)
+        val card = TestFixtures.card(id = "card-1", board = board)
+
         every { boardRepository.findBySlug(any()) } returns board
+        every { cardRepository.findById("card-1") } returns card
+        every { reactionRepository.findByCardIdAndParticipantIdAndEmoji(any(), any(), any()) } returns null
 
         assertFailsWith<BadRequestException> {
-            useCase.execute("test1234", AddReactionRequest("card-1", "p-1", "💩"))
+            useCase.execute("test1234", AddReactionRequest("card-1", "p-1", "\uD83D\uDCA9"))
         }
     }
 

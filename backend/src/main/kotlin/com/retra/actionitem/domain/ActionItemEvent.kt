@@ -2,7 +2,7 @@ package com.retra.actionitem.domain
 
 import com.retra.shared.domain.DomainEvent
 
-sealed class ActionItemEvent : DomainEvent {
+sealed class ActionItemEvent : DomainEvent() {
 
     data class ActionItemCreated(
         val actionItemId: String,

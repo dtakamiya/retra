@@ -23,7 +23,7 @@ class DomainEventBroadcasterTest {
     @Test
     fun `CardCreated イベントで cards トピックに送信`() {
         val event = CardEvent.CardCreated(
-            slug = "test1234", cardId = "c-1", columnId = "col-1",
+            boardSlug = "test1234", cardId = "c-1", columnId = "col-1",
             content = "Test", authorNickname = "Alice", participantId = "p-1",
             voteCount = 0, sortOrder = 0, isAnonymous = false,
             createdAt = "2024-01-01", updatedAt = "2024-01-01"
@@ -47,7 +47,7 @@ class DomainEventBroadcasterTest {
     @Test
     fun `CardCreated 匿名モードではauthorNicknameとparticipantIdがnullになる`() {
         val event = CardEvent.CardCreated(
-            slug = "test1234", cardId = "c-1", columnId = "col-1",
+            boardSlug = "test1234", cardId = "c-1", columnId = "col-1",
             content = "Test", authorNickname = "Alice", participantId = "p-1",
             voteCount = 0, sortOrder = 0, isAnonymous = true,
             createdAt = "2024-01-01", updatedAt = "2024-01-01"
@@ -71,7 +71,7 @@ class DomainEventBroadcasterTest {
     @Test
     fun `CardUpdated イベントで cards トピックに送信`() {
         val event = CardEvent.CardUpdated(
-            slug = "test1234", cardId = "c-1", columnId = "col-1",
+            boardSlug = "test1234", cardId = "c-1", columnId = "col-1",
             content = "Updated content", authorNickname = "Alice", participantId = "p-1",
             voteCount = 2, sortOrder = 1, isAnonymous = false,
             createdAt = "2024-01-01", updatedAt = "2024-01-02"
@@ -94,7 +94,7 @@ class DomainEventBroadcasterTest {
     @Test
     fun `CardUpdated 匿名モードではauthorNicknameとparticipantIdがnullになる`() {
         val event = CardEvent.CardUpdated(
-            slug = "test1234", cardId = "c-1", columnId = "col-1",
+            boardSlug = "test1234", cardId = "c-1", columnId = "col-1",
             content = "Updated content", authorNickname = "Alice", participantId = "p-1",
             voteCount = 2, sortOrder = 1, isAnonymous = true,
             createdAt = "2024-01-01", updatedAt = "2024-01-02"
@@ -118,7 +118,7 @@ class DomainEventBroadcasterTest {
     @Test
     fun `CardMoved イベントで cards トピックに送信`() {
         val event = CardEvent.CardMoved(
-            slug = "test1234", cardId = "c-1",
+            boardSlug = "test1234", cardId = "c-1",
             sourceColumnId = "col-1", targetColumnId = "col-2", sortOrder = 0
         )
 
@@ -134,7 +134,7 @@ class DomainEventBroadcasterTest {
 
     @Test
     fun `CardDeleted イベントで cards トピックに送信`() {
-        val event = CardEvent.CardDeleted("test1234", "c-1", "col-1")
+        val event = CardEvent.CardDeleted(boardSlug = "test1234", cardId = "c-1", columnId = "col-1")
 
         broadcaster.handleCardDeleted(event)
 
@@ -148,7 +148,7 @@ class DomainEventBroadcasterTest {
 
     @Test
     fun `VoteAdded イベントで votes トピックに送信`() {
-        val event = VoteEvent.VoteAdded("test1234", "v-1", "c-1", "p-1", "2024-01-01")
+        val event = VoteEvent.VoteAdded(boardSlug = "test1234", voteId = "v-1", cardId = "c-1", participantId = "p-1", createdAt = "2024-01-01")
 
         broadcaster.handleVoteAdded(event)
 
@@ -162,7 +162,7 @@ class DomainEventBroadcasterTest {
 
     @Test
     fun `VoteRemoved イベントで votes トピックに送信`() {
-        val event = VoteEvent.VoteRemoved("test1234", "c-1", "p-1")
+        val event = VoteEvent.VoteRemoved(boardSlug = "test1234", cardId = "c-1", participantId = "p-1")
 
         broadcaster.handleVoteRemoved(event)
 
@@ -176,7 +176,7 @@ class DomainEventBroadcasterTest {
 
     @Test
     fun `PhaseChanged イベントで phase トピックに送信`() {
-        val event = BoardEvent.PhaseChanged("test1234", com.retra.board.domain.Phase.VOTING)
+        val event = BoardEvent.PhaseChanged(boardSlug = "test1234", phase = com.retra.board.domain.Phase.VOTING)
 
         broadcaster.handlePhaseChanged(event)
 
@@ -190,7 +190,7 @@ class DomainEventBroadcasterTest {
 
     @Test
     fun `ParticipantJoined イベントで participants トピックに送信`() {
-        val event = BoardEvent.ParticipantJoined("test1234", "p-1", "Alice", true)
+        val event = BoardEvent.ParticipantJoined(boardSlug = "test1234", participantId = "p-1", nickname = "Alice", isFacilitator = true)
 
         broadcaster.handleParticipantJoined(event)
 
@@ -204,8 +204,8 @@ class DomainEventBroadcasterTest {
 
     @Test
     fun `ParticipantOnlineChanged イベントで ONLINE OFFLINE 送信`() {
-        val onlineEvent = BoardEvent.ParticipantOnlineChanged("test1234", "p-1", true)
-        val offlineEvent = BoardEvent.ParticipantOnlineChanged("test1234", "p-1", false)
+        val onlineEvent = BoardEvent.ParticipantOnlineChanged(boardSlug = "test1234", participantId = "p-1", isOnline = true)
+        val offlineEvent = BoardEvent.ParticipantOnlineChanged(boardSlug = "test1234", participantId = "p-1", isOnline = false)
 
         broadcaster.handleParticipantOnlineChanged(onlineEvent)
         broadcaster.handleParticipantOnlineChanged(offlineEvent)
@@ -227,7 +227,7 @@ class DomainEventBroadcasterTest {
     @Test
     fun `MemoCreated イベントで memos トピックに送信`() {
         val event = MemoEvent.MemoCreated(
-            slug = "test1234", cardId = "c-1", memoId = "m-1",
+            boardSlug = "test1234", cardId = "c-1", memoId = "m-1",
             content = "Test memo", authorNickname = "Alice", participantId = "p-1",
             createdAt = "2024-01-01", updatedAt = "2024-01-01"
         )
@@ -245,7 +245,7 @@ class DomainEventBroadcasterTest {
     @Test
     fun `MemoUpdated イベントで memos トピックに送信`() {
         val event = MemoEvent.MemoUpdated(
-            slug = "test1234", cardId = "c-1", memoId = "m-1",
+            boardSlug = "test1234", cardId = "c-1", memoId = "m-1",
             content = "Updated memo", authorNickname = "Alice", participantId = "p-1",
             createdAt = "2024-01-01", updatedAt = "2024-01-01"
         )
@@ -262,7 +262,7 @@ class DomainEventBroadcasterTest {
 
     @Test
     fun `MemoDeleted イベントで memos トピックに送信`() {
-        val event = MemoEvent.MemoDeleted("test1234", "c-1", "m-1")
+        val event = MemoEvent.MemoDeleted(boardSlug = "test1234", cardId = "c-1", memoId = "m-1")
 
         broadcaster.handleMemoDeleted(event)
 
@@ -276,7 +276,7 @@ class DomainEventBroadcasterTest {
 
     @Test
     fun `ReactionAdded イベントで reactions トピックに送信`() {
-        val event = ReactionEvent.ReactionAdded("test1234", "r-1", "c-1", "p-1", "👍", "2024-01-01")
+        val event = ReactionEvent.ReactionAdded(boardSlug = "test1234", reactionId = "r-1", cardId = "c-1", participantId = "p-1", emoji = "👍", createdAt = "2024-01-01")
 
         broadcaster.handleReactionAdded(event)
 
@@ -290,7 +290,7 @@ class DomainEventBroadcasterTest {
 
     @Test
     fun `ReactionRemoved イベントで reactions トピックに送信`() {
-        val event = ReactionEvent.ReactionRemoved("test1234", "c-1", "p-1", "👍")
+        val event = ReactionEvent.ReactionRemoved(boardSlug = "test1234", cardId = "c-1", participantId = "p-1", emoji = "👍")
 
         broadcaster.handleReactionRemoved(event)
 

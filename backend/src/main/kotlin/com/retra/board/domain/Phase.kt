@@ -32,13 +32,13 @@ enum class Phase {
 
     fun requiresAuthorForMove(): Boolean = this == WRITING
 
-    fun requiresFacilitatorForMove(): Boolean = this in listOf(DISCUSSION, ACTION_ITEMS)
+    fun requiresFacilitatorForMove(): Boolean = this in FACILITATOR_MOVE_PHASES
 
-    fun canCreateMemo(): Boolean = this in listOf(DISCUSSION, ACTION_ITEMS)
+    fun canCreateMemo(): Boolean = this in MEMO_PHASES
 
     fun canCreateActionItem(): Boolean = this == ACTION_ITEMS
 
-    fun canMarkDiscussed(): Boolean = this == DISCUSSION || this == ACTION_ITEMS
+    fun canMarkDiscussed(): Boolean = this in MEMO_PHASES
 
     companion object {
         private val validTransitions = mapOf(
@@ -49,5 +49,7 @@ enum class Phase {
         )
 
         private val MOVABLE_PHASES = listOf(WRITING, DISCUSSION, ACTION_ITEMS)
+        private val FACILITATOR_MOVE_PHASES = listOf(DISCUSSION, ACTION_ITEMS)
+        private val MEMO_PHASES = listOf(DISCUSSION, ACTION_ITEMS)
     }
 }

@@ -1,7 +1,13 @@
 package com.retra.actionitem.usecase
 
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
+
 data class CreateActionItemRequest(
+    @field:NotBlank
+    @field:Size(max = 2000)
     val content: String,
+    @field:NotBlank
     val participantId: String,
     val cardId: String? = null,
     val assigneeId: String? = null,
@@ -10,7 +16,10 @@ data class CreateActionItemRequest(
 )
 
 data class UpdateActionItemRequest(
+    @field:NotBlank
+    @field:Size(max = 2000)
     val content: String,
+    @field:NotBlank
     val participantId: String,
     val assigneeId: String? = null,
     val dueDate: String? = null,
@@ -18,11 +27,14 @@ data class UpdateActionItemRequest(
 )
 
 data class UpdateActionItemStatusRequest(
+    @field:NotBlank
     val status: String,
+    @field:NotBlank
     val participantId: String
 )
 
 data class DeleteActionItemRequest(
+    @field:NotBlank
     val participantId: String
 )
 

@@ -10,6 +10,7 @@ import com.retra.actionitem.usecase.UpdateActionItemRequest
 import com.retra.actionitem.usecase.UpdateActionItemStatusRequest
 import com.retra.actionitem.usecase.UpdateActionItemStatusUseCase
 import com.retra.actionitem.usecase.UpdateActionItemUseCase
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
@@ -32,7 +33,7 @@ class ActionItemController(
     @ResponseStatus(HttpStatus.CREATED)
     fun createActionItem(
         @PathVariable slug: String,
-        @RequestBody request: CreateActionItemRequest
+        @Valid @RequestBody request: CreateActionItemRequest
     ): ActionItemResponse {
         return createUseCase.execute(slug, request)
     }
@@ -41,7 +42,7 @@ class ActionItemController(
     fun updateActionItem(
         @PathVariable slug: String,
         @PathVariable id: String,
-        @RequestBody request: UpdateActionItemRequest
+        @Valid @RequestBody request: UpdateActionItemRequest
     ): ActionItemResponse {
         return updateUseCase.execute(slug, id, request)
     }
@@ -50,7 +51,7 @@ class ActionItemController(
     fun updateStatus(
         @PathVariable slug: String,
         @PathVariable id: String,
-        @RequestBody request: UpdateActionItemStatusRequest
+        @Valid @RequestBody request: UpdateActionItemStatusRequest
     ): ActionItemResponse {
         return updateStatusUseCase.execute(slug, id, request)
     }
@@ -60,8 +61,8 @@ class ActionItemController(
     fun deleteActionItem(
         @PathVariable slug: String,
         @PathVariable id: String,
-        @RequestBody request: DeleteActionItemRequest
+        @RequestParam participantId: String
     ) {
-        deleteUseCase.execute(slug, id, request)
+        deleteUseCase.execute(slug, id, DeleteActionItemRequest(participantId))
     }
 }

@@ -90,9 +90,9 @@ export const api = {
   },
 
   deleteCard(slug: string, cardId: string, participantId: string): Promise<void> {
-    return request(`/boards/${slug}/cards/${cardId}`, {
+    const params = new URLSearchParams({ participantId });
+    return request(`/boards/${slug}/cards/${cardId}?${params}`, {
       method: 'DELETE',
-      body: JSON.stringify({ participantId }),
     });
   },
 
@@ -112,9 +112,9 @@ export const api = {
   },
 
   removeVote(slug: string, cardId: string, participantId: string): Promise<void> {
-    return request(`/boards/${slug}/votes`, {
+    const params = new URLSearchParams({ cardId, participantId });
+    return request(`/boards/${slug}/votes?${params}`, {
       method: 'DELETE',
-      body: JSON.stringify({ cardId, participantId }),
     });
   },
 
@@ -150,9 +150,9 @@ export const api = {
   },
 
   deleteMemo(slug: string, cardId: string, memoId: string, participantId: string): Promise<void> {
-    return request(`/boards/${slug}/cards/${cardId}/memos/${memoId}`, {
+    const params = new URLSearchParams({ participantId });
+    return request(`/boards/${slug}/cards/${cardId}/memos/${memoId}?${params}`, {
       method: 'DELETE',
-      body: JSON.stringify({ participantId }),
     });
   },
 
@@ -165,9 +165,9 @@ export const api = {
   },
 
   removeReaction(slug: string, cardId: string, participantId: string, emoji: string): Promise<void> {
-    return request(`/boards/${slug}/reactions`, {
+    const params = new URLSearchParams({ cardId, participantId, emoji });
+    return request(`/boards/${slug}/reactions?${params}`, {
       method: 'DELETE',
-      body: JSON.stringify({ cardId, participantId, emoji }),
     });
   },
 
@@ -206,9 +206,9 @@ export const api = {
   },
 
   deleteActionItem(slug: string, id: string, participantId: string): Promise<void> {
-    return request<void>(`/boards/${slug}/action-items/${id}`, {
+    const params = new URLSearchParams({ participantId });
+    return request<void>(`/boards/${slug}/action-items/${id}?${params}`, {
       method: 'DELETE',
-      body: JSON.stringify({ participantId }),
     });
   },
 

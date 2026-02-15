@@ -47,7 +47,8 @@ class UpdateOnlineStatusUseCaseTest {
 
     @Test
     fun `セッションID設定`() {
-        val participant = TestFixtures.participant(id = "p-1")
+        val board = TestFixtures.board(slug = "test1234")
+        val participant = TestFixtures.participant(id = "p-1", board = board)
         every { participantRepository.findById("p-1") } returns participant
         every { participantRepository.save(any()) } answers { firstArg() }
 
@@ -55,6 +56,7 @@ class UpdateOnlineStatusUseCaseTest {
 
         assertEquals("session-abc", participant.sessionId)
         assertTrue(participant.isOnline)
+        verify { eventPublisher.publishAll(any()) }
     }
 
     @Test

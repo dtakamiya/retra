@@ -20,6 +20,7 @@ class CardMapperTest {
         val response = CardMapper.toCardResponse(card, isAnonymous = false, requesterId = "p-2")
 
         assertEquals("Alice", response.authorNickname)
+        assertEquals("p-1", response.participantId)
     }
 
     @Test
@@ -32,6 +33,7 @@ class CardMapperTest {
         val response = CardMapper.toCardResponse(card, isAnonymous = true, requesterId = "p-1")
 
         assertEquals("Alice", response.authorNickname)
+        assertEquals("p-1", response.participantId)
     }
 
     @Test
@@ -44,6 +46,7 @@ class CardMapperTest {
         val response = CardMapper.toCardResponse(card, isAnonymous = true, requesterId = "p-2")
 
         assertNull(response.authorNickname)
+        assertNull(response.participantId)
     }
 
     @Test
@@ -56,6 +59,7 @@ class CardMapperTest {
         val response = CardMapper.toCardResponse(card, isAnonymous = true, requesterId = null)
 
         assertNull(response.authorNickname)
+        assertNull(response.participantId)
     }
 
     @Test

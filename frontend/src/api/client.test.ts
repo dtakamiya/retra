@@ -162,16 +162,15 @@ describe('api client', () => {
 
   // --- deleteCard ---
 
-  it('deleteCard sends DELETE with participantId', async () => {
+  it('deleteCard sends DELETE with participantId as query param', async () => {
     mock204();
 
     const result = await api.deleteCard('slug1', 'card-1', 'p-1');
 
     expect(result).toBeUndefined();
-    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/cards/card-1', {
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/cards/card-1?participantId=p-1', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ participantId: 'p-1' }),
     });
   });
 
@@ -208,16 +207,15 @@ describe('api client', () => {
 
   // --- removeVote ---
 
-  it('removeVote sends DELETE with cardId and participantId', async () => {
+  it('removeVote sends DELETE with cardId and participantId as query params', async () => {
     mock204();
 
     const result = await api.removeVote('slug1', 'card-1', 'p-1');
 
     expect(result).toBeUndefined();
-    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/votes', {
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/votes?cardId=card-1&participantId=p-1', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cardId: 'card-1', participantId: 'p-1' }),
     });
   });
 
@@ -299,16 +297,15 @@ describe('api client', () => {
 
   // --- deleteMemo ---
 
-  it('deleteMemo sends DELETE with participantId', async () => {
+  it('deleteMemo sends DELETE with participantId as query param', async () => {
     mock204();
 
     const result = await api.deleteMemo('slug1', 'card-1', 'memo-1', 'p-1');
 
     expect(result).toBeUndefined();
-    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/cards/card-1/memos/memo-1', {
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/cards/card-1/memos/memo-1?participantId=p-1', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ participantId: 'p-1' }),
     });
   });
 
@@ -330,17 +327,20 @@ describe('api client', () => {
 
   // --- removeReaction ---
 
-  it('removeReaction sends DELETE with cardId, participantId, emoji', async () => {
+  it('removeReaction sends DELETE with cardId, participantId, emoji as query params', async () => {
     mock204();
 
     const result = await api.removeReaction('slug1', 'card-1', 'p-1', '👍');
 
     expect(result).toBeUndefined();
-    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/reactions', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cardId: 'card-1', participantId: 'p-1', emoji: '👍' }),
-    });
+    const expectedParams = new URLSearchParams({ cardId: 'card-1', participantId: 'p-1', emoji: '👍' });
+    expect(mockFetch).toHaveBeenCalledWith(
+      `/api/v1/boards/slug1/reactions?${expectedParams}`,
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   });
 
   // --- exportBoard ---
@@ -465,16 +465,15 @@ describe('api client', () => {
 
   // --- deleteActionItem ---
 
-  it('deleteActionItem sends DELETE with participantId', async () => {
+  it('deleteActionItem sends DELETE with participantId as query param', async () => {
     mock204();
 
     const result = await api.deleteActionItem('slug1', 'ai-1', 'p-1');
 
     expect(result).toBeUndefined();
-    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/action-items/ai-1', {
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/action-items/ai-1?participantId=p-1', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ participantId: 'p-1' }),
     });
   });
 

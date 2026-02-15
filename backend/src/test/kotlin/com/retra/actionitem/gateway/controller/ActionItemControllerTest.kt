@@ -125,10 +125,7 @@ class ActionItemControllerTest {
     fun `DELETE action-items id アクションアイテム削除 204`() {
         mockMvc.perform(
             delete("/api/v1/boards/test1234/action-items/ai-1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(
-                    DeleteActionItemRequest("p-1")
-                ))
+                .param("participantId", "p-1")
         )
             .andExpect(status().isNoContent)
     }

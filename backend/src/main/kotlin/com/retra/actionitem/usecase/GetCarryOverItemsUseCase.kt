@@ -3,7 +3,6 @@ package com.retra.actionitem.usecase
 import com.retra.actionitem.domain.ActionItemRepository
 import com.retra.actionitem.domain.ActionItemStatus
 import com.retra.board.domain.BoardRepository
-import com.retra.board.domain.Phase
 import com.retra.shared.domain.NotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,14 +20,9 @@ class GetCarryOverItemsUseCase(
         val teamName = board.teamName
             ?: return CarryOverItemsResponse(items = emptyList(), teamName = "")
 
-        val closedBoards = boardRepository.findByTeamNameAndPhaseOrderByUpdatedAtDesc(teamName, Phase.CLOSED)
-            .filter { it.id != board.id }
+        val prevBoard = boardRepository.findLatestClosedBoardByTeamName(teamName, board.id)
+            ?: return CarryOverItemsResponse(items = emptyList(), teamName = teamName)
 
-        if (closedBoards.isEmpty()) {
-            return CarryOverItemsResponse(items = emptyList(), teamName = teamName)
-        }
-
-        val prevBoard = closedBoards.first()
         val actionItems = actionItemRepository.findByBoardId(prevBoard.id)
             .filter { it.status != ActionItemStatus.DONE }
 

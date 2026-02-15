@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -31,7 +32,7 @@ class BoardController(
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun createBoard(@RequestBody request: CreateBoardRequest): BoardResponse {
+    fun createBoard(@Valid @RequestBody request: CreateBoardRequest): BoardResponse {
         return createBoardUseCase.execute(request)
     }
 
@@ -46,7 +47,7 @@ class BoardController(
     @PatchMapping("/{slug}/phase")
     fun changePhase(
         @PathVariable slug: String,
-        @RequestBody request: ChangePhaseRequest
+        @Valid @RequestBody request: ChangePhaseRequest
     ): BoardResponse {
         return transitionPhaseUseCase.execute(slug, request)
     }
@@ -55,7 +56,7 @@ class BoardController(
     @ResponseStatus(HttpStatus.CREATED)
     fun joinBoard(
         @PathVariable slug: String,
-        @RequestBody request: JoinBoardRequest
+        @Valid @RequestBody request: JoinBoardRequest
     ): ParticipantResponse {
         return joinBoardUseCase.execute(slug, request)
     }

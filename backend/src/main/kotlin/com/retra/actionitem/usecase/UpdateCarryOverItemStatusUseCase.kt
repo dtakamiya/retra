@@ -35,8 +35,10 @@ class UpdateCarryOverItemStatusUseCase(
             throw BadRequestException("Invalid status: ${request.status}")
         }
 
-        actionItem.status = newStatus
-        actionItem.updatedAt = java.time.Instant.now().toString()
+        actionItem.changeStatus(newStatus, participant)
         actionItemRepository.save(actionItem)
+
+        eventPublisher.publishAll(actionItem.getDomainEvents())
+        actionItem.clearDomainEvents()
     }
 }

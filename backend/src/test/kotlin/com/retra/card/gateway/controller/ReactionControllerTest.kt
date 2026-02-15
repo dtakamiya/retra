@@ -52,8 +52,9 @@ class ReactionControllerTest {
     fun `DELETE reactions リアクション削除 204`() {
         mockMvc.perform(
             delete("/api/v1/boards/test1234/reactions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(RemoveReactionRequest("card-1", "p-1", "👍")))
+                .param("cardId", "card-1")
+                .param("participantId", "p-1")
+                .param("emoji", "👍")
         )
             .andExpect(status().isNoContent)
     }

@@ -1,6 +1,6 @@
 package com.retra.card.domain
 
-import com.retra.shared.domain.DomainEvent
+import com.retra.shared.domain.AggregateRoot
 import com.retra.shared.domain.ConflictException
 import com.retra.shared.domain.ForbiddenException
 import com.retra.shared.domain.NotFoundException
@@ -51,22 +51,17 @@ open class Card(
     open var discussionOrder: Int = 0,
 
     @OneToMany(mappedBy = "card", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @org.hibernate.annotations.BatchSize(size = 20)
     open var votes: MutableList<Vote> = mutableListOf(),
 
     @OneToMany(mappedBy = "card", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @org.hibernate.annotations.BatchSize(size = 20)
     open var memos: MutableList<Memo> = mutableListOf(),
 
     @OneToMany(mappedBy = "card", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @org.hibernate.annotations.BatchSize(size = 20)
     open var reactions: MutableList<Reaction> = mutableListOf()
-) {
-    @Transient
-    private val _domainEvents: MutableList<DomainEvent> = mutableListOf()
-
-    fun getDomainEvents(): List<DomainEvent> = _domainEvents.toList()
-
-    fun clearDomainEvents() {
-        _domainEvents.clear()
-    }
+) : AggregateRoot() {
 
     fun updateContent(newContent: String, executorId: String) {
         if (participant?.id != executorId) {
@@ -74,11 +69,11 @@ open class Card(
         }
         content = newContent
         updatedAt = Instant.now().toString()
-        _domainEvents.add(
+        registerEvent(
             CardEvent.CardUpdated(
-                slug = board?.slug ?: "",
+                boardSlug = board?.slug ?: throw IllegalStateException("Card must belong to a board"),
                 cardId = id,
-                columnId = column?.id ?: "",
+                columnId = column?.id ?: throw IllegalStateException("Card must belong to a column"),
                 content = content,
                 authorNickname = authorNickname,
                 participantId = participant?.id,
@@ -96,9 +91,9 @@ open class Card(
         column = targetColumn
         sortOrder = newSortOrder
         updatedAt = Instant.now().toString()
-        _domainEvents.add(
+        registerEvent(
             CardEvent.CardMoved(
-                slug = board?.slug ?: "",
+                boardSlug = board?.slug ?: throw IllegalStateException("Card must belong to a board"),
                 cardId = id,
                 sourceColumnId = sourceColumnId,
                 targetColumnId = targetColumn.id,
@@ -173,9 +168,9 @@ open class Card(
                 createdAt = now,
                 updatedAt = now
             )
-            card._domainEvents.add(
+            card.registerEvent(
                 CardEvent.CardCreated(
-                    slug = board.slug,
+                    boardSlug = board.slug,
                     cardId = card.id,
                     columnId = column.id,
                     content = content,

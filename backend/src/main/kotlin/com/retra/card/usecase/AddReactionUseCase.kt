@@ -11,8 +11,6 @@ import com.retra.shared.domain.NotFoundException
 import com.retra.shared.gateway.event.SpringDomainEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant
-import java.util.UUID
 
 @Service
 class AddReactionUseCase(
@@ -22,18 +20,10 @@ class AddReactionUseCase(
     private val eventPublisher: SpringDomainEventPublisher
 ) {
 
-    companion object {
-        val ALLOWED_EMOJIS = setOf("👍", "❤️", "😂", "🎉", "🤔", "👀")
-    }
-
     @Transactional
     fun execute(slug: String, request: AddReactionRequest): ReactionResponse {
         val board = boardRepository.findBySlug(slug)
             ?: throw NotFoundException("Board not found: $slug")
-
-        if (!ALLOWED_EMOJIS.contains(request.emoji)) {
-            throw BadRequestException("Invalid emoji")
-        }
 
         val card = cardRepository.findById(request.cardId)
             ?: throw NotFoundException("Card not found")
@@ -51,26 +41,23 @@ class AddReactionUseCase(
             throw ConflictException("Already reacted with this emoji")
         }
 
-        val now = Instant.now().toString()
-        val reaction = Reaction(
-            id = UUID.randomUUID().toString(),
+        val reaction = Reaction.create(
             card = card,
             board = board,
             participant = participant,
-            emoji = request.emoji,
-            createdAt = now
+            emoji = request.emoji
         )
         reactionRepository.save(reaction)
 
         val response = ReactionMapper.toReactionResponse(reaction)
         eventPublisher.publish(
             ReactionEvent.ReactionAdded(
-                slug = slug,
+                boardSlug = slug,
                 reactionId = reaction.id,
                 cardId = request.cardId,
                 participantId = request.participantId,
                 emoji = request.emoji,
-                createdAt = now
+                createdAt = reaction.createdAt
             )
         )
         return response

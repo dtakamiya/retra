@@ -32,7 +32,7 @@ class RemoveReactionUseCase(
 
         eventPublisher.publish(
             ReactionEvent.ReactionRemoved(
-                slug = slug,
+                boardSlug = slug,
                 cardId = request.cardId,
                 participantId = request.participantId,
                 emoji = request.emoji

@@ -4,4 +4,5 @@ interface BoardRepository {
     fun save(board: Board): Board
     fun findBySlug(slug: String): Board?
     fun findByTeamNameAndPhaseOrderByUpdatedAtDesc(teamName: String, phase: Phase): List<Board>
+    fun findLatestClosedBoardByTeamName(teamName: String, excludeBoardId: String): Board?
 }

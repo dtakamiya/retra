@@ -2,7 +2,14 @@ package com.retra.shared.gateway.exception
 
 import com.retra.shared.domain.*
 import org.junit.jupiter.api.Test
+import org.springframework.core.MethodParameter
 import org.springframework.http.HttpStatus
+import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.validation.BindingResult
+import org.springframework.validation.FieldError
+import org.springframework.validation.MapBindingResult
+import org.springframework.web.HttpRequestMethodNotSupportedException
+import org.springframework.web.bind.MethodArgumentNotValidException
 import kotlin.test.assertEquals
 
 class GlobalExceptionHandlerTest {
@@ -82,5 +89,59 @@ class GlobalExceptionHandlerTest {
         val response = handler.handleInvalidPhaseTransition(InvalidPhaseTransitionException("test"))
         assertEquals("Bad Request", response.body?.error)
         assertEquals("test", response.body?.message)
+    }
+
+    @Suppress("unused")
+    fun dummyMethod(param: String) {}
+
+    @Test
+    fun `MethodArgumentNotValidException は 400`() {
+        val bindingResult: BindingResult = MapBindingResult(mutableMapOf<String, Any>(), "request")
+        bindingResult.addError(FieldError("request", "content", "must not be blank"))
+        val method = this::class.java.getDeclaredMethod("dummyMethod", String::class.java)
+        val ex = MethodArgumentNotValidException(
+            MethodParameter(method, 0),
+            bindingResult
+        )
+        val response = handler.handleValidation(ex)
+        assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals(400, response.body?.status)
+        assertEquals("Validation Error", response.body?.error)
+        assertEquals("content: must not be blank", response.body?.message)
+    }
+
+    @Test
+    fun `HttpMessageNotReadableException は 400`() {
+        val response = handler.handleBadJson(
+            HttpMessageNotReadableException("bad json")
+        )
+        assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals(400, response.body?.status)
+        assertEquals("Invalid request body", response.body?.message)
+    }
+
+    @Test
+    fun `IllegalArgumentException は 400`() {
+        val response = handler.handleIllegalArgument(IllegalArgumentException("invalid arg"))
+        assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals(400, response.body?.status)
+        assertEquals("invalid arg", response.body?.message)
+    }
+
+    @Test
+    fun `HttpRequestMethodNotSupportedException は 405`() {
+        val response = handler.handleMethodNotAllowed(
+            HttpRequestMethodNotSupportedException("DELETE")
+        )
+        assertEquals(HttpStatus.METHOD_NOT_ALLOWED, response.statusCode)
+        assertEquals(405, response.body?.status)
+    }
+
+    @Test
+    fun `未知の例外は 500`() {
+        val response = handler.handleGenericException(RuntimeException("unexpected"))
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.statusCode)
+        assertEquals(500, response.body?.status)
+        assertEquals("An unexpected error occurred", response.body?.message)
     }
 }

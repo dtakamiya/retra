@@ -1,6 +1,6 @@
 package com.retra.board.domain
 
-import com.retra.shared.domain.DomainEvent
+import com.retra.shared.domain.AggregateRoot
 import com.retra.shared.domain.ForbiddenException
 import com.retra.shared.domain.NotFoundException
 import com.retra.card.domain.Card
@@ -45,22 +45,17 @@ open class Board(
 
     @OneToMany(mappedBy = "board", cascade = [CascadeType.ALL], orphanRemoval = true)
     @OrderBy("sortOrder ASC")
+    @org.hibernate.annotations.BatchSize(size = 20)
     open var columns: MutableList<BoardColumn> = mutableListOf(),
 
     @OneToMany(mappedBy = "board", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @org.hibernate.annotations.BatchSize(size = 20)
     open var participants: MutableList<Participant> = mutableListOf(),
 
     @OneToMany(mappedBy = "board", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @org.hibernate.annotations.BatchSize(size = 20)
     open var cards: MutableList<Card> = mutableListOf()
-) {
-    @Transient
-    private val _domainEvents: MutableList<DomainEvent> = mutableListOf()
-
-    fun getDomainEvents(): List<DomainEvent> = _domainEvents.toList()
-
-    fun clearDomainEvents() {
-        _domainEvents.clear()
-    }
+) : AggregateRoot() {
 
     fun getVoteLimit(): VoteLimit = VoteLimit(maxVotesPerPerson)
 
@@ -71,7 +66,7 @@ open class Board(
         }
         phase = phase.transitionTo(targetPhase)
         updatedAt = Instant.now().toString()
-        _domainEvents.add(BoardEvent.PhaseChanged(slug, phase))
+        registerEvent(BoardEvent.PhaseChanged(boardSlug = slug, phase = phase))
         return phase
     }
 
@@ -86,9 +81,9 @@ open class Board(
             createdAt = Instant.now().toString()
         )
         participants.add(participant)
-        _domainEvents.add(
+        registerEvent(
             BoardEvent.ParticipantJoined(
-                slug = slug,
+                boardSlug = slug,
                 participantId = participant.id,
                 nickname = participant.nickname,
                 isFacilitator = participant.isFacilitator
@@ -141,7 +136,7 @@ open class Board(
             }
             board.columns.addAll(boardColumns)
 
-            board._domainEvents.add(BoardEvent.BoardCreated(board.id, board.slug))
+            board.registerEvent(BoardEvent.BoardCreated(board.id, board.slug))
             return board
         }
     }

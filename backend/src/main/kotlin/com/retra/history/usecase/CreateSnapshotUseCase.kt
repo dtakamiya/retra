@@ -1,5 +1,6 @@
 package com.retra.history.usecase
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.retra.actionitem.domain.ActionItemRepository
 import com.retra.actionitem.domain.ActionItemStatus
 import com.retra.board.domain.Board
@@ -13,7 +14,8 @@ import java.time.Instant
 @Service
 class CreateSnapshotUseCase(
     private val snapshotRepository: BoardSnapshotRepository,
-    private val actionItemRepository: ActionItemRepository
+    private val actionItemRepository: ActionItemRepository,
+    private val objectMapper: ObjectMapper
 ) {
 
     @Transactional
@@ -45,24 +47,16 @@ class CreateSnapshotUseCase(
     }
 
     private fun buildSnapshotJson(board: Board, cards: List<Card>): String {
-        val cardsByColumnId = cards.groupBy { it.column?.id ?: "" }
-        val columnsJson = board.columns.sortedBy { it.sortOrder }.joinToString(",") { column ->
-            val columnCards = cardsByColumnId[column.id] ?: emptyList()
-            val cardsJson = columnCards.sortedBy { it.sortOrder }.joinToString(",") { card ->
-                """{"content":${escapeJson(card.content)},"votes":${card.votes.size}}"""
+        val data = mapOf(
+            "columns" to board.columns.sortedBy { it.sortOrder }.map { column ->
+                mapOf(
+                    "name" to column.name,
+                    "cards" to cards.filter { it.column?.id == column.id }
+                        .sortedBy { it.sortOrder }
+                        .map { mapOf("content" to it.content, "votes" to it.votes.size) }
+                )
             }
-            """{"name":${escapeJson(column.name)},"cards":[$cardsJson]}"""
-        }
-        return """{"columns":[$columnsJson]}"""
-    }
-
-    private fun escapeJson(value: String): String {
-        val escaped = value
-            .replace("\\", "\\\\")
-            .replace("\"", "\\\"")
-            .replace("\n", "\\n")
-            .replace("\r", "\\r")
-            .replace("\t", "\\t")
-        return "\"$escaped\""
+        )
+        return objectMapper.writeValueAsString(data)
     }
 }

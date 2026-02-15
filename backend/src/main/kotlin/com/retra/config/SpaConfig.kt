@@ -16,6 +16,9 @@ class SpaConfig : WebMvcConfigurer {
             .resourceChain(true)
             .addResolver(object : PathResourceResolver() {
                 override fun getResource(resourcePath: String, location: Resource): Resource? {
+                    if (resourcePath.startsWith("api/") || resourcePath.startsWith("ws")) {
+                        return null
+                    }
                     val requested = ClassPathResource("static/$resourcePath")
                     return if (requested.exists()) requested else ClassPathResource("static/index.html")
                 }

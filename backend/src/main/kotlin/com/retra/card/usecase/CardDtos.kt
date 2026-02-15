@@ -1,37 +1,55 @@
 package com.retra.card.usecase
 
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
+
 data class CreateCardRequest(
+    @field:NotBlank
     val columnId: String,
+    @field:NotBlank
+    @field:Size(max = 2000)
     val content: String,
+    @field:NotBlank
     val participantId: String
 )
 
 data class UpdateCardRequest(
+    @field:NotBlank
+    @field:Size(max = 2000)
     val content: String,
+    @field:NotBlank
     val participantId: String
 )
 
 data class DeleteCardRequest(
+    @field:NotBlank
     val participantId: String
 )
 
 data class MoveCardRequest(
+    @field:NotBlank
     val targetColumnId: String,
     val sortOrder: Int,
+    @field:NotBlank
     val participantId: String
 )
 
 data class VoteRequest(
+    @field:NotBlank
     val cardId: String,
+    @field:NotBlank
     val participantId: String
 )
 
 data class RemoveVoteRequest(
+    @field:NotBlank
     val cardId: String,
+    @field:NotBlank
     val participantId: String
 )
 
 data class MarkCardDiscussedRequest(
+    @field:NotBlank
     val participantId: String,
     val isDiscussed: Boolean
 )

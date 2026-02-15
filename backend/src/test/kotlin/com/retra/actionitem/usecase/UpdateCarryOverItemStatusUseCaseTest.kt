@@ -30,7 +30,7 @@ class UpdateCarryOverItemStatusUseCaseTest {
         val currentBoard = TestFixtures.board(slug = "current-slug")
         val facilitator = TestFixtures.participant(id = "p-1", board = currentBoard, isFacilitator = true)
         currentBoard.participants.add(facilitator)
-        val actionItem = TestFixtures.actionItem(id = "ai-1", status = ActionItemStatus.OPEN)
+        val actionItem = TestFixtures.actionItem(id = "ai-1", board = currentBoard, status = ActionItemStatus.OPEN)
 
         every { boardRepository.findBySlug("current-slug") } returns currentBoard
         every { actionItemRepository.findById("ai-1") } returns actionItem
@@ -40,6 +40,7 @@ class UpdateCarryOverItemStatusUseCaseTest {
 
         assertEquals(ActionItemStatus.DONE, actionItem.status)
         verify { actionItemRepository.save(actionItem) }
+        verify { eventPublisher.publishAll(any()) }
     }
 
     @Test

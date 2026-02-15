@@ -37,6 +37,6 @@ class DeleteCardUseCase(
         val columnId = card.column?.id ?: ""
         cardRepository.delete(card)
 
-        eventPublisher.publish(CardEvent.CardDeleted(slug, cardId, columnId))
+        eventPublisher.publish(CardEvent.CardDeleted(boardSlug = slug, cardId = cardId, columnId = columnId))
     }
 }

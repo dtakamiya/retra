@@ -55,8 +55,8 @@ class VoteControllerTest {
     fun `DELETE votes 投票削除 204`() {
         mockMvc.perform(
             delete("/api/v1/boards/test1234/votes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(RemoveVoteRequest("card-1", "p-1")))
+                .param("cardId", "card-1")
+                .param("participantId", "p-1")
         )
             .andExpect(status().isNoContent)
     }

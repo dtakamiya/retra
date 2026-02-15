@@ -27,9 +27,11 @@ class UpdateOnlineStatusUseCase(
     fun setSessionId(participantId: String, sessionId: String) {
         val participant = participantRepository.findById(participantId)
             ?: throw NotFoundException("Participant not found")
-        participant.sessionId = sessionId
-        participant.isOnline = true
+        participant.updateOnlineStatus(true, sessionId)
         participantRepository.save(participant)
+
+        eventPublisher.publishAll(participant.getDomainEvents())
+        participant.clearDomainEvents()
     }
 
     @Transactional
