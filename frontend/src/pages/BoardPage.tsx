@@ -84,9 +84,12 @@ export function BoardPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4" />
-          <p className="text-gray-600">ボードを読み込み中...</p>
+        <div className="text-center animate-[fadeIn_0.3s_ease-out]">
+          <div className="relative w-12 h-12 mx-auto mb-4">
+            <div className="absolute inset-0 rounded-full border-2 border-indigo-100" />
+            <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-indigo-600 animate-spin" />
+          </div>
+          <p className="text-sm text-gray-400">ボードを読み込み中...</p>
         </div>
       </div>
     );
@@ -95,11 +98,12 @@ export function BoardPage() {
   if (error || !board) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <p className="text-xl text-gray-600 mb-4">{error || 'ボードが見つかりません'}</p>
+        <div className="text-center animate-[scaleFadeIn_0.3s_ease-out]">
+          <div className="text-5xl text-gray-200 font-bold mb-4">Oops</div>
+          <p className="text-gray-500 mb-6 text-sm">{error || 'ボードが見つかりません'}</p>
           <button
             onClick={() => navigate('/')}
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white text-sm rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-all shadow-sm shadow-indigo-200"
           >
             ホームに戻る
           </button>
@@ -109,7 +113,7 @@ export function BoardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50/50 flex flex-col">
       {!isConnected && <ConnectionBanner />}
 
       <BoardHeader />
@@ -118,8 +122,8 @@ export function BoardPage() {
         <div className="flex-1 overflow-x-auto">
           <BoardView />
         </div>
-        <div className="hidden lg:block w-64 border-l border-gray-200 bg-white">
-          <div className="p-4">
+        <div className="hidden lg:block w-64 border-l border-gray-100 bg-white/80 backdrop-blur-sm">
+          <div className="p-4 space-y-0">
             <TimerDisplay />
             <ParticipantList />
             <CarryOverPanel />
@@ -128,7 +132,7 @@ export function BoardPage() {
       </div>
 
       {/* Mobile sidebar content */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 flex items-center justify-between z-10">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-100 p-3 flex items-center justify-between z-10">
         <TimerDisplay compact />
         <ParticipantList compact />
       </div>

@@ -150,7 +150,7 @@ describe('ExportMenu', () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText('エクスポート')).toBeDisabled();
-      expect(screen.getByText('エクスポート中...')).toBeInTheDocument();
+      expect(screen.getByText('...')).toBeInTheDocument();
     });
   });
 });

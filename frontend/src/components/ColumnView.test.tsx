@@ -50,7 +50,7 @@ describe('ColumnView', () => {
     render(<ColumnView column={column} />)
 
     expect(screen.getByText('Keep')).toBeInTheDocument()
-    expect(screen.getByText('(2)')).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
   })
 
   it('renders column description', () => {

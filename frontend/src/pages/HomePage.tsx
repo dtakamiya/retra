@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { LayoutGrid, Users, BarChart3, EyeOff } from 'lucide-react';
+import { LayoutGrid, Users, BarChart3, EyeOff, Sparkles } from 'lucide-react';
 import { api } from '../api/client';
 import { useToastStore } from '../store/toastStore';
 import type { Framework } from '../types';
 
-const FRAMEWORKS: { value: Framework; label: string; description: string }[] = [
-  { value: 'KPT', label: 'KPT', description: 'Keep / Problem / Try' },
-  { value: 'FUN_DONE_LEARN', label: 'Fun Done Learn', description: 'Fun / Done / Learn' },
-  { value: 'FOUR_LS', label: '4Ls', description: 'Liked / Learned / Lacked / Longed For' },
-  { value: 'START_STOP_CONTINUE', label: 'Start Stop Continue', description: 'Start / Stop / Continue' },
+const FRAMEWORKS: { value: Framework; label: string; description: string; icon: string }[] = [
+  { value: 'KPT', label: 'KPT', description: 'Keep / Problem / Try', icon: '🔄' },
+  { value: 'FUN_DONE_LEARN', label: 'Fun Done Learn', description: 'Fun / Done / Learn', icon: '🎯' },
+  { value: 'FOUR_LS', label: '4Ls', description: 'Liked / Learned / Lacked / Longed For', icon: '💡' },
+  { value: 'START_STOP_CONTINUE', label: 'Start Stop Continue', description: 'Start / Stop / Continue', icon: '🚀' },
 ];
 
 export function HomePage() {
@@ -49,59 +49,73 @@ export function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <div className="max-w-2xl mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-900 mb-3">Retra</h1>
-          <p className="text-lg text-gray-600">
-            スクラムチームのためのレトロスペクティブボード
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-indigo-100 rounded-full opacity-40 blur-3xl animate-[float_8s_ease-in-out_infinite]" />
+        <div className="absolute top-1/2 -left-24 w-72 h-72 bg-purple-100 rounded-full opacity-30 blur-3xl animate-[float_6s_ease-in-out_infinite_1s]" />
+        <div className="absolute -bottom-12 right-1/3 w-64 h-64 bg-blue-100 rounded-full opacity-30 blur-3xl animate-[float_7s_ease-in-out_infinite_2s]" />
+      </div>
+
+      <div className="max-w-2xl mx-auto px-4 py-16 relative z-10">
+        <div className="text-center mb-12 animate-[fadeIn_0.6s_ease-out]">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-100/80 text-indigo-700 text-xs font-medium rounded-full mb-6 backdrop-blur-sm">
+            <Sparkles size={12} />
+            チームのふりかえりをもっと効果的に
+          </div>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4 tracking-tight">
+            Retra
+          </h1>
+          <p className="text-lg text-gray-500 leading-relaxed">
+            スクラムチームのためのリアルタイム<br className="sm:hidden" />レトロスペクティブボード
           </p>
           <Link
             to="/dashboard"
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm mt-4"
+            className="inline-flex items-center gap-2 text-indigo-500 hover:text-indigo-700 text-sm mt-5 transition-colors group"
           >
-            <BarChart3 size={16} />
+            <BarChart3 size={16} className="group-hover:scale-110 transition-transform" />
             チームダッシュボード
           </Link>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl shadow-indigo-100/50 p-8 border border-white/60 animate-[scaleFadeIn_0.5s_ease-out]">
           {/* Tab Switcher */}
-          <div className="flex gap-2 mb-8">
+          <div className="flex gap-2 mb-8 p-1 bg-gray-100/80 rounded-xl">
             <button
               onClick={() => setMode('create')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-medium transition-colors ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium transition-all text-sm ${
                 mode === 'create'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-white text-indigo-700 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              <LayoutGrid size={18} />
+              <LayoutGrid size={16} />
               ボードを作成
             </button>
             <button
               onClick={() => setMode('join')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-medium transition-colors ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium transition-all text-sm ${
                 mode === 'join'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-white text-indigo-700 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              <Users size={18} />
+              <Users size={16} />
               ボードに参加
             </button>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+            <div className="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm flex items-center gap-2 animate-[scaleFadeIn_0.2s_ease-out]">
+              <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
               {error}
             </div>
           )}
 
           {mode === 'create' ? (
-            <form onSubmit={handleCreate} className="space-y-6">
+            <form onSubmit={handleCreate} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   ボードタイトル
                 </label>
                 <input
@@ -109,36 +123,39 @@ export function HomePage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="スプリント42 ふりかえり"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white outline-none transition-all text-sm"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   フレームワーク
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2.5">
                   {FRAMEWORKS.map((fw) => (
                     <button
                       key={fw.value}
                       type="button"
                       onClick={() => setFramework(fw.value)}
-                      className={`p-3 border-2 rounded-lg text-left transition-all ${
+                      className={`p-3 border-2 rounded-xl text-left transition-all ${
                         framework === fw.value
-                          ? 'border-indigo-500 bg-indigo-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-indigo-400 bg-indigo-50/80 shadow-sm shadow-indigo-100'
+                          : 'border-gray-100 bg-gray-50/50 hover:border-gray-200 hover:bg-gray-50'
                       }`}
                     >
-                      <div className="font-medium text-gray-900">{fw.label}</div>
-                      <div className="text-xs text-gray-500 mt-1">{fw.description}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-base">{fw.icon}</span>
+                        <span className="font-medium text-sm text-gray-900">{fw.label}</span>
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1 ml-7">{fw.description}</div>
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   1人あたりの最大投票数
                 </label>
                 <input
@@ -147,12 +164,12 @@ export function HomePage() {
                   onChange={(e) => setMaxVotes(Number(e.target.value))}
                   min={1}
                   max={20}
-                  className="w-24 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                  className="w-24 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white outline-none transition-all text-sm"
                 />
               </div>
 
               <div>
-                <label htmlFor="teamName" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="teamName" className="block text-sm font-medium text-gray-700 mb-1.5">
                   チーム名（オプション）
                 </label>
                 <input
@@ -161,49 +178,49 @@ export function HomePage() {
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
                   placeholder="チーム Alpha"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white outline-none transition-all text-sm"
                 />
-                <p className="text-xs text-gray-500 mt-1">同じチーム名のレトロから前回のアクションアイテムを引き継ぎます</p>
+                <p className="text-xs text-gray-400 mt-1.5">同じチーム名のレトロから前回のアクションアイテムを引き継ぎます</p>
               </div>
 
               <div>
-                <label className="flex items-center gap-3 cursor-pointer">
+                <label className="flex items-center gap-3 cursor-pointer group">
                   <div
                     role="switch"
                     aria-checked={isAnonymous}
                     tabIndex={0}
                     onClick={() => setIsAnonymous(!isAnonymous)}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsAnonymous(!isAnonymous); } }}
-                    className={`relative w-11 h-6 rounded-full transition-colors ${
-                      isAnonymous ? 'bg-indigo-600' : 'bg-gray-300'
+                    className={`relative w-11 h-6 rounded-full transition-all ${
+                      isAnonymous ? 'bg-indigo-600 shadow-sm shadow-indigo-200' : 'bg-gray-300 group-hover:bg-gray-400'
                     }`}
                   >
                     <div
-                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${
                         isAnonymous ? 'translate-x-5' : ''
                       }`}
                     />
                   </div>
                   <div className="flex items-center gap-2">
-                    <EyeOff size={16} className="text-gray-500" />
+                    <EyeOff size={15} className="text-gray-400" />
                     <span className="text-sm font-medium text-gray-700">匿名モード</span>
                   </div>
                 </label>
-                <p className="text-xs text-gray-500 mt-1 ml-14">カードの作成者名を非表示にします（作成後は変更不可）</p>
+                <p className="text-xs text-gray-400 mt-1 ml-14">カードの作成者名を非表示にします（作成後は変更不可）</p>
               </div>
 
               <button
                 type="submit"
                 disabled={loading || !title.trim()}
-                className="w-full py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-indigo-200 hover:shadow-md hover:shadow-indigo-200 active:scale-[0.98] text-sm"
               >
                 {loading ? '作成中...' : 'ボードを作成'}
               </button>
             </form>
           ) : (
-            <form onSubmit={handleJoin} className="space-y-6">
+            <form onSubmit={handleJoin} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   ボードURLまたはコード
                 </label>
                 <input
@@ -211,7 +228,7 @@ export function HomePage() {
                   value={joinSlug}
                   onChange={(e) => setJoinSlug(e.target.value)}
                   placeholder="ボードコードを入力またはURLを貼り付け"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white outline-none transition-all text-sm"
                   required
                 />
               </div>
@@ -219,7 +236,7 @@ export function HomePage() {
               <button
                 type="submit"
                 disabled={!joinSlug.trim()}
-                className="w-full py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-indigo-200 hover:shadow-md hover:shadow-indigo-200 active:scale-[0.98] text-sm"
               >
                 ボードに参加
               </button>

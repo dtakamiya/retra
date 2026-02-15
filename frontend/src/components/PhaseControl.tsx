@@ -48,29 +48,29 @@ export function PhaseControl() {
   return (
     <div className="flex items-center gap-2">
       {/* Phase stepper */}
-      <div className="hidden sm:flex items-center gap-1">
+      <div className="hidden sm:flex items-center gap-0.5 p-1 bg-gray-50 rounded-lg">
         {PHASES.map((phase, i) => (
           <div key={phase.key} className="flex items-center">
             <div
-              className={`px-2 py-1 text-xs rounded font-medium ${
+              className={`px-2.5 py-1 text-[11px] rounded-md font-medium transition-all ${
                 i === currentIndex
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
                   : i < currentIndex
-                    ? 'bg-indigo-100 text-indigo-700'
-                    : 'bg-gray-100 text-gray-400'
+                    ? 'bg-indigo-50 text-indigo-600'
+                    : 'text-gray-400'
               }`}
             >
               {phase.label}
             </div>
             {i < PHASES.length - 1 && (
-              <ChevronRight size={14} className="text-gray-300 mx-0.5" />
+              <ChevronRight size={12} className={`mx-0.5 ${i < currentIndex ? 'text-indigo-300' : 'text-gray-300'}`} />
             )}
           </div>
         ))}
       </div>
 
       {/* Mobile phase indicator */}
-      <span className="sm:hidden px-2 py-1 bg-indigo-600 text-white text-xs font-medium rounded">
+      <span className="sm:hidden px-2.5 py-1 bg-indigo-600 text-white text-[11px] font-medium rounded-md shadow-sm shadow-indigo-200">
         {PHASES[currentIndex]?.label}
       </span>
 
@@ -79,7 +79,7 @@ export function PhaseControl() {
         <button
           onClick={handleAdvance}
           disabled={loading}
-          className="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          className="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white text-xs font-medium rounded-lg hover:from-indigo-700 hover:to-indigo-600 disabled:opacity-50 transition-all shadow-sm shadow-indigo-200 hover:shadow-md active:scale-[0.97]"
         >
           {loading ? '...' : `次へ: ${PHASES.find((p) => p.key === nextPhase)?.label}`}
         </button>

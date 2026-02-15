@@ -68,30 +68,39 @@ export function ColumnView({ column }: Props) {
   return (
     <div className="flex-1 min-w-[280px] max-w-[400px] flex flex-col">
       <div
-        className="rounded-t-lg px-4 py-3 flex items-center justify-between"
-        style={{ backgroundColor: column.color + '20', borderTop: `3px solid ${column.color}` }}
+        className="rounded-t-xl px-4 py-3 flex items-center justify-between"
+        style={{ backgroundColor: column.color + '15', borderTop: `3px solid ${column.color}` }}
       >
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="font-semibold text-gray-900">{column.name}</h2>
-            <span className="text-sm text-gray-500">({column.cards.length})</span>
+            <div
+              className="w-2 h-2 rounded-full flex-shrink-0"
+              style={{ backgroundColor: column.color }}
+            />
+            <h2 className="font-semibold text-gray-800 text-sm">{column.name}</h2>
+            <span
+              className="text-[11px] font-medium px-1.5 py-0.5 rounded-full"
+              style={{ backgroundColor: column.color + '20', color: column.color }}
+            >
+              {column.cards.length}
+            </span>
           </div>
           {columnDescriptions[column.name] && (
-            <p className="text-xs text-gray-500 mt-0.5">{columnDescriptions[column.name]}</p>
+            <p className="text-[11px] text-gray-400 mt-0.5 ml-4">{columnDescriptions[column.name]}</p>
           )}
         </div>
         {isWriting && (
           <button
             onClick={() => setShowForm(true)}
-            className="p-1 rounded hover:bg-white/50 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-white/60 transition-all active:scale-90"
             title="カードを追加"
           >
-            <Plus size={18} style={{ color: column.color }} />
+            <Plus size={16} style={{ color: column.color }} />
           </button>
         )}
       </div>
 
-      <div ref={setNodeRef} className="flex-1 bg-gray-100/50 rounded-b-lg p-2 space-y-2 overflow-y-auto">
+      <div ref={setNodeRef} className="flex-1 bg-gray-50/80 rounded-b-xl p-2 space-y-2 overflow-y-auto">
         {showForm && isWriting && (
           <CardForm columnId={column.id} onClose={() => setShowForm(false)} />
         )}
@@ -101,8 +110,20 @@ export function ColumnView({ column }: Props) {
           ))}
         </SortableContext>
         {column.cards.length === 0 && !showForm && (
-          <div className="text-center py-8 text-gray-400 text-sm">
-            {isWriting ? '＋ボタンでカードを追加' : 'カードはありません'}
+          <div className="text-center py-10 text-gray-300 text-xs">
+            {isWriting ? (
+              <button
+                onClick={() => setShowForm(true)}
+                className="flex flex-col items-center gap-2 mx-auto hover:text-gray-400 transition-colors group"
+              >
+                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                  <Plus size={18} className="text-gray-400" />
+                </div>
+                <span>カードを追加</span>
+              </button>
+            ) : (
+              'カードはありません'
+            )}
           </div>
         )}
       </div>

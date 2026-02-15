@@ -1,8 +1,27 @@
-import { Users } from 'lucide-react';
+import { Users, Crown } from 'lucide-react';
 import { useBoardStore } from '../store/boardStore';
 
 interface Props {
   compact?: boolean;
+}
+
+const AVATAR_COLORS = [
+  'from-indigo-500 to-purple-500',
+  'from-blue-500 to-cyan-500',
+  'from-emerald-500 to-teal-500',
+  'from-orange-500 to-amber-500',
+  'from-pink-500 to-rose-500',
+  'from-violet-500 to-indigo-500',
+  'from-cyan-500 to-blue-500',
+  'from-teal-500 to-emerald-500',
+];
+
+function getAvatarColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
 export function ParticipantList({ compact = false }: Props) {
@@ -15,13 +34,13 @@ export function ParticipantList({ compact = false }: Props) {
   if (compact) {
     return (
       <div className="flex items-center gap-2">
-        <Users size={16} className="text-gray-500" />
-        <div className="flex -space-x-2">
+        <Users size={14} className="text-gray-400" />
+        <div className="flex -space-x-1.5">
           {board.participants.slice(0, 5).map((p) => (
             <div
               key={p.id}
-              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium text-white border-2 border-white ${
-                p.isOnline ? 'bg-indigo-500' : 'bg-gray-300'
+              className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold text-white border-2 border-white bg-gradient-to-br ${
+                p.isOnline ? getAvatarColor(p.nickname) : 'from-gray-300 to-gray-400'
               }`}
               title={`${p.nickname}${p.isFacilitator ? ' (ファシリテーター)' : ''}`}
             >
@@ -29,13 +48,13 @@ export function ParticipantList({ compact = false }: Props) {
             </div>
           ))}
           {board.participants.length > 5 && (
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium bg-gray-200 text-gray-600 border-2 border-white">
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-medium bg-gray-100 text-gray-500 border-2 border-white">
               +{board.participants.length - 5}
             </div>
           )}
         </div>
         {remainingVotes && board.phase === 'VOTING' && (
-          <span className="text-xs text-indigo-600 font-medium ml-2">
+          <span className="text-[11px] text-indigo-600 font-medium ml-1.5 bg-indigo-50 px-2 py-0.5 rounded-full">
             残り{remainingVotes.remaining}/{remainingVotes.max}票
           </span>
         )}
@@ -45,45 +64,58 @@ export function ParticipantList({ compact = false }: Props) {
 
   return (
     <div>
-      <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-        <Users size={16} />
+      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+        <Users size={14} />
         参加者 ({onlineCount}/{board.participants.length})
       </h3>
 
       {remainingVotes && board.phase === 'VOTING' && (
-        <div className="mb-3 px-3 py-2 bg-indigo-50 rounded-lg">
-          <div className="text-sm text-indigo-700 font-medium">
-            投票: {remainingVotes.used}/{remainingVotes.max}
+        <div className="mb-3 px-3 py-2 bg-indigo-50/80 rounded-xl">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-indigo-600 font-medium">
+              投票: {remainingVotes.used}/{remainingVotes.max}
+            </span>
+            <span className="text-[11px] text-indigo-500">
+              残り {remainingVotes.remaining}票
+            </span>
           </div>
-          <div className="text-xs text-indigo-500">
-            残り {remainingVotes.remaining}票
+          <div className="w-full h-1.5 bg-indigo-100 rounded-full mt-1.5">
+            <div
+              className="h-full rounded-full bg-indigo-500 transition-all"
+              style={{ width: `${(remainingVotes.used / remainingVotes.max) * 100}%` }}
+            />
           </div>
         </div>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {board.participants.map((p) => (
-          <div key={p.id} className="flex items-center gap-2">
+          <div key={p.id} className="flex items-center gap-2.5 py-1 px-1 rounded-lg hover:bg-gray-50/80 transition-colors">
             <div className="relative">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium text-white ${
-                  p.isOnline ? 'bg-indigo-500' : 'bg-gray-300'
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white bg-gradient-to-br ${
+                  p.isOnline ? getAvatarColor(p.nickname) : 'from-gray-300 to-gray-400'
                 }`}
               >
                 {p.nickname.charAt(0).toUpperCase()}
               </div>
               <div
-                className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${
+                className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white ${
                   p.isOnline ? 'bg-green-400' : 'bg-gray-300'
                 }`}
               />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-gray-700 truncate">
-                {p.nickname}
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-medium text-gray-700 truncate">
+                  {p.nickname}
+                </span>
+                {p.isFacilitator && (
+                  <Crown size={11} className="text-amber-500 flex-shrink-0" />
+                )}
               </div>
               {p.isFacilitator && (
-                <div className="text-xs text-indigo-500">ファシリテーター</div>
+                <div className="text-[10px] text-amber-600">ファシリテーター</div>
               )}
             </div>
           </div>
