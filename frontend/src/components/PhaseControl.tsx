@@ -52,7 +52,7 @@ export function PhaseControl() {
     <>
       <div className="flex items-center gap-2">
         {/* Phase stepper */}
-        <div className="hidden sm:flex items-center gap-0.5 p-1 bg-gray-50 rounded-lg">
+        <div className="hidden sm:flex items-center gap-0.5 p-1 bg-gray-50 dark:bg-slate-800 rounded-lg">
           {PHASES.map((phase, i) => (
             <div key={phase.key} className="flex items-center">
               <div
@@ -60,14 +60,14 @@ export function PhaseControl() {
                   i === currentIndex
                     ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
                     : i < currentIndex
-                      ? 'bg-indigo-50 text-indigo-600'
-                      : 'text-gray-400'
+                      ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300'
+                      : 'text-gray-400 dark:text-slate-500'
                 }`}
               >
                 {phase.label}
               </div>
               {i < PHASES.length - 1 && (
-                <ChevronRight size={12} className={`mx-0.5 ${i < currentIndex ? 'text-indigo-300' : 'text-gray-300'}`} />
+                <ChevronRight size={12} className={`mx-0.5 ${i < currentIndex ? 'text-indigo-300 dark:text-indigo-400' : 'text-gray-300 dark:text-slate-600'}`} />
               )}
             </div>
           ))}

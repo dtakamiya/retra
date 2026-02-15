@@ -27,26 +27,26 @@ export function NicknameModal({ onJoin, boardTitle }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-[fadeIn_0.2s_ease-out]">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-[scaleFadeIn_0.3s_ease-out]">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl dark:shadow-black/40 max-w-md w-full p-8 animate-[scaleFadeIn_0.3s_ease-out]">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-            <Users size={20} className="text-indigo-600" />
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center">
+            <Users size={20} className="text-indigo-600 dark:text-indigo-400" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">ボードに参加</h2>
-            <p className="text-sm text-gray-500">{boardTitle}</p>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-slate-100">ボードに参加</h2>
+            <p className="text-sm text-gray-500 dark:text-slate-400">{boardTitle}</p>
           </div>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm flex items-center gap-2 animate-[scaleFadeIn_0.2s_ease-out]">
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 text-red-600 dark:text-red-400 rounded-xl text-sm flex items-center gap-2 animate-[scaleFadeIn_0.2s_ease-out]">
             <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
             ニックネーム
           </label>
           <input
@@ -54,7 +54,7 @@ export function NicknameModal({ onJoin, boardTitle }: Props) {
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             placeholder="ニックネームを入力"
-            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 focus:bg-white outline-none transition-all text-sm mb-5"
+            className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-600 outline-none transition-all text-sm dark:text-slate-100 dark:placeholder:text-slate-500 mb-5"
             autoFocus
             required
             maxLength={20}

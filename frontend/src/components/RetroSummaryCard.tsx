@@ -13,21 +13,21 @@ export function RetroSummaryCard({ snapshot }: Props) {
   const dateStr = new Date(snapshot.closedAt).toLocaleDateString('ja-JP');
 
   return (
-    <Link to={`/dashboard/${snapshot.id}`} className="block p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+    <Link to={`/dashboard/${snapshot.id}`} className="block p-4 border dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-semibold">{snapshot.teamName}</h3>
-        <span className="text-sm text-gray-500 flex items-center gap-1">
+        <h3 className="font-semibold dark:text-slate-100">{snapshot.teamName}</h3>
+        <span className="text-sm text-gray-500 dark:text-slate-400 flex items-center gap-1">
           <Calendar size={14} />
           {dateStr}
         </span>
       </div>
-      <div className="flex items-center gap-4 text-sm text-gray-600">
+      <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-slate-300">
         <span className="flex items-center gap-1"><FileText size={14} />{snapshot.totalCards} カード</span>
         <span className="flex items-center gap-1"><Vote size={14} />{snapshot.totalVotes} 投票</span>
         <span className="flex items-center gap-1"><Users size={14} />{snapshot.totalParticipants} 参加者</span>
         <span className="flex items-center gap-1"><ListTodo size={14} />AI {snapshot.actionItemsDone}/{snapshot.actionItemsTotal} ({completionRate}%)</span>
       </div>
-      <span className="text-xs text-gray-400 mt-1 block">{snapshot.framework}</span>
+      <span className="text-xs text-gray-400 dark:text-slate-500 mt-1 block">{snapshot.framework}</span>
     </Link>
   );
 }

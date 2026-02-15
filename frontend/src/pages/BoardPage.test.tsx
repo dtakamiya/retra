@@ -70,6 +70,10 @@ vi.mock('../components/NicknameModal', () => ({
   ),
 }))
 
+vi.mock('../components/BoardSkeleton', () => ({
+  BoardSkeleton: () => <div data-testid="board-skeleton">ボードを読み込み中...</div>,
+}))
+
 // --- Helpers ---
 
 function renderBoardPage() {

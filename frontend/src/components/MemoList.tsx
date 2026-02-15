@@ -16,7 +16,7 @@ export function MemoList({ cardId, memos }: Props) {
   const canAddMemo = board.phase === 'DISCUSSION' || board.phase === 'ACTION_ITEMS';
 
   return (
-    <div className="mt-2 pt-2 border-t border-gray-100 space-y-1.5">
+    <div className="mt-2 pt-2 border-t border-gray-100 dark:border-slate-700 space-y-1.5">
       {memos.map((memo) => (
         <MemoItem key={memo.id} memo={memo} cardId={cardId} />
       ))}

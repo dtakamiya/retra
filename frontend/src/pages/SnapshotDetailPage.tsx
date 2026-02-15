@@ -20,15 +20,15 @@ export function SnapshotDetailPage() {
   }, [snapshotId]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <Link to="/dashboard" className="text-blue-600 hover:text-blue-800 flex items-center gap-1 mb-4">
+        <Link to="/dashboard" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1 mb-4 transition-colors">
           <ArrowLeft size={16} />
           ダッシュボードに戻る
         </Link>
-        {loading && <div className="text-center py-8 text-gray-500">読み込み中...</div>}
+        {loading && <div className="text-center py-8 text-gray-500 dark:text-slate-400">読み込み中...</div>}
         {!loading && snapshot && <SnapshotDetailView snapshot={snapshot} />}
-        {!loading && !snapshot && <div className="text-center py-8 text-gray-500">スナップショットが見つかりません</div>}
+        {!loading && !snapshot && <div className="text-center py-8 text-gray-500 dark:text-slate-400">スナップショットが見つかりません</div>}
       </div>
     </div>
   );

@@ -39,7 +39,7 @@ export function ParticipantList({ compact = false }: Props) {
           {board.participants.slice(0, 5).map((p) => (
             <div
               key={p.id}
-              className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold text-white border-2 border-white bg-gradient-to-br ${
+              className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold text-white border-2 border-white dark:border-slate-800 bg-gradient-to-br ${
                 p.isOnline ? getAvatarColor(p.nickname) : 'from-gray-300 to-gray-400'
               }`}
               title={`${p.nickname}${p.isFacilitator ? ' (ファシリテーター)' : ''}`}
@@ -48,13 +48,13 @@ export function ParticipantList({ compact = false }: Props) {
             </div>
           ))}
           {board.participants.length > 5 && (
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-medium bg-gray-100 text-gray-500 border-2 border-white">
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-medium bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-slate-400 border-2 border-white dark:border-slate-800">
               +{board.participants.length - 5}
             </div>
           )}
         </div>
         {remainingVotes && board.phase === 'VOTING' && (
-          <span className="text-[11px] text-indigo-600 font-medium ml-1.5 bg-indigo-50 px-2 py-0.5 rounded-full">
+          <span className="text-[11px] text-indigo-600 dark:text-indigo-300 font-medium ml-1.5 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded-full">
             残り{remainingVotes.remaining}/{remainingVotes.max}票
           </span>
         )}
@@ -64,22 +64,22 @@ export function ParticipantList({ compact = false }: Props) {
 
   return (
     <div>
-      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+      <h3 className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
         <Users size={14} />
         参加者 ({onlineCount}/{board.participants.length})
       </h3>
 
       {remainingVotes && board.phase === 'VOTING' && (
-        <div className="mb-3 px-3 py-2 bg-indigo-50/80 rounded-xl">
+        <div className="mb-3 px-3 py-2 bg-indigo-50/80 dark:bg-indigo-900/20 rounded-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-indigo-600 font-medium">
+            <span className="text-xs text-indigo-600 dark:text-indigo-300 font-medium">
               投票: {remainingVotes.used}/{remainingVotes.max}
             </span>
-            <span className="text-[11px] text-indigo-500">
+            <span className="text-[11px] text-indigo-500 dark:text-indigo-300">
               残り {remainingVotes.remaining}票
             </span>
           </div>
-          <div className="w-full h-1.5 bg-indigo-100 rounded-full mt-1.5">
+          <div className="w-full h-1.5 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mt-1.5">
             <div
               className="h-full rounded-full bg-indigo-500 transition-all"
               style={{ width: `${(remainingVotes.used / remainingVotes.max) * 100}%` }}
@@ -90,7 +90,7 @@ export function ParticipantList({ compact = false }: Props) {
 
       <div className="space-y-1.5">
         {board.participants.map((p) => (
-          <div key={p.id} className="flex items-center gap-2.5 py-1 px-1 rounded-lg hover:bg-gray-50/80 transition-colors">
+          <div key={p.id} className="flex items-center gap-2.5 py-1 px-1 rounded-lg hover:bg-gray-50/80 dark:hover:bg-slate-800/50 transition-colors">
             <div className="relative">
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white bg-gradient-to-br ${
@@ -107,7 +107,7 @@ export function ParticipantList({ compact = false }: Props) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-medium text-gray-700 truncate">
+                <span className="text-sm font-medium text-gray-700 dark:text-slate-200 truncate">
                   {p.nickname}
                 </span>
                 {p.isFacilitator && (

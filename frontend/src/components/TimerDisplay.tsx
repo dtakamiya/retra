@@ -74,7 +74,7 @@ export function TimerDisplay({ compact = false }: Props) {
 
   return (
     <div className="mb-6">
-      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+      <h3 className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
         <Timer size={14} />
         タイマー
       </h3>
@@ -82,19 +82,19 @@ export function TimerDisplay({ compact = false }: Props) {
       <div
         className={`relative rounded-xl mb-3 overflow-hidden ${
           isLow
-            ? 'bg-red-50'
+            ? 'bg-red-50 dark:bg-red-900/20'
             : isExpired
-              ? 'bg-red-50'
+              ? 'bg-red-50 dark:bg-red-900/20'
               : timer.isRunning
-                ? 'bg-indigo-50'
-                : 'bg-gray-50'
+                ? 'bg-indigo-50 dark:bg-indigo-900/20'
+                : 'bg-gray-50 dark:bg-slate-800'
         }`}
       >
         {/* Progress bar background */}
         {timer.totalSeconds > 0 && (
           <div
             className={`absolute bottom-0 left-0 h-1 rounded-full transition-all ${
-              isLow ? 'bg-red-300' : 'bg-indigo-300'
+              isLow ? 'bg-red-300 dark:bg-red-400' : 'bg-indigo-300 dark:bg-indigo-400'
             }`}
             style={{ width: `${progress}%` }}
           />
@@ -102,12 +102,12 @@ export function TimerDisplay({ compact = false }: Props) {
         <div
           className={`text-3xl font-mono font-bold text-center py-4 ${
             isLow
-              ? 'text-red-600'
+              ? 'text-red-600 dark:text-red-400'
               : isExpired
-                ? 'text-red-400'
+                ? 'text-red-400 dark:text-red-500'
                 : timer.isRunning
-                  ? 'text-indigo-700'
-                  : 'text-gray-400'
+                  ? 'text-indigo-700 dark:text-indigo-300'
+                  : 'text-gray-400 dark:text-slate-500'
           }`}
         >
           {timer.totalSeconds > 0 ? timeStr : '--:--'}
@@ -130,9 +130,9 @@ export function TimerDisplay({ compact = false }: Props) {
                 onChange={(e) => setDuration(Math.max(1, Number(e.target.value)))}
                 min={1}
                 max={60}
-                className="w-16 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none"
+                className="w-16 px-2 py-1.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm text-center dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none"
               />
-              <span className="text-xs text-gray-400">分</span>
+              <span className="text-xs text-gray-400 dark:text-slate-500">分</span>
               <button
                 onClick={handleStart}
                 className="flex-1 px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 transition-all active:scale-95"

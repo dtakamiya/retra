@@ -21,7 +21,7 @@ function StatusSection({ title, items, color }: StatusSectionProps) {
     <div className="mb-4">
       <div className="flex items-center gap-2 mb-2">
         <div className={`w-1.5 h-1.5 rounded-full ${color}`} />
-        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{title}</h4>
+        <h4 className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">{title}</h4>
         <span className="text-[10px] text-gray-400">({items.length})</span>
       </div>
       <div className="space-y-1.5">
@@ -50,14 +50,14 @@ export function ActionItemList({ actionItems, slug, participants }: Props) {
   const doneItems = sortByPriority(actionItems.filter((ai) => ai.status === 'DONE'));
 
   return (
-    <div className="mt-6 border-t border-gray-100 pt-5 px-4">
-      <h3 className="text-base font-bold mb-4 flex items-center gap-2 text-gray-800">
-        <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
-          <ListTodo size={16} className="text-purple-600" />
+    <div className="mt-6 border-t border-gray-100 dark:border-slate-700 pt-5 px-4">
+      <h3 className="text-base font-bold mb-4 flex items-center gap-2 text-gray-800 dark:text-slate-100">
+        <div className="w-7 h-7 rounded-lg bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center">
+          <ListTodo size={16} className="text-purple-600 dark:text-purple-400" />
         </div>
         アクションアイテム
         {actionItems.length > 0 && (
-          <span className="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{actionItems.length}</span>
+          <span className="text-xs font-normal text-gray-400 bg-gray-100 dark:bg-slate-700 dark:text-slate-400 px-2 py-0.5 rounded-full">{actionItems.length}</span>
         )}
       </h3>
 
@@ -66,7 +66,7 @@ export function ActionItemList({ actionItems, slug, participants }: Props) {
       {doneItems.length > 0 && <StatusSection title="完了" items={doneItems} color="bg-green-500" />}
 
       {actionItems.length === 0 && (
-        <p className="text-sm text-gray-300 mb-3">アクションアイテムはまだありません</p>
+        <p className="text-sm text-gray-300 dark:text-slate-600 mb-3">アクションアイテムはまだありません</p>
       )}
 
       {canAdd && <ActionItemForm slug={slug} participants={participants} />}
