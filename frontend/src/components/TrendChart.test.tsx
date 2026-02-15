@@ -15,6 +15,20 @@ vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div data-testid="responsive-container">{children}</div>,
 }))
 
+vi.mock('lucide-react', async () => {
+  const actual = await vi.importActual<Record<string, unknown>>('lucide-react')
+  return {
+    ...actual,
+    TrendingUp: () => <span data-testid="trending-up" />,
+    TrendingDown: () => <span data-testid="trending-down" />,
+    Minus: () => <span data-testid="minus" />,
+    FileText: () => <span data-testid="icon-file-text" />,
+    Vote: () => <span data-testid="icon-vote" />,
+    Users: () => <span data-testid="icon-users" />,
+    CheckCircle: () => <span data-testid="icon-check-circle" />,
+  }
+})
+
 describe('TrendChart', () => {
   it('renders without crashing', () => {
     const data = [
@@ -50,10 +64,11 @@ describe('TrendChart', () => {
 
   it('renders correct line names', () => {
     const data = [createTrendPoint()]
-    const { getByText } = render(<TrendChart data={data} />)
+    const { getAllByText, getByText } = render(<TrendChart data={data} />)
 
-    expect(getByText('カード数')).toBeInTheDocument()
-    expect(getByText('投票数')).toBeInTheDocument()
+    // カード数・投票数はサマリーカードとチャートラインの両方に存在する
+    expect(getAllByText('カード数').length).toBeGreaterThanOrEqual(1)
+    expect(getAllByText('投票数').length).toBeGreaterThanOrEqual(1)
     expect(getByText('AI完了率(%)')).toBeInTheDocument()
   })
 
@@ -82,5 +97,88 @@ describe('TrendChart', () => {
 
     expect(getByText('基本トレンド')).toBeInTheDocument()
     expect(getByText('エンゲージメント')).toBeInTheDocument()
+  })
+
+  // サマリーカード関連のテスト
+  it('renders trend summary section', () => {
+    const data = [createTrendPoint()]
+    const { getByTestId } = render(<TrendChart data={data} />)
+
+    expect(getByTestId('trend-summary')).toBeInTheDocument()
+  })
+
+  it('renders four summary cards with latest metric values', () => {
+    const data = [createTrendPoint({ totalCards: 15, totalVotes: 40, totalParticipants: 6, actionItemCompletionRate: 75 })]
+    const { getByTestId } = render(<TrendChart data={data} />)
+
+    const summary = getByTestId('trend-summary')
+    expect(summary.children).toHaveLength(4)
+    expect(summary.textContent).toContain('15')
+    expect(summary.textContent).toContain('40')
+    expect(summary.textContent).toContain('6')
+    expect(summary.textContent).toContain('75')
+  })
+
+  it('shows "初回" indicator when only one data point', () => {
+    const data = [createTrendPoint()]
+    const { getAllByText } = render(<TrendChart data={data} />)
+
+    const initLabels = getAllByText(/初回/)
+    expect(initLabels.length).toBe(4)
+  })
+
+  it('shows positive trend indicator when metrics increase', () => {
+    const data = [
+      createTrendPoint({ closedAt: '2024-03-01T10:00:00Z', totalCards: 10, totalVotes: 20, totalParticipants: 5, actionItemCompletionRate: 40 }),
+      createTrendPoint({ closedAt: '2024-03-15T10:00:00Z', totalCards: 15, totalVotes: 30, totalParticipants: 6, actionItemCompletionRate: 60 }),
+    ]
+    const { getAllByTestId } = render(<TrendChart data={data} />)
+
+    const upIndicators = getAllByTestId('trending-up')
+    expect(upIndicators.length).toBeGreaterThan(0)
+  })
+
+  it('shows negative trend indicator when metrics decrease', () => {
+    const data = [
+      createTrendPoint({ closedAt: '2024-03-01T10:00:00Z', totalCards: 15, totalVotes: 30, totalParticipants: 6, actionItemCompletionRate: 60 }),
+      createTrendPoint({ closedAt: '2024-03-15T10:00:00Z', totalCards: 10, totalVotes: 20, totalParticipants: 5, actionItemCompletionRate: 40 }),
+    ]
+    const { getAllByTestId } = render(<TrendChart data={data} />)
+
+    const downIndicators = getAllByTestId('trending-down')
+    expect(downIndicators.length).toBeGreaterThan(0)
+  })
+
+  it('shows flat indicator when metrics are unchanged', () => {
+    const data = [
+      createTrendPoint({ closedAt: '2024-03-01T10:00:00Z', totalCards: 10, totalVotes: 20, totalParticipants: 5, actionItemCompletionRate: 50 }),
+      createTrendPoint({ closedAt: '2024-03-15T10:00:00Z', totalCards: 10, totalVotes: 20, totalParticipants: 5, actionItemCompletionRate: 50 }),
+    ]
+    const { getAllByText } = render(<TrendChart data={data} />)
+
+    const flatIndicators = getAllByText('横ばい')
+    expect(flatIndicators.length).toBeGreaterThan(0)
+  })
+
+  it('displays summary labels for all four metrics', () => {
+    const data = [createTrendPoint()]
+    const { getByTestId } = render(<TrendChart data={data} />)
+
+    const summary = getByTestId('trend-summary')
+    expect(summary.textContent).toContain('カード数')
+    expect(summary.textContent).toContain('投票数')
+    expect(summary.textContent).toContain('参加者数')
+    expect(summary.textContent).toContain('AI完了率')
+  })
+
+  it('displays units for summary cards', () => {
+    const data = [createTrendPoint()]
+    const { getByTestId } = render(<TrendChart data={data} />)
+
+    const summary = getByTestId('trend-summary')
+    expect(summary.textContent).toContain('枚')
+    expect(summary.textContent).toContain('票')
+    expect(summary.textContent).toContain('人')
+    expect(summary.textContent).toContain('%')
   })
 })
