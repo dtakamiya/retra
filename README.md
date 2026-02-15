@@ -2,21 +2,24 @@
 
 スクラムチームのためのリアルタイム・レトロスペクティブボード
 
-![Retra ホームページ](docs/images/screenshot-01-homepage.png)
+![Retra ホームページ](docs/images/01-home-create-board.png)
 
 ## 主要機能
 
 - **4種類のフレームワーク** - KPT / Fun Done Learn / 4Ls / Start Stop Continue
 - **5段階のフェーズワークフロー** - 記入 → 投票 → 議論 → アクション → 完了
+- **フェーズ遷移確認ダイアログ** - フェーズ移行時の確認ダイアログで誤操作を防止
 - **リアクション機能** - カードへの絵文字リアクション（👍❤️😂🎉🤔👀）
 - **メモ機能** - 議論・アクションフェーズでカードにメモを追加
-- **アクションアイテム追跡** - アクションフェーズでアクションアイテムを作成・管理（担当者・期限・ステータス）
-- **レトロ履歴ダッシュボード** - 過去のレトロスペクティブの履歴閲覧・トレンド分析
+- **アクションアイテム追跡** - アクションフェーズでアクションアイテムを作成・管理（担当者・期限・優先度・ステータス）
+- **レトロ履歴ダッシュボード** - 過去のレトロスペクティブの履歴閲覧・エンゲージメント指標のトレンド分析
 - **ドラッグ&ドロップ** - カードの並べ替え・カラム間移動
 - **リアルタイム同期** - WebSocket（STOMP）による即時反映
 - **タイマー機能** - フェーズごとの時間管理（開始・一時停止・リセット）
-- **投票機能** - 1人あたりの最大投票数を設定可能
+- **投票機能** - 1人あたりの最大投票数を設定可能、投票進捗バーで残り投票数を可視化
+- **議論済みマーク** - ファシリテーターがカードに議論済みマークを付けてグレーアウト・ソート
 - **フェーズベースのアクセス制御** - 記入フェーズでのみカード作成、投票フェーズでのみ投票など
+- **匿名モード** - ボード作成時に設定可能、カードの投稿者名を他の参加者から非表示
 - **エクスポート機能** - ボード内容をCSVまたはMarkdown形式でダウンロード
 - **アクションアイテム引き継ぎ** - 同一チームの前回レトロから未完了アクションアイテムを引き継ぎ
 - **自動スナップショット** - ボード完了時に自動でスナップショットを保存
@@ -86,65 +89,80 @@ cd frontend && npx tsc --noEmit
 <details>
 <summary>全スクリーンショットを表示</summary>
 
-### ホームページ
-ボードの作成・参加ができるトップページ。フレームワークの選択や最大投票数の設定が可能。
+### ホームページ - ボード作成
+フレームワークの選択、チーム名、最大投票数、匿名モードなどを設定してボードを作成。
 
-![ホームページ](docs/images/screenshot-01-homepage.png)
+![ホームページ - ボード作成](docs/images/01-home-create-board.png)
 
-### ボード作成直後
-ボード作成後、ファシリテーターとしてボードに参加した状態。
+### ホームページ - ボード参加
+既存ボードのスラッグを入力して参加。
 
-![ボード作成直後](docs/images/screenshot-02-board-created.png)
+![ホームページ - ボード参加](docs/images/02-home-join-board.png)
+
+### ボード参加タブ
+URLを共有してボードに参加する画面。
+
+![ボード参加タブ](docs/images/02-join-board-tab.png)
+
+### ボード作成直後（ニックネーム入力）
+ボード作成後、ニックネーム入力モーダルが表示される。
+
+![ボード作成直後](docs/images/03-board-created-with-nickname-modal.png)
 
 ### 参加者のボード画面
 URLを共有して別の参加者がボードに参加した状態。
 
-![参加者のボード画面](docs/images/screenshot-03-joined-board.png)
+![参加者のボード画面](docs/images/04-board-joined.png)
 
 ### 記入フェーズ - カード追加
 各カラムにカードを追加した状態。カードには投稿者名が表示される。
 
-![カード追加](docs/images/screenshot-04-cards-added.png)
+![カード追加](docs/images/05-cards-added.png)
 
-### 全参加者のカード
+### 記入フェーズ - 複数参加者
 複数の参加者がそれぞれカードを追加した状態。
 
-![全参加者のカード](docs/images/screenshot-05-all-participants.png)
+![複数参加者のカード](docs/images/06-writing-multi-users.png)
 
 ### 投票フェーズ
-投票フェーズに移行した状態。各カードに投票ボタンが表示される。
+投票フェーズに移行した状態。各カードに投票ボタンと投票進捗バーが表示される。
 
-![投票フェーズ](docs/images/screenshot-06-voting-phase.png)
+![投票フェーズ](docs/images/06-voting-phase.png)
 
-### 投票結果
+### 投票フェーズ - 投票済み
 参加者が投票を行った後の状態。投票数が表示される。
 
-![投票結果](docs/images/screenshot-07-voting-results.png)
+![投票済み](docs/images/07-voting-with-votes.png)
+
+### 投票フェーズ - 複数参加者の結果
+複数参加者が投票した後の集計結果。
+
+![投票結果](docs/images/07-voting-multi-users-result.png)
+
+### 投票上限
+1人あたりの最大投票数に達した状態。
+
+![投票上限](docs/images/05-voting-max-votes.png)
 
 ### 議論フェーズ
-議論フェーズに移行した状態。投票結果を参考に議論を進める。
+投票結果を参考に議論を進めるフェーズ。議論済みマーク機能でカードをグレーアウトできる。
 
-![議論フェーズ](docs/images/screenshot-08-discussion-phase.png)
+![議論フェーズ](docs/images/08-discussion-phase.png)
 
 ### アクションアイテムフェーズ
-議論を踏まえてアクションアイテムを整理するフェーズ。担当者・期限を設定してアクションアイテムを作成できる。
+議論を踏まえてアクションアイテムを整理するフェーズ。担当者・期限・優先度を設定してアクションアイテムを作成できる。
 
-![アクションアイテムフェーズ](docs/images/screenshot-09-action-items-phase.png)
+![アクションアイテムフェーズ](docs/images/09-actions-phase.png)
 
 ### 完了フェーズ
 レトロスペクティブが完了した状態。ボードのスナップショットが自動保存される。
 
-![完了フェーズ](docs/images/screenshot-10-closed-phase.png)
+![完了フェーズ](docs/images/10-closed-phase.png)
 
-### タイマー（実行中）
-フェーズごとの時間管理用タイマー。ファシリテーターが操作可能。
+### 404 ページ
+存在しないボードにアクセスした場合のエラーページ。
 
-![タイマー実行中](docs/images/screenshot-11-timer-running.png)
-
-### タイマー（一時停止）
-タイマーを一時停止した状態。
-
-![タイマー一時停止](docs/images/screenshot-12-timer-paused.png)
+![404ページ](docs/images/11-board-not-found.png)
 
 </details>
 
@@ -153,8 +171,8 @@ URLを共有して別の参加者がボードに参加した状態。
 ### イベント駆動リアルタイム更新
 
 ```
-REST API → Service（DB永続化）→ Spring ApplicationEvent
-  → BoardEventBroadcaster（@EventListener）→ STOMP broadcast
+REST API → UseCase（DB永続化）→ Spring ApplicationEvent
+  → DomainEventBroadcaster（@EventListener）→ STOMP broadcast
     → /topic/board/{slug}/{category}
       → フロントエンド Zustand Store 更新
 ```

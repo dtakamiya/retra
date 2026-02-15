@@ -147,4 +147,37 @@ describe('TeamDashboardPage', () => {
       expect(screen.queryByText('読み込み中...')).not.toBeInTheDocument()
     })
   })
+
+  it('displays KPI summary cards when history has data', async () => {
+    const history = [
+      createSnapshotSummary({ totalCards: 10, totalVotes: 20, totalParticipants: 5, actionItemsDone: 2, actionItemsTotal: 4 }),
+      createSnapshotSummary({ id: 'snap-2', totalCards: 14, totalVotes: 30, totalParticipants: 7, actionItemsDone: 3, actionItemsTotal: 5 }),
+    ]
+    vi.mocked(api.getHistory).mockResolvedValue(history)
+    vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
+
+    render(<TeamDashboardPage />)
+
+    await waitFor(() => {
+      expect(screen.getByTestId('kpi-summary')).toBeInTheDocument()
+    })
+    // Total cards: 10 + 14 = 24
+    expect(screen.getByText('24')).toBeInTheDocument()
+    expect(screen.getByText('総カード数')).toBeInTheDocument()
+    // Total votes: 20 + 30 = 50
+    expect(screen.getByText('50')).toBeInTheDocument()
+    expect(screen.getByText('総投票数')).toBeInTheDocument()
+  })
+
+  it('does not display KPI summary when history is empty', async () => {
+    vi.mocked(api.getHistory).mockResolvedValue([])
+    vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
+
+    render(<TeamDashboardPage />)
+
+    await waitFor(() => {
+      expect(screen.queryByText('読み込み中...')).not.toBeInTheDocument()
+    })
+    expect(screen.queryByTestId('kpi-summary')).not.toBeInTheDocument()
+  })
 })

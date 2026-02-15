@@ -20,15 +20,30 @@ export function SnapshotDetailPage() {
   }, [snapshotId]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-gray-50/50 dark:bg-slate-900">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <Link to="/dashboard" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1 mb-4 transition-colors">
-          <ArrowLeft size={16} />
+        <Link
+          to="/dashboard"
+          className="text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1 text-sm transition-colors mb-6"
+        >
+          <ArrowLeft size={14} />
           ダッシュボードに戻る
         </Link>
-        {loading && <div className="text-center py-8 text-gray-500 dark:text-slate-400">読み込み中...</div>}
+        {loading && (
+          <div className="text-center py-12">
+            <div className="relative w-10 h-10 mx-auto mb-3">
+              <div className="absolute inset-0 rounded-full border-2 border-indigo-100 dark:border-indigo-900/50" />
+              <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-indigo-600 dark:border-t-indigo-400 animate-spin" />
+            </div>
+            <p className="text-sm text-gray-400 dark:text-slate-500">読み込み中...</p>
+          </div>
+        )}
         {!loading && snapshot && <SnapshotDetailView snapshot={snapshot} />}
-        {!loading && !snapshot && <div className="text-center py-8 text-gray-500 dark:text-slate-400">スナップショットが見つかりません</div>}
+        {!loading && !snapshot && (
+          <div className="text-center py-12">
+            <p className="text-sm text-gray-400 dark:text-slate-500">スナップショットが見つかりません</p>
+          </div>
+        )}
       </div>
     </div>
   );
