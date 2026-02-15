@@ -15,7 +15,8 @@ describe('SnapshotDetailView', () => {
     const snapshot = createSnapshotDetail({ closedAt: '2024-06-20T15:00:00Z' })
     render(<SnapshotDetailView snapshot={snapshot} />)
 
-    expect(screen.getByText('2024/6/21')).toBeInTheDocument()
+    const expected = new Date('2024-06-20T15:00:00Z').toLocaleDateString('ja-JP')
+    expect(screen.getByText(expected)).toBeInTheDocument()
   })
 
   it('displays framework', () => {
