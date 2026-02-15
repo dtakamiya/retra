@@ -54,7 +54,7 @@ describe('RetroSummaryCard', () => {
     expect(screen.getByText('AI 0/0 (0%)')).toBeInTheDocument()
   })
 
-  it('displays framework name', () => {
+  it('displays framework name as badge', () => {
     const snapshot = createSnapshotSummary({ framework: 'KPT' })
     render(<RetroSummaryCard snapshot={snapshot} />)
 
@@ -67,5 +67,13 @@ describe('RetroSummaryCard', () => {
 
     const link = screen.getByRole('link')
     expect(link).toHaveAttribute('href', '/dashboard/snap-123')
+  })
+
+  it('renders completion progress bar', () => {
+    const snapshot = createSnapshotSummary({ actionItemsDone: 3, actionItemsTotal: 4 })
+    render(<RetroSummaryCard snapshot={snapshot} />)
+
+    const bar = screen.getByTestId('completion-bar')
+    expect(bar).toHaveStyle({ width: '75%' })
   })
 })
