@@ -22,6 +22,7 @@ export function TimerDisplay({ compact = false }: Props) {
   const timeStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   const isLow = timer.isRunning && timer.remainingSeconds <= 30;
   const isExpired = timer.totalSeconds > 0 && timer.remainingSeconds === 0 && !timer.isRunning;
+  const progress = timer.totalSeconds > 0 ? (timer.remainingSeconds / timer.totalSeconds) * 100 : 0;
 
   const handleStart = async () => {
     try {
@@ -58,11 +59,11 @@ export function TimerDisplay({ compact = false }: Props) {
 
   if (compact) {
     return (
-      <div className="flex items-center gap-2">
-        <Timer size={16} className={isLow ? 'text-red-500' : 'text-gray-500'} />
+      <div className="flex items-center gap-1.5">
+        <Timer size={14} className={isLow ? 'text-red-500' : 'text-gray-400'} />
         <span
-          className={`text-sm font-mono font-medium ${
-            isLow ? 'text-red-500' : isExpired ? 'text-red-400' : 'text-gray-700'
+          className={`text-xs font-mono font-semibold ${
+            isLow ? 'text-red-500' : isExpired ? 'text-red-400' : 'text-gray-600'
           }`}
         >
           {timer.totalSeconds > 0 ? timeStr : '--:--'}
@@ -73,27 +74,48 @@ export function TimerDisplay({ compact = false }: Props) {
 
   return (
     <div className="mb-6">
-      <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-        <Timer size={16} />
+      <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+        <Timer size={14} />
         タイマー
       </h3>
 
       <div
-        className={`text-3xl font-mono font-bold text-center py-3 rounded-lg mb-3 ${
+        className={`relative rounded-xl mb-3 overflow-hidden ${
           isLow
-            ? 'bg-red-50 text-red-600'
+            ? 'bg-red-50'
             : isExpired
-              ? 'bg-red-50 text-red-400'
+              ? 'bg-red-50'
               : timer.isRunning
-                ? 'bg-indigo-50 text-indigo-700'
-                : 'bg-gray-50 text-gray-400'
+                ? 'bg-indigo-50'
+                : 'bg-gray-50'
         }`}
       >
-        {timer.totalSeconds > 0 ? timeStr : '--:--'}
+        {/* Progress bar background */}
+        {timer.totalSeconds > 0 && (
+          <div
+            className={`absolute bottom-0 left-0 h-1 rounded-full transition-all ${
+              isLow ? 'bg-red-300' : 'bg-indigo-300'
+            }`}
+            style={{ width: `${progress}%` }}
+          />
+        )}
+        <div
+          className={`text-3xl font-mono font-bold text-center py-4 ${
+            isLow
+              ? 'text-red-600'
+              : isExpired
+                ? 'text-red-400'
+                : timer.isRunning
+                  ? 'text-indigo-700'
+                  : 'text-gray-400'
+          }`}
+        >
+          {timer.totalSeconds > 0 ? timeStr : '--:--'}
+        </div>
       </div>
 
       {isExpired && (
-        <div className="text-center text-sm text-red-500 mb-3 font-medium">
+        <div className="text-center text-xs text-red-500 mb-3 font-semibold animate-[pulseGlow_2s_ease-in-out_infinite]">
           時間切れ！
         </div>
       )}
@@ -108,57 +130,57 @@ export function TimerDisplay({ compact = false }: Props) {
                 onChange={(e) => setDuration(Math.max(1, Number(e.target.value)))}
                 min={1}
                 max={60}
-                className="w-16 px-2 py-1 border border-gray-300 rounded text-sm text-center"
+                className="w-16 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none"
               />
-              <span className="text-sm text-gray-500">分</span>
+              <span className="text-xs text-gray-400">分</span>
               <button
                 onClick={handleStart}
-                className="flex-1 px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+                className="flex-1 px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 transition-all active:scale-95"
               >
                 開始
               </button>
               <button
                 onClick={() => setShowDuration(false)}
-                className="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700"
+                className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
               >
                 キャンセル
               </button>
             </div>
           ) : (
-            <div className="flex gap-2">
+            <div className="flex gap-1.5">
               {!timer.isRunning && timer.remainingSeconds === 0 && (
                 <button
                   onClick={() => setShowDuration(true)}
-                  className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 transition-all active:scale-95"
                 >
-                  <Play size={14} />
+                  <Play size={13} />
                   開始
                 </button>
               )}
               {timer.isRunning && (
                 <button
                   onClick={handlePause}
-                  className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-amber-500 text-white text-xs font-medium rounded-lg hover:bg-amber-600 transition-all active:scale-95"
                 >
-                  <Pause size={14} />
+                  <Pause size={13} />
                   一時停止
                 </button>
               )}
               {!timer.isRunning && timer.remainingSeconds > 0 && (
                 <button
                   onClick={handleResume}
-                  className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 transition-all active:scale-95"
                 >
-                  <Play size={14} />
+                  <Play size={13} />
                   再開
                 </button>
               )}
               {timer.totalSeconds > 0 && (
                 <button
                   onClick={handleReset}
-                  className="flex items-center justify-center gap-1 px-3 py-1.5 border border-gray-300 text-gray-600 text-sm rounded hover:bg-gray-50 transition-colors"
+                  className="flex items-center justify-center gap-1 px-3 py-1.5 border border-gray-200 text-gray-500 text-xs rounded-lg hover:bg-gray-50 transition-all active:scale-95"
                 >
-                  <RotateCcw size={14} />
+                  <RotateCcw size={13} />
                 </button>
               )}
             </div>

@@ -76,20 +76,24 @@ export function ExportMenu() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={isExporting}
-        className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all disabled:opacity-50 ${
+          copied
+            ? 'bg-green-50 text-green-600 border border-green-200'
+            : 'border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300'
+        }`}
         aria-label="エクスポート"
         aria-expanded={isOpen}
         aria-haspopup="menu"
       >
         {copied ? (
           <>
-            <Check size={16} className="text-green-500" />
-            <span className="text-green-600">コピー済み</span>
+            <Check size={13} className="text-green-500" />
+            <span>コピー済み</span>
           </>
         ) : (
           <>
-            <Download size={16} />
-            <span>{isExporting ? 'エクスポート中...' : 'エクスポート'}</span>
+            <Download size={13} />
+            <span>{isExporting ? '...' : 'エクスポート'}</span>
           </>
         )}
       </button>
@@ -102,44 +106,44 @@ export function ExportMenu() {
 
       {isOpen && (
         <div
-          className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+          className="absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-xl shadow-gray-200/50 z-50 animate-[scaleFadeIn_0.15s_ease-out] overflow-hidden"
           role="menu"
         >
           {participant && (
             <>
               <button
                 onClick={() => handleExport('CSV')}
-                className="flex items-center gap-3 w-full px-4 py-3 text-sm text-left hover:bg-gray-50 rounded-t-lg transition-colors"
+                className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-left hover:bg-gray-50 transition-colors"
                 role="menuitem"
               >
-                <FileSpreadsheet size={16} className="text-green-600" />
+                <FileSpreadsheet size={15} className="text-green-600" />
                 <div>
-                  <div>CSV形式でダウンロード</div>
-                  <div className="text-xs text-gray-400">.csv ファイルとして保存</div>
+                  <div className="font-medium text-gray-700">CSV形式でダウンロード</div>
+                  <div className="text-[11px] text-gray-400">.csv ファイルとして保存</div>
                 </div>
               </button>
               <button
                 onClick={() => handleExport('MARKDOWN')}
-                className="flex items-center gap-3 w-full px-4 py-3 text-sm text-left hover:bg-gray-50 transition-colors border-t border-gray-100"
+                className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-left hover:bg-gray-50 transition-colors border-t border-gray-50"
                 role="menuitem"
               >
-                <FileText size={16} className="text-blue-600" />
+                <FileText size={15} className="text-blue-600" />
                 <div>
-                  <div>Markdown形式でダウンロード</div>
-                  <div className="text-xs text-gray-400">.md ファイルとして保存</div>
+                  <div className="font-medium text-gray-700">Markdown形式でダウンロード</div>
+                  <div className="text-[11px] text-gray-400">.md ファイルとして保存</div>
                 </div>
               </button>
             </>
           )}
           <button
             onClick={handleCopy}
-            className={`flex items-center gap-3 w-full px-4 py-3 text-sm text-left hover:bg-gray-50 transition-colors border-t border-gray-100 ${participant ? '' : 'rounded-t-lg'} rounded-b-lg`}
+            className={`flex items-center gap-3 w-full px-4 py-2.5 text-sm text-left hover:bg-gray-50 transition-colors border-t border-gray-50`}
             role="menuitem"
           >
-            <ClipboardCopy size={16} className="text-purple-600" />
+            <ClipboardCopy size={15} className="text-purple-600" />
             <div>
-              <div>クリップボードにコピー</div>
-              <div className="text-xs text-gray-400">Markdown形式でコピー</div>
+              <div className="font-medium text-gray-700">クリップボードにコピー</div>
+              <div className="text-[11px] text-gray-400">Markdown形式でコピー</div>
             </div>
           </button>
         </div>

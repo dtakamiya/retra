@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import { BoardHeader } from './BoardHeader'
 import { useBoardStore } from '../store/boardStore'
@@ -9,6 +10,10 @@ vi.mock('../store/boardStore')
 vi.mock('./PhaseControl', () => ({
   PhaseControl: () => <div data-testid="phase-control">PhaseControl</div>,
 }))
+
+function renderWithRouter(ui: React.ReactElement) {
+  return render(<MemoryRouter>{ui}</MemoryRouter>)
+}
 
 describe('BoardHeader', () => {
   beforeEach(() => {
@@ -34,7 +39,7 @@ describe('BoardHeader', () => {
       setBoard: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    render(<BoardHeader />)
+    renderWithRouter(<BoardHeader />)
 
     expect(screen.getByText('スプリント10 ふりかえり')).toBeInTheDocument()
   })
@@ -46,12 +51,12 @@ describe('BoardHeader', () => {
       setBoard: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    render(<BoardHeader />)
+    renderWithRouter(<BoardHeader />)
 
     expect(screen.getByText('FUN DONE LEARN')).toBeInTheDocument()
   })
 
-  it('clicking share button copies URL to clipboard and shows "コピーしました！"', async () => {
+  it('clicking share button copies URL to clipboard and shows "コピー済み"', async () => {
     const user = userEvent.setup()
 
     const writeTextMock = vi.fn().mockResolvedValue(undefined)
@@ -67,7 +72,7 @@ describe('BoardHeader', () => {
       setBoard: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    render(<BoardHeader />)
+    renderWithRouter(<BoardHeader />)
 
     // Click the share button (initially shows "共有")
     const shareButton = screen.getByText('共有')
@@ -76,7 +81,7 @@ describe('BoardHeader', () => {
     expect(writeTextMock).toHaveBeenCalledWith(window.location.href)
 
     await waitFor(() => {
-      expect(screen.getByText('コピーしました！')).toBeInTheDocument()
+      expect(screen.getByText('コピー済み')).toBeInTheDocument()
     })
   })
 })

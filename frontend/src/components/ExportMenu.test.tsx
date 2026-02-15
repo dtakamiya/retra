@@ -30,9 +30,11 @@ describe('ExportMenu', () => {
             id: 'board-1',
             slug: 'test1234',
             title: 'Test Retro',
+            teamName: null,
             framework: 'KPT',
             phase: 'DISCUSSION',
             maxVotesPerPerson: 5,
+            isAnonymous: false,
             columns: [],
             participants: [],
             createdAt: '2024-01-01T00:00:00Z',
@@ -150,7 +152,7 @@ describe('ExportMenu', () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText('エクスポート')).toBeDisabled();
-      expect(screen.getByText('エクスポート中...')).toBeInTheDocument();
+      expect(screen.getByText('...')).toBeInTheDocument();
     });
   });
 });

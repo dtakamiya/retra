@@ -9,9 +9,9 @@ const ICON_MAP: Record<ToastType, typeof CheckCircle2> = {
 };
 
 const STYLE_MAP: Record<ToastType, string> = {
-  success: 'bg-green-50 border-green-300 text-green-800',
-  error: 'bg-red-50 border-red-300 text-red-800',
-  info: 'bg-blue-50 border-blue-300 text-blue-800',
+  success: 'bg-white border-green-200 text-green-800',
+  error: 'bg-white border-red-200 text-red-800',
+  info: 'bg-white border-blue-200 text-blue-800',
 };
 
 const ICON_STYLE_MAP: Record<ToastType, string> = {
@@ -32,15 +32,15 @@ export function ToastContainer() {
         return (
           <div
             key={toast.id}
-            className={`flex items-start gap-2 px-4 py-3 border rounded-lg shadow-lg animate-[slideIn_0.2s_ease-out] ${STYLE_MAP[toast.type]}`}
+            className={`flex items-start gap-2.5 px-4 py-3 border rounded-xl shadow-lg shadow-gray-200/50 animate-[slideIn_0.2s_ease-out] ${STYLE_MAP[toast.type]}`}
             role="alert"
             data-testid="toast"
           >
-            <Icon size={18} className={`flex-shrink-0 mt-0.5 ${ICON_STYLE_MAP[toast.type]}`} />
+            <Icon size={16} className={`flex-shrink-0 mt-0.5 ${ICON_STYLE_MAP[toast.type]}`} />
             <p className="text-sm flex-1">{toast.message}</p>
             <button
               onClick={() => removeToast(toast.id)}
-              className="flex-shrink-0 p-0.5 opacity-60 hover:opacity-100 transition-opacity"
+              className="flex-shrink-0 p-0.5 opacity-40 hover:opacity-100 transition-opacity"
               aria-label="閉じる"
             >
               <X size={14} />
