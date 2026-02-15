@@ -19,7 +19,7 @@ describe('SnapshotDetailView', () => {
     expect(screen.getByText(expected)).toBeInTheDocument()
   })
 
-  it('displays framework', () => {
+  it('displays framework as badge', () => {
     const snapshot = createSnapshotDetail({ framework: 'FUN_DONE_LEARN' })
     render(<SnapshotDetailView snapshot={snapshot} />)
 
@@ -32,6 +32,14 @@ describe('SnapshotDetailView', () => {
 
     expect(screen.getByText('20')).toBeInTheDocument()
     expect(screen.getByText('カード数')).toBeInTheDocument()
+  })
+
+  it('displays total votes stat', () => {
+    const snapshot = createSnapshotDetail({ totalVotes: 30 })
+    render(<SnapshotDetailView snapshot={snapshot} />)
+
+    expect(screen.getByText('30')).toBeInTheDocument()
+    expect(screen.getByText('投票数')).toBeInTheDocument()
   })
 
   it('displays total participants stat', () => {
@@ -50,12 +58,11 @@ describe('SnapshotDetailView', () => {
     expect(screen.getByText('AI完了率')).toBeInTheDocument()
   })
 
-  it('displays action item fraction', () => {
+  it('displays action item fraction as sub text', () => {
     const snapshot = createSnapshotDetail({ actionItemsDone: 3, actionItemsTotal: 4 })
     render(<SnapshotDetailView snapshot={snapshot} />)
 
     expect(screen.getByText('3/4')).toBeInTheDocument()
-    expect(screen.getByText('AI完了')).toBeInTheDocument()
   })
 
   it('displays 0% completion rate when no action items', () => {
@@ -77,8 +84,8 @@ describe('SnapshotDetailView', () => {
     render(<SnapshotDetailView snapshot={snapshot} />)
 
     expect(screen.getByText('カラム詳細')).toBeInTheDocument()
-    expect(screen.getByText('Keep (1)')).toBeInTheDocument()
-    expect(screen.getByText('Problem (1)')).toBeInTheDocument()
+    expect(screen.getByText('Keep')).toBeInTheDocument()
+    expect(screen.getByText('Problem')).toBeInTheDocument()
     expect(screen.getByText('Good teamwork')).toBeInTheDocument()
     expect(screen.getByText('5 票')).toBeInTheDocument()
     expect(screen.getByText('Slow builds')).toBeInTheDocument()

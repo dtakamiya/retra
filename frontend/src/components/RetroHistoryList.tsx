@@ -1,3 +1,4 @@
+import { History } from 'lucide-react';
 import type { SnapshotSummary } from '../types';
 import { RetroSummaryCard } from './RetroSummaryCard';
 
@@ -7,10 +8,17 @@ interface Props {
 
 export function RetroHistoryList({ history }: Props) {
   if (history.length === 0) {
-    return <p className="text-gray-500 text-center py-4">まだレトロスペクティブの履歴がありません</p>;
+    return (
+      <div className="text-center py-8">
+        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+          <History size={18} className="text-gray-400" />
+        </div>
+        <p className="text-sm text-gray-500">まだレトロスペクティブの履歴がありません</p>
+      </div>
+    );
   }
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {history.map((snapshot) => (
         <RetroSummaryCard key={snapshot.id} snapshot={snapshot} />
       ))}

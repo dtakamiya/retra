@@ -1,17 +1,17 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { TrendChart } from './TrendChart'
 import { createTrendPoint } from '../test/fixtures'
 
 // Mock recharts to avoid SVG rendering issues in jsdom
 vi.mock('recharts', () => ({
-  LineChart: ({ children }: { children: React.ReactNode }) => <div data-testid="line-chart">{children}</div>,
-  Line: ({ name }: { name: string }) => <div data-testid="line">{name}</div>,
+  AreaChart: ({ children }: { children: React.ReactNode }) => <div data-testid="area-chart">{children}</div>,
+  Area: ({ name }: { name: string }) => <div data-testid="area" data-name={name} />,
   XAxis: () => <div data-testid="x-axis" />,
   YAxis: () => <div data-testid="y-axis" />,
   CartesianGrid: () => <div data-testid="cartesian-grid" />,
   Tooltip: () => <div data-testid="tooltip" />,
-  Legend: () => <div data-testid="legend" />,
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div data-testid="responsive-container">{children}</div>,
 }))
 
@@ -40,63 +40,71 @@ describe('TrendChart', () => {
     expect(container).toBeTruthy()
   })
 
-  it('renders ResponsiveContainers', () => {
+  it('renders one ResponsiveContainer for active tab', () => {
     const data = [createTrendPoint()]
     const { getAllByTestId } = render(<TrendChart data={data} />)
 
-    expect(getAllByTestId('responsive-container')).toHaveLength(2)
+    expect(getAllByTestId('responsive-container')).toHaveLength(1)
   })
 
-  it('renders LineCharts', () => {
+  it('renders one AreaChart for active tab', () => {
     const data = [createTrendPoint()]
     const { getAllByTestId } = render(<TrendChart data={data} />)
 
-    expect(getAllByTestId('line-chart')).toHaveLength(2)
+    expect(getAllByTestId('area-chart')).toHaveLength(1)
   })
 
-  it('renders seven lines for all metrics', () => {
+  it('renders three areas for basic trend tab', () => {
     const data = [createTrendPoint()]
     const { getAllByTestId } = render(<TrendChart data={data} />)
 
-    const lines = getAllByTestId('line')
-    expect(lines).toHaveLength(7)
+    const areas = getAllByTestId('area')
+    expect(areas).toHaveLength(3)
   })
 
-  it('renders correct line names', () => {
-    const data = [createTrendPoint()]
-    const { getAllByText, getByText } = render(<TrendChart data={data} />)
-
-    // カード数・投票数はサマリーカードとチャートラインの両方に存在する
-    expect(getAllByText('カード数').length).toBeGreaterThanOrEqual(1)
-    expect(getAllByText('投票数').length).toBeGreaterThanOrEqual(1)
-    expect(getByText('AI完了率(%)')).toBeInTheDocument()
-  })
-
-  it('renders engagement chart section', () => {
+  it('renders correct area names for basic trend', () => {
     const data = [createTrendPoint()]
     const { getAllByTestId } = render(<TrendChart data={data} />)
 
-    // 2つのチャート（基本トレンド + エンゲージメント）
-    const charts = getAllByTestId('line-chart')
-    expect(charts).toHaveLength(2)
+    const areas = getAllByTestId('area')
+    const names = areas.map(el => el.getAttribute('data-name'))
+    expect(names).toContain('カード数')
+    expect(names).toContain('投票数')
+    expect(names).toContain('AI完了率(%)')
   })
 
-  it('renders engagement metric line names', () => {
+  it('renders tab navigation', () => {
     const data = [createTrendPoint()]
-    const { getByText } = render(<TrendChart data={data} />)
+    render(<TrendChart data={data} />)
 
-    expect(getByText('カード数/人')).toBeInTheDocument()
-    expect(getByText('投票数/人')).toBeInTheDocument()
-    expect(getByText('投票数/カード')).toBeInTheDocument()
-    expect(getByText('アクション化率(%)')).toBeInTheDocument()
+    expect(screen.getByText('基本トレンド')).toBeInTheDocument()
+    expect(screen.getByText('エンゲージメント')).toBeInTheDocument()
   })
 
-  it('renders section headings', () => {
+  it('switches to engagement tab and shows engagement metrics', async () => {
+    const user = userEvent.setup()
     const data = [createTrendPoint()]
-    const { getByText } = render(<TrendChart data={data} />)
+    const { getAllByTestId } = render(<TrendChart data={data} />)
 
-    expect(getByText('基本トレンド')).toBeInTheDocument()
-    expect(getByText('エンゲージメント')).toBeInTheDocument()
+    await user.click(screen.getByText('エンゲージメント'))
+
+    const areas = getAllByTestId('area')
+    const names = areas.map(el => el.getAttribute('data-name'))
+    expect(names).toContain('カード数/人')
+    expect(names).toContain('投票数/人')
+    expect(names).toContain('投票数/カード')
+    expect(names).toContain('アクション化率(%)')
+  })
+
+  it('renders four areas for engagement tab', async () => {
+    const user = userEvent.setup()
+    const data = [createTrendPoint()]
+    const { getAllByTestId } = render(<TrendChart data={data} />)
+
+    await user.click(screen.getByText('エンゲージメント'))
+
+    const areas = getAllByTestId('area')
+    expect(areas).toHaveLength(4)
   })
 
   // サマリーカード関連のテスト
