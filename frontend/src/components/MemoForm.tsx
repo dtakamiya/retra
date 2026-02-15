@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Send } from 'lucide-react';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
@@ -12,6 +12,7 @@ export function MemoForm({ cardId }: Props) {
   const { board, participant } = useBoardStore();
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const addToast = useToastStore((s) => s.addToast);
 
@@ -35,15 +36,20 @@ export function MemoForm({ cardId }: Props) {
       e.preventDefault();
       handleSubmit();
     }
+    if (e.key === 'Escape') {
+      setContent('');
+      textareaRef.current?.blur();
+    }
   };
 
   return (
     <div className="flex gap-2 items-end">
       <textarea
+        ref={textareaRef}
         value={content}
         onChange={(e) => setContent(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="メモを追加..."
+        placeholder="メモを追加...（Escでクリア）"
         maxLength={2000}
         className="flex-1 resize-none border border-gray-200 rounded px-2 py-1 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-300 min-h-[32px]"
         rows={1}

@@ -44,7 +44,7 @@ describe('ActionItemForm', () => {
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
 
-    expect(screen.getByPlaceholderText('アクションアイテムを追加...')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('アクションアイテムを追加...（Escでクリア）')).toBeInTheDocument()
     expect(screen.getByLabelText('担当者を選択')).toBeInTheDocument()
     expect(screen.getByLabelText('期限を設定')).toBeInTheDocument()
     expect(screen.getByLabelText('アクションアイテムを追加')).toBeInTheDocument()
@@ -82,7 +82,7 @@ describe('ActionItemForm', () => {
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
 
-    const textarea = screen.getByPlaceholderText('アクションアイテムを追加...')
+    const textarea = screen.getByPlaceholderText('アクションアイテムを追加...（Escでクリア）')
     await user.type(textarea, 'アクション内容')
     await user.click(screen.getByLabelText('アクションアイテムを追加'))
 
@@ -107,7 +107,7 @@ describe('ActionItemForm', () => {
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
 
-    const textarea = screen.getByPlaceholderText('アクションアイテムを追加...')
+    const textarea = screen.getByPlaceholderText('アクションアイテムを追加...（Escでクリア）')
     await user.type(textarea, 'アクション内容')
     await user.selectOptions(screen.getByLabelText('担当者を選択'), 'p-2')
     // Date input: type via user
@@ -126,6 +126,26 @@ describe('ActionItemForm', () => {
     )
   })
 
+  it('pressing Escape clears all fields and blurs textarea', async () => {
+    const user = userEvent.setup()
+    vi.mocked(useBoardStore).mockReturnValue({
+      participant: createParticipant({ id: 'p-1' }),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<ActionItemForm slug="test-slug" participants={participants} />)
+
+    const textarea = screen.getByPlaceholderText('アクションアイテムを追加...（Escでクリア）')
+    await user.type(textarea, '入力中のアクション')
+    await user.selectOptions(screen.getByLabelText('担当者を選択'), 'p-2')
+    expect(textarea).toHaveValue('入力中のアクション')
+
+    await user.type(textarea, '{Escape}')
+    expect(textarea).toHaveValue('')
+    expect(textarea).not.toHaveFocus()
+    expect(screen.getByLabelText('担当者を選択')).toHaveValue('')
+    expect(screen.getByLabelText('優先度を選択')).toHaveValue('MEDIUM')
+  })
+
   it('pressing Enter submits the action item', async () => {
     const user = userEvent.setup()
     vi.mocked(useBoardStore).mockReturnValue({
@@ -135,7 +155,7 @@ describe('ActionItemForm', () => {
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
 
-    const textarea = screen.getByPlaceholderText('アクションアイテムを追加...')
+    const textarea = screen.getByPlaceholderText('アクションアイテムを追加...（Escでクリア）')
     await user.type(textarea, 'Enter送信')
     await user.type(textarea, '{Enter}')
 
@@ -159,7 +179,7 @@ describe('ActionItemForm', () => {
 
     render(<ActionItemForm slug="test-slug" participants={participants} cardId="card-1" />)
 
-    const textarea = screen.getByPlaceholderText('アクションアイテムを追加...')
+    const textarea = screen.getByPlaceholderText('アクションアイテムを追加...（Escでクリア）')
     await user.type(textarea, '変換アクション')
     await user.click(screen.getByLabelText('アクションアイテムを追加'))
 
@@ -181,6 +201,6 @@ describe('ActionItemForm', () => {
 
     render(<ActionItemForm slug="test-slug" participants={participants} initialContent="初期内容" />)
 
-    expect(screen.getByPlaceholderText('アクションアイテムを追加...')).toHaveValue('初期内容')
+    expect(screen.getByPlaceholderText('アクションアイテムを追加...（Escでクリア）')).toHaveValue('初期内容')
   })
 })

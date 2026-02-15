@@ -119,7 +119,7 @@ describe('ActionItemList', () => {
 
     render(<ActionItemList actionItems={[]} slug="test-slug" participants={participants} />)
 
-    expect(screen.getByPlaceholderText('アクションアイテムを追加...')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('アクションアイテムを追加...（Escでクリア）')).toBeInTheDocument()
   })
 
   it('does NOT show ActionItemForm in CLOSED phase', () => {
@@ -130,7 +130,7 @@ describe('ActionItemList', () => {
 
     render(<ActionItemList actionItems={[]} slug="test-slug" participants={participants} />)
 
-    expect(screen.queryByPlaceholderText('アクションアイテムを追加...')).not.toBeInTheDocument()
+    expect(screen.queryByPlaceholderText('アクションアイテムを追加...（Escでクリア）')).not.toBeInTheDocument()
   })
 
   it('hides status sections when no items in that status', () => {

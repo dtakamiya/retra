@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
@@ -19,6 +19,7 @@ export function ActionItemForm({ slug, participants, cardId, initialContent = ''
   const [dueDate, setDueDate] = useState('');
   const [priority, setPriority] = useState<ActionItemPriority>('MEDIUM');
   const [loading, setLoading] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const addToast = useToastStore((s) => s.addToast);
 
   if (!participant) return null;
@@ -52,15 +53,23 @@ export function ActionItemForm({ slug, participants, cardId, initialContent = ''
       e.preventDefault();
       handleSubmit();
     }
+    if (e.key === 'Escape') {
+      setContent('');
+      setAssigneeId('');
+      setDueDate('');
+      setPriority('MEDIUM');
+      textareaRef.current?.blur();
+    }
   };
 
   return (
     <div className="bg-gray-50 rounded-lg p-3 border border-dashed border-gray-300 space-y-2">
       <textarea
+        ref={textareaRef}
         value={content}
         onChange={(e) => setContent(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="アクションアイテムを追加..."
+        placeholder="アクションアイテムを追加...（Escでクリア）"
         maxLength={2000}
         className="w-full resize-none border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-300 min-h-[40px]"
         rows={2}
