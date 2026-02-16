@@ -1,4 +1,4 @@
-import type { ActionItem, Board, Card, CarryOverItem, Column, Memo, Participant, Reaction, RemainingVotes, SnapshotDetail, SnapshotSummary, TimerState, TrendData, TrendPoint, Vote } from '../types'
+import type { ActionItem, Board, Card, CarryOverItem, Column, Kudos, Memo, Participant, Reaction, RemainingVotes, SnapshotDetail, SnapshotSummary, TimerState, TrendData, TrendPoint, Vote } from '../types'
 
 export function createParticipant(overrides: Partial<Participant> = {}): Participant {
   return {
@@ -202,6 +202,21 @@ export function createCarryOverItem(overrides: Partial<CarryOverItem> = {}): Car
     sourceBoardTitle: 'Sprint 42 Retro',
     sourceBoardClosedAt: '2024-01-01T00:00:00Z',
     sourceBoardSlug: 'prev-slug',
+    ...overrides,
+  }
+}
+
+export function createKudos(overrides: Partial<Kudos> = {}): Kudos {
+  return {
+    id: 'kudos-1',
+    boardId: 'board-1',
+    senderId: 'p-1',
+    senderNickname: 'TestUser',
+    receiverId: 'p-2',
+    receiverNickname: 'OtherUser',
+    category: 'GREAT_JOB',
+    message: undefined,
+    createdAt: '2024-01-01T00:00:00Z',
     ...overrides,
   }
 }

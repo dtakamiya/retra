@@ -11,6 +11,8 @@ import type {
   CardMovedPayload,
   CarryOverItem,
   CarryOverItemsResponse,
+  Kudos,
+  KudosDeletedPayload,
   Memo,
   MemoDeletedPayload,
   Participant,
@@ -33,6 +35,7 @@ interface BoardState {
   actionItems: ActionItem[];
   carryOverItems: CarryOverItem[];
   carryOverTeamName: string;
+  kudos: Kudos[];
 
   setBoard: (board: Board) => void;
   setParticipant: (participant: Participant) => void;
@@ -42,6 +45,7 @@ interface BoardState {
   setActionItems: (items: ActionItem[]) => void;
   setCarryOverItems: (response: CarryOverItemsResponse) => void;
   updateCarryOverItemStatus: (actionItemId: string, newStatus: ActionItemStatus) => void;
+  setKudos: (kudos: Kudos[]) => void;
 
   // WebSocket event handlers
   handleCardCreated: (card: Card) => void;
@@ -64,6 +68,8 @@ interface BoardState {
   handleActionItemUpdated: (item: ActionItem) => void;
   handleActionItemStatusChanged: (payload: ActionItemStatusChangedPayload) => void;
   handleActionItemDeleted: (payload: ActionItemDeletedPayload) => void;
+  handleKudosSent: (kudos: Kudos) => void;
+  handleKudosDeleted: (payload: KudosDeletedPayload) => void;
 }
 
 export const useBoardStore = create<BoardState>((set) => ({
@@ -75,6 +81,7 @@ export const useBoardStore = create<BoardState>((set) => ({
   actionItems: [],
   carryOverItems: [],
   carryOverTeamName: '',
+  kudos: [],
 
   setBoard: (board) => set({ board }),
   setParticipant: (participant) => set({ participant }),
@@ -88,6 +95,7 @@ export const useBoardStore = create<BoardState>((set) => ({
       .map((item) => item.id === actionItemId ? { ...item, status: newStatus } : item)
       .filter((item) => item.status !== 'DONE'),
   })),
+  setKudos: (kudos) => set({ kudos }),
 
   handleCardCreated: (card) =>
     set((state) => {
@@ -377,5 +385,13 @@ export const useBoardStore = create<BoardState>((set) => ({
       actionItems: state.actionItems.filter(
         (ai) => ai.id !== payload.actionItemId
       ),
+    })),
+
+  handleKudosSent: (kudos) =>
+    set((state) => ({ kudos: [kudos, ...state.kudos] })),
+
+  handleKudosDeleted: (payload) =>
+    set((state) => ({
+      kudos: state.kudos.filter((k) => k.id !== payload.id),
     })),
 }));
