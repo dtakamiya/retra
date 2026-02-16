@@ -5,6 +5,7 @@ import type {
   CarryOverItemsResponse,
   ExportFormat,
   Framework,
+  Kudos,
   Memo,
   Participant,
   Phase,
@@ -250,5 +251,24 @@ export const api = {
       throw new Error(error.message || `HTTP ${response.status}`);
     }
     return response.blob();
+  },
+
+  // Kudos
+  getKudos(slug: string): Promise<Kudos[]> {
+    return request(`/boards/${slug}/kudos`);
+  },
+
+  sendKudos(slug: string, senderId: string, receiverId: string, category: string, message?: string): Promise<Kudos> {
+    return request(`/boards/${slug}/kudos`, {
+      method: 'POST',
+      body: JSON.stringify({ senderId, receiverId, category, message }),
+    });
+  },
+
+  deleteKudos(slug: string, kudosId: string, participantId: string): Promise<void> {
+    const params = new URLSearchParams({ participantId });
+    return request(`/boards/${slug}/kudos/${kudosId}?${params}`, {
+      method: 'DELETE',
+    });
   },
 };
