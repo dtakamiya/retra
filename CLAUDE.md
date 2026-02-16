@@ -122,6 +122,14 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 | `actionitem/gateway/controller/` | `ActionItemController` (REST) |
 | `actionitem/gateway/db/` | JPA repository implementations (`JpaActionItemRepository`) + Spring Data interfaces (`SpringDataActionItemRepository`) |
 
+#### `kudos/` - Kudos Module
+| Package | Purpose |
+|---------|---------|
+| `kudos/domain/` | `Kudos`, `KudosCategory`, `KudosEvent`, `KudosRepository` |
+| `kudos/usecase/` | `SendKudosUseCase`, `GetKudosUseCase`, `DeleteKudosUseCase`, DTOs (`KudosDtos`), Mapper (`KudosMapper`) |
+| `kudos/gateway/controller/` | `KudosController` (REST) |
+| `kudos/gateway/db/` | JPA repository implementations (`JpaKudosRepository`) + Spring Data interfaces (`SpringDataKudosRepository`) |
+
 #### `history/` - History Module
 | Package | Purpose |
 |---------|---------|
@@ -145,12 +153,12 @@ Entry point: `RetraApplication.kt`
 |-----------|---------|
 | `api/client.ts` | REST API wrapper (`/api/v1` base) |
 | `pages/` | `HomePage` (create/join), `BoardPage` (main board), `TeamDashboardPage` (history + trends), `SnapshotDetailPage` (snapshot detail), `NotFoundPage` |
-| `components/` | `BoardHeader`, `BoardView`, `ColumnView`, `CardItem`, `CardForm`, `MemoList`, `MemoItem`, `MemoForm`, `ReactionList`, `ReactionPicker`, `ParticipantList`, `PhaseControl`, `TimerDisplay`, `ConnectionBanner`, `NicknameModal`, `ExportMenu`, `ToastContainer`, `ActionItemList`, `ActionItemCard`, `ActionItemForm`, `ActionItemStatusBadge`, `CarryOverPanel`, `RetroHistoryList`, `RetroSummaryCard`, `TrendChart`, `SnapshotDetailView` |
+| `components/` | `BoardHeader`, `BoardView`, `ColumnView`, `CardItem`, `CardForm`, `MemoList`, `MemoItem`, `MemoForm`, `ReactionList`, `ReactionPicker`, `ParticipantList`, `PhaseControl`, `TimerDisplay`, `ConnectionBanner`, `NicknameModal`, `ExportMenu`, `ToastContainer`, `ActionItemList`, `ActionItemCard`, `ActionItemForm`, `ActionItemStatusBadge`, `CarryOverPanel`, `RetroHistoryList`, `RetroSummaryCard`, `TrendChart`, `SnapshotDetailView`, `KudosPanel`, `KudosCard`, `KudosSendForm` |
 | `store/boardStore.ts` | Zustand store with WebSocket event handlers |
 | `store/toastStore.ts` | Toast notification store (success/error/info, 4秒自動削除) |
 | `websocket/useWebSocket.ts` | STOMP client hook with auto-reconnect |
 | `hooks/useTimerAlert.ts` | Timer alert sound hook |
-| `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `Reaction`, `ExportFormat`, `CardMovedPayload`, `ReactionRemovedPayload`, etc.) |
+| `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `Reaction`, `Kudos`, `ExportFormat`, `CardMovedPayload`, `ReactionRemovedPayload`, `KudosDeletedPayload`, etc.) |
 | `utils/` | Utility functions (`exportMarkdown.ts` - Markdown export conversion) |
 | `test/` | Test utilities: `setup.ts`, `fixtures.ts`, `test-utils.tsx`, `dnd-mocks.ts` |
 
@@ -176,6 +184,9 @@ All REST endpoints are under `/api/v1`:
 - `DELETE /boards/{slug}/cards/{cardId}/memos/{memoId}` - Delete memo
 - `POST /boards/{slug}/reactions` - Add reaction (emoji: 👍❤️😂🎉🤔👀)
 - `DELETE /boards/{slug}/reactions` - Remove reaction
+- `POST /boards/{slug}/kudos` - Send kudos (all phases)
+- `GET /boards/{slug}/kudos` - Get all kudos for board
+- `DELETE /boards/{slug}/kudos/{id}` - Delete own kudos
 - `POST /boards/{slug}/timer` - Timer control (facilitator only)
 - `GET /boards/{slug}/timer` - Get timer state
 - `GET /boards/{slug}/export` - Export board (CSV/Markdown, query params: `participantId`, `format`)
@@ -200,6 +211,7 @@ STOMP topics under `/topic/board/{slug}/`:
 - `phase` - `PHASE_CHANGED`
 - `participants` - `PARTICIPANT_JOINED`, `PARTICIPANT_ONLINE_CHANGED`
 - `action-items` - `ACTION_ITEM_CREATED`, `ACTION_ITEM_UPDATED`, `ACTION_ITEM_STATUS_CHANGED`, `ACTION_ITEM_DELETED`
+- `kudos` - `KUDOS_SENT`, `KUDOS_DELETED`
 
 ### Phase-Based Access Control
 
@@ -213,6 +225,7 @@ Business rules are enforced in the usecase layer:
 - Anonymous mode: set at board creation, cannot be changed; hides author names from other participants (self visible)
 - Phase transitions: facilitator only, must follow sequential order
 - Timer: facilitator only
+- Kudos: send in all phases; delete by sender only; categories (GREAT_JOB, THANK_YOU, INSPIRING, HELPFUL, CREATIVE, TEAM_PLAYER); anonymous mode hides sender name; 140 char message limit
 - Auto-snapshot: created automatically when board transitions to CLOSED phase
 
 ## Testing
@@ -237,6 +250,9 @@ Business rules are enforced in the usecase layer:
   - `history/domain/` - BoardSnapshot tests
   - `history/usecase/` - CreateSnapshot, GetSnapshot, GetTeamHistory usecase tests
   - `history/gateway/controller/` - HistoryController tests
+  - `kudos/domain/` - Kudos, KudosCategory tests
+  - `kudos/usecase/` - SendKudos, GetKudos, DeleteKudos usecase tests
+  - `kudos/gateway/controller/` - KudosController tests
   - `shared/gateway/` - GlobalExceptionHandler, DomainEventBroadcaster, SpringDomainEventPublisher tests
 
 ### Frontend Tests (`frontend/src/`)
@@ -251,7 +267,7 @@ Business rules are enforced in the usecase layer:
 ### E2E Tests (`frontend/e2e/`)
 - **Framework:** Playwright
 - **Config:** `playwright.config.ts`
-- **Test suites:** `home`, `board-creation`, `board-join`, `card-operations`, `card-edit-delete`, `card-drag-drop`, `voting`, `voting-limit`, `phase-control`, `timer`, `realtime-sync`, `authorization`, `memo-operations`, `reaction-operations`, `export`, `action-item-operations`, `dashboard`
+- **Test suites:** `home`, `board-creation`, `board-join`, `card-operations`, `card-edit-delete`, `card-drag-drop`, `voting`, `voting-limit`, `phase-control`, `timer`, `realtime-sync`, `authorization`, `memo-operations`, `reaction-operations`, `export`, `action-item-operations`, `dashboard`, `kudos-operations`
 
 ## Technical Constraints
 
@@ -259,7 +275,7 @@ Business rules are enforced in the usecase layer:
 - **SQLite single-writer:** HikariCP `maximum-pool-size=1`, WAL mode, `busy_timeout=5000ms`, `foreign_keys=ON`
 - **Kotlin JPA entities** use `open class` (not data class) due to `allOpen` plugin with `@Entity`, `@MappedSuperclass`, `@Embeddable` annotations
 - **TailwindCSS v4:** Uses `@tailwindcss/vite` plugin with `@import "tailwindcss"` syntax. No `tailwind.config.js`.
-- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V12, do not modify existing migrations)
+- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V14, do not modify existing migrations)
 - **SPA fallback:** `SpaConfig.kt` serves `index.html` for non-API, non-static routes in production
 - **Vite proxy:** Dev server proxies `/api` to `http://localhost:8080` and `/ws` to `ws://localhost:8080`
 - **TypeScript strict mode:** `noUnusedLocals`, `noUnusedParameters`, `erasableSyntaxOnly`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports` all enabled
