@@ -6,6 +6,7 @@ import com.retra.card.domain.CardEvent
 import com.retra.card.domain.MemoEvent
 import com.retra.card.domain.ReactionEvent
 import com.retra.card.domain.VoteEvent
+import com.retra.kudos.domain.KudosEvent
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionalEventListener
@@ -261,6 +262,39 @@ class DomainEventBroadcaster(
             WebSocketMessage("ACTION_ITEM_DELETED", mapOf(
                 "actionItemId" to event.actionItemId
             ))
+        )
+    }
+
+    @TransactionalEventListener(fallbackExecution = true)
+    fun handleKudosSent(event: KudosEvent.KudosSent) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.boardSlug}/kudos",
+            WebSocketMessage(
+                "KUDOS_SENT",
+                mapOf(
+                    "id" to event.kudosId,
+                    "senderId" to event.senderId,
+                    "senderNickname" to event.senderNickname,
+                    "receiverId" to event.receiverId,
+                    "receiverNickname" to event.receiverNickname,
+                    "category" to event.category.name,
+                    "message" to (event.message ?: ""),
+                    "createdAt" to event.createdAt
+                )
+            )
+        )
+    }
+
+    @TransactionalEventListener(fallbackExecution = true)
+    fun handleKudosDeleted(event: KudosEvent.KudosDeleted) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.boardSlug}/kudos",
+            WebSocketMessage(
+                "KUDOS_DELETED",
+                mapOf(
+                    "id" to event.kudosId
+                )
+            )
         )
     }
 }
