@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { api } from '../api/client';
 import { useBoardStore } from '../store/boardStore';
 import { useToastStore } from '../store/toastStore';
+import { CharacterCounter } from './CharacterCounter';
+
+const MAX_CONTENT_LENGTH = 2000;
 
 interface Props {
   columnId: string;
@@ -15,7 +18,7 @@ export function CardForm({ columnId, onClose }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!content.trim() || !board || !participant) return;
+    if (!content.trim() || content.length > MAX_CONTENT_LENGTH || !board || !participant) return;
     setLoading(true);
     try {
       await api.createCard(board.slug, columnId, content.trim(), participant.id);
@@ -46,23 +49,27 @@ export function CardForm({ columnId, onClose }: Props) {
         onKeyDown={handleKeyDown}
         placeholder="意見を入力...（Enterで送信、Shift+Enterで改行）"
         className="w-full resize-none border-0 focus:ring-0 outline-none text-sm text-gray-700 dark:text-slate-200 placeholder:text-gray-300 dark:placeholder:text-slate-600 dark:bg-slate-800 min-h-[60px] leading-relaxed"
+        maxLength={MAX_CONTENT_LENGTH}
         autoFocus
         rows={3}
       />
-      <div className="flex justify-end gap-2 mt-2 pt-2 border-t border-gray-50 dark:border-slate-700">
-        <button
-          onClick={onClose}
-          className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
-        >
-          キャンセル
-        </button>
-        <button
-          onClick={handleSubmit}
-          disabled={loading || !content.trim()}
-          className="px-3 py-1 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-all active:scale-95"
-        >
-          {loading ? '...' : '追加'}
-        </button>
+      <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50 dark:border-slate-700">
+        <CharacterCounter current={content.length} max={MAX_CONTENT_LENGTH} />
+        <div className="flex gap-2">
+          <button
+            onClick={onClose}
+            className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+          >
+            キャンセル
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={loading || !content.trim()}
+            className="px-3 py-1 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-all active:scale-95"
+          >
+            {loading ? '...' : '追加'}
+          </button>
+        </div>
       </div>
     </div>
   );

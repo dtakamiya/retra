@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import { BoardHeader } from './BoardHeader'
 import { useBoardStore } from '../store/boardStore'
-import { createBoard, createParticipant } from '../test/fixtures'
+import { createBoard, createCard, createColumn, createParticipant } from '../test/fixtures'
 
 vi.mock('../store/boardStore')
 vi.mock('./PhaseControl', () => ({
@@ -83,5 +83,41 @@ describe('BoardHeader', () => {
     await waitFor(() => {
       expect(screen.getByText('コピー済み')).toBeInTheDocument()
     })
+  })
+
+  it('shows overall discussion progress in DISCUSSION phase', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({
+        phase: 'DISCUSSION',
+        columns: [
+          createColumn({
+            id: 'col-1',
+            cards: [
+              createCard({ id: 'c1', isDiscussed: true }),
+              createCard({ id: 'c2', isDiscussed: false }),
+            ],
+          }),
+        ],
+      }),
+      participant: createParticipant(),
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    renderWithRouter(<BoardHeader />)
+
+    expect(screen.getByText('議論済み')).toBeInTheDocument()
+    expect(screen.getByText('1/2')).toBeInTheDocument()
+  })
+
+  it('does NOT show discussion progress in WRITING phase', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant(),
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    renderWithRouter(<BoardHeader />)
+
+    expect(screen.queryByText('議論済み')).not.toBeInTheDocument()
   })
 })

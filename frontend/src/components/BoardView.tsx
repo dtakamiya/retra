@@ -14,6 +14,9 @@ import { useBoardStore } from '../store/boardStore';
 import { ColumnView } from './ColumnView';
 import { CardItem } from './CardItem';
 import { ActionItemList } from './ActionItemList';
+import { BoardFilterBar } from './BoardFilterBar';
+import { DEFAULT_FILTER_STATE } from '../types/filter';
+import type { FilterState } from '../types/filter';
 import type { Board, Card, Column } from '../types';
 
 const DRAG_ACTIVATION_DISTANCE = 8;
@@ -60,7 +63,9 @@ export function BoardView() {
   const { board, participant, handleCardMoved, setBoard, actionItems, setActionItems, setCarryOverItems } = useBoardStore();
   const [activeCard, setActiveCard] = useState<Card | null>(null);
   const [activeColumnColor, setActiveColumnColor] = useState('#000');
+  const [activeColumnName, setActiveColumnName] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [filter, setFilter] = useState<FilterState>(DEFAULT_FILTER_STATE);
 
   // Load action items when board loads or phase changes
   useEffect(() => {
@@ -117,6 +122,7 @@ export function BoardView() {
         if (card) {
           setActiveCard(card);
           setActiveColumnColor(column.color);
+          setActiveColumnName(column.name);
         }
       }
     },
@@ -169,16 +175,47 @@ export function BoardView() {
     [board, participant, findColumnByCardId, handleCardMoved, setBoard]
   );
 
+  const isDiscussionLike = board?.phase === 'DISCUSSION' || board?.phase === 'ACTION_ITEMS';
+
+  const filteredColumns = useMemo(() => {
+    if (!board) return [];
+    const hasFilter = filter.searchText || filter.sortByVotes || filter.undiscussedOnly || filter.myCardsOnly;
+    if (!hasFilter) return board.columns;
+
+    return board.columns.map((col) => {
+      let cards = [...col.cards];
+
+      if (filter.searchText) {
+        const lower = filter.searchText.toLowerCase();
+        cards = cards.filter((c) => c.content.toLowerCase().includes(lower));
+      }
+      if (filter.undiscussedOnly) {
+        cards = cards.filter((c) => !c.isDiscussed);
+      }
+      if (filter.myCardsOnly && participant) {
+        cards = cards.filter((c) => c.participantId === participant.id);
+      }
+      if (filter.sortByVotes) {
+        cards.sort((a, b) => b.voteCount - a.voteCount);
+      }
+
+      return { ...col, cards };
+    });
+  }, [board, filter, participant]);
+
   if (!board) return null;
 
+  const hasActiveFilter = filter.searchText || filter.sortByVotes || filter.undiscussedOnly || filter.myCardsOnly;
+
   const isDndEnabled =
-    board.phase === 'WRITING' ||
+    !hasActiveFilter &&
+    (board.phase === 'WRITING' ||
     board.phase === 'DISCUSSION' ||
-    board.phase === 'ACTION_ITEMS';
+    board.phase === 'ACTION_ITEMS');
 
   const columnsContent = (
     <div className="flex gap-4 p-4 min-h-0 pb-20 lg:pb-4">
-      {board.columns.map((column) => (
+      {filteredColumns.map((column) => (
         <ColumnView key={column.id} column={column} />
       ))}
     </div>
@@ -186,6 +223,11 @@ export function BoardView() {
 
   return (
     <>
+      <BoardFilterBar
+        filter={filter}
+        onFilterChange={setFilter}
+        showDiscussionFilter={!!isDiscussionLike}
+      />
       {errorMessage && (
         <div
           role="alert"
@@ -204,7 +246,7 @@ export function BoardView() {
           {columnsContent}
           <DragOverlay>
             {activeCard ? (
-              <CardItem card={activeCard} columnColor={activeColumnColor} isOverlay maxVoteCount={maxVoteCount} />
+              <CardItem card={activeCard} columnColor={activeColumnColor} columnName={activeColumnName} isOverlay maxVoteCount={maxVoteCount} />
             ) : null}
           </DragOverlay>
         </DndContext>

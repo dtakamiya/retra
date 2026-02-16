@@ -444,4 +444,46 @@ describe('BoardView', () => {
 
     expect(api.getActionItems).toHaveBeenCalledWith('test-slug')
   })
+
+  it('renders filter bar', () => {
+    const board = createBoard({
+      phase: 'WRITING',
+      columns: [createColumn({ id: 'col-1', name: 'Keep' })],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board,
+      participant: createParticipant(),
+      handleCardMoved: vi.fn(),
+      setBoard: vi.fn(),
+      actionItems: [],
+      setActionItems: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<BoardView />)
+
+    expect(screen.getByLabelText('カード検索')).toBeInTheDocument()
+    expect(screen.getByText('投票数順')).toBeInTheDocument()
+    expect(screen.getByText('自分のカード')).toBeInTheDocument()
+  })
+
+  it('shows undiscussed filter in DISCUSSION phase', () => {
+    const board = createBoard({
+      phase: 'DISCUSSION',
+      columns: [createColumn({ id: 'col-1', name: 'Keep' })],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board,
+      participant: createParticipant(),
+      handleCardMoved: vi.fn(),
+      setBoard: vi.fn(),
+      actionItems: [],
+      setActionItems: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<BoardView />)
+
+    expect(screen.getByText('未議論のみ')).toBeInTheDocument()
+  })
 })

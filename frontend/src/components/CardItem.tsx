@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ThumbsUp, Pencil, Trash2, GripVertical, MessageSquare, ListTodo, CheckCircle } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -9,22 +9,28 @@ import { MemoList } from './MemoList';
 import { ReactionList } from './ReactionList';
 import { ReactionPicker } from './ReactionPicker';
 import { VoteProgressBar } from './VoteProgressBar';
+import { CharacterCounter } from './CharacterCounter';
+import { CardDetailModal } from './CardDetailModal';
 import type { Card } from '../types';
+
+const MAX_CONTENT_LENGTH = 2000;
 
 interface Props {
   card: Card;
   columnColor: string;
+  columnName?: string;
   isOverlay?: boolean;
   maxVoteCount?: number;
 }
 
-export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) {
+export function CardItem({ card, columnColor, columnName, isOverlay, maxVoteCount }: Props) {
   const { board, participant, remainingVotes } = useBoardStore();
   const addToast = useToastStore((s) => s.addToast);
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(card.content);
   const [loading, setLoading] = useState(false);
   const [memosExpanded, setMemosExpanded] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   const isAuthor = board && participant ? card.participantId === participant.id : false;
   const isFacilitator = participant?.isFacilitator ?? false;
@@ -33,6 +39,15 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
   const isWriting = phase === 'WRITING';
   const isDiscussionLike = phase === 'DISCUSSION' || phase === 'ACTION_ITEMS';
   const showMemos = isDiscussionLike || phase === 'CLOSED';
+
+  // DISCUSSIONフェーズ遷移時にメモありカードのメモセクションを自動展開
+  const prevPhaseRef = useRef(phase);
+  useEffect(() => {
+    if (prevPhaseRef.current !== phase && (phase === 'DISCUSSION') && card.memos.length > 0) {
+      setMemosExpanded(true);
+    }
+    prevPhaseRef.current = phase;
+  }, [phase, card.memos.length]);
 
   const isPostWriting = phase !== 'WRITING';
   const hasMyVoteHighlight = isPostWriting && participant
@@ -97,7 +112,7 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
   };
 
   const handleUpdate = async () => {
-    if (!editContent.trim()) return;
+    if (!editContent.trim() || editContent.length > MAX_CONTENT_LENGTH) return;
     setLoading(true);
     try {
       await api.updateCard(board.slug, card.id, editContent.trim(), participant.id);
@@ -173,26 +188,30 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
           onChange={(e) => setEditContent(e.target.value)}
           onKeyDown={handleEditKeyDown}
           className="w-full resize-none border-0 focus:ring-0 outline-none text-sm text-gray-800 dark:text-slate-200 dark:bg-slate-800 min-h-[60px]"
+          maxLength={MAX_CONTENT_LENGTH}
           autoFocus
           rows={3}
         />
-        <div className="flex justify-end gap-2 mt-2">
-          <button
-            onClick={() => {
-              setEditing(false);
-              setEditContent(card.content);
-            }}
-            className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
-          >
-            キャンセル
-          </button>
-          <button
-            onClick={handleUpdate}
-            disabled={loading || !editContent.trim()}
-            className="px-3 py-1 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
-          >
-            保存
-          </button>
+        <div className="flex items-center justify-between mt-2">
+          <CharacterCounter current={editContent.length} max={MAX_CONTENT_LENGTH} />
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                setEditing(false);
+                setEditContent(card.content);
+              }}
+              className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+            >
+              キャンセル
+            </button>
+            <button
+              onClick={handleUpdate}
+              disabled={loading || !editContent.trim()}
+              className="px-3 py-1 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+            >
+              保存
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -231,7 +250,17 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
             <CheckCircle size={16} />
           </button>
         )}
-        <p className="text-sm text-gray-700 dark:text-slate-200 whitespace-pre-wrap break-words flex-1 leading-relaxed">{card.content}</p>
+        <p
+          className="text-sm text-gray-700 dark:text-slate-200 whitespace-pre-wrap break-words flex-1 leading-relaxed cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          onClick={() => setShowDetailModal(true)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter') setShowDetailModal(true); }}
+          title="クリックで詳細を表示"
+          aria-label="カード詳細を表示"
+        >
+          {card.content}
+        </p>
       </div>
 
       <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50 dark:border-slate-700">
@@ -348,6 +377,18 @@ export function CardItem({ card, columnColor, isOverlay, maxVoteCount }: Props) 
       {/* Memo list */}
       {showMemos && memosExpanded && (
         <MemoList cardId={card.id} memos={card.memos} />
+      )}
+
+      {/* Card detail modal */}
+      {showDetailModal && (
+        <CardDetailModal
+          card={card}
+          columnName={columnName ?? ''}
+          columnColor={columnColor}
+          myParticipantId={participant?.id}
+          onClose={() => setShowDetailModal(false)}
+          onReactionToggle={handleReactionToggle}
+        />
       )}
     </div>
   );

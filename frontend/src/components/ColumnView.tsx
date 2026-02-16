@@ -5,6 +5,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { useBoardStore } from '../store/boardStore';
 import { CardItem } from './CardItem';
 import { CardForm } from './CardForm';
+import { DiscussionProgress } from './DiscussionProgress';
 import type { Column } from '../types';
 
 const columnDescriptions: Record<string, string> = {
@@ -36,6 +37,7 @@ export function ColumnView({ column }: Props) {
   const [showForm, setShowForm] = useState(false);
 
   const isWriting = board?.phase === 'WRITING';
+  const isDiscussionLike = board?.phase === 'DISCUSSION' || board?.phase === 'ACTION_ITEMS';
 
   const { setNodeRef } = useDroppable({ id: column.id });
 
@@ -88,6 +90,9 @@ export function ColumnView({ column }: Props) {
           {columnDescriptions[column.name] && (
             <p className="text-[11px] text-gray-400 mt-0.5 ml-4">{columnDescriptions[column.name]}</p>
           )}
+          {isDiscussionLike && (
+            <DiscussionProgress cards={column.cards} color={column.color} />
+          )}
         </div>
         {isWriting && (
           <button
@@ -106,7 +111,7 @@ export function ColumnView({ column }: Props) {
         )}
         <SortableContext items={cardIds} strategy={verticalListSortingStrategy}>
           {sortedCards.map((card) => (
-            <CardItem key={card.id} card={card} columnColor={column.color} maxVoteCount={maxVoteCount} />
+            <CardItem key={card.id} card={card} columnColor={column.color} columnName={column.name} maxVoteCount={maxVoteCount} />
           ))}
         </SortableContext>
         {column.cards.length === 0 && !showForm && (

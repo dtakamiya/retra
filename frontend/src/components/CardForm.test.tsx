@@ -63,4 +63,20 @@ describe('CardForm', () => {
 
     expect(api.createCard).toHaveBeenCalledWith('test1234', 'col-1', 'テストカードの内容', 'p-1')
   })
+
+  it('shows character counter', () => {
+    render(<CardForm columnId="col-1" onClose={mockOnClose} />)
+
+    expect(screen.getByText('0/2000')).toBeInTheDocument()
+  })
+
+  it('updates character counter when typing', async () => {
+    const user = userEvent.setup()
+    render(<CardForm columnId="col-1" onClose={mockOnClose} />)
+
+    const textarea = screen.getByPlaceholderText('意見を入力...（Enterで送信、Shift+Enterで改行）')
+    await user.type(textarea, 'hello')
+
+    expect(screen.getByText('5/2000')).toBeInTheDocument()
+  })
 })

@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { CardItem } from './CardItem'
 import { useBoardStore } from '../store/boardStore'
 import { api } from '../api/client'
-import { createActionItem, createBoard, createCard, createParticipant, createReaction, createRemainingVotes, createVote } from '../test/fixtures'
+import { createActionItem, createBoard, createCard, createMemo, createParticipant, createReaction, createRemainingVotes, createVote } from '../test/fixtures'
 
 vi.mock('../store/boardStore')
 vi.mock('../api/client', () => ({
@@ -16,6 +16,7 @@ vi.mock('../api/client', () => ({
     addReaction: vi.fn(),
     removeReaction: vi.fn(),
     createActionItem: vi.fn(),
+    markCardDiscussed: vi.fn(),
   },
 }))
 vi.mock('@dnd-kit/sortable', async () => {
@@ -124,9 +125,7 @@ describe('CardItem', () => {
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
 
-    // vote button + reaction picker
-    const buttons = screen.getAllByRole('button')
-    expect(buttons.length).toBe(2)
+    expect(screen.getByTestId('vote-button')).toBeInTheDocument()
   })
 
   it('shows vote count when > 0 in non-voting phase', () => {
@@ -184,9 +183,8 @@ describe('CardItem', () => {
     const card = createCard({ participantId: 'p-1' })
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // drag handle + edit (Pencil) + delete (Trash2) + reaction picker buttons
-    const buttons = screen.getAllByRole('button')
-    expect(buttons.length).toBe(4)
+    expect(screen.getByLabelText('カードを編集')).toBeInTheDocument()
+    expect(screen.getByLabelText('カードを削除')).toBeInTheDocument()
   })
 
   it('shows delete (not edit) button for facilitator who is not author in WRITING phase', () => {
@@ -199,9 +197,8 @@ describe('CardItem', () => {
     const card = createCard({ participantId: 'p-1' })
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // delete button + reaction picker
-    const buttons = screen.getAllByRole('button')
-    expect(buttons.length).toBe(2)
+    expect(screen.getByLabelText('カードを削除')).toBeInTheDocument()
+    expect(screen.queryByLabelText('カードを編集')).not.toBeInTheDocument()
   })
 
   it('does NOT show edit/delete buttons for non-author non-facilitator', () => {
@@ -214,8 +211,8 @@ describe('CardItem', () => {
     const card = createCard({ participantId: 'p-1' })
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // Only reaction picker button
-    expect(screen.queryAllByRole('button')).toHaveLength(1)
+    expect(screen.queryByLabelText('カードを編集')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('カードを削除')).not.toBeInTheDocument()
   })
 
   it('clicking edit button shows textarea with current content', async () => {
@@ -230,9 +227,7 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // Click the edit (Pencil) button — buttons: drag handle, edit, delete
-    const buttons = screen.getAllByRole('button')
-    await user.click(buttons[1]) // edit is the second button (after drag handle)
+    await user.click(screen.getByLabelText('カードを編集'))
 
     const textarea = screen.getByRole('textbox')
     expect(textarea).toBeInTheDocument()
@@ -255,16 +250,12 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // Enter edit mode (drag handle, edit, delete)
-    const buttons = screen.getAllByRole('button')
-    await user.click(buttons[1])
+    await user.click(screen.getByLabelText('カードを編集'))
 
-    // Clear and type new content
     const textarea = screen.getByRole('textbox')
     await user.clear(textarea)
     await user.type(textarea, '新しい内容')
 
-    // Click save button
     await user.click(screen.getByText('保存'))
 
     expect(api.updateCard).toHaveBeenCalledWith('test-slug', 'card-1', '新しい内容', 'p-1')
@@ -284,11 +275,8 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // Enter edit mode
-    const buttons = screen.getAllByRole('button')
-    await user.click(buttons[1])
+    await user.click(screen.getByLabelText('カードを編集'))
 
-    // Press Enter to save (content is already the original)
     const textarea = screen.getByRole('textbox')
     await user.type(textarea, '{Enter}')
 
@@ -307,16 +295,12 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // Enter edit mode
-    const buttons = screen.getAllByRole('button')
-    await user.click(buttons[1])
+    await user.click(screen.getByLabelText('カードを編集'))
 
-    // Type something then press Escape
     const textarea = screen.getByRole('textbox')
     await user.type(textarea, '変更内容')
     await user.keyboard('{Escape}')
 
-    // Textarea should be gone, original content should be visible
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
     expect(screen.getByText('Escキャンセルテスト')).toBeInTheDocument()
   })
@@ -333,17 +317,13 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // Enter edit mode
-    const buttons = screen.getAllByRole('button')
-    await user.click(buttons[1])
+    await user.click(screen.getByLabelText('カードを編集'))
 
-    // Type something then click cancel
     const textarea = screen.getByRole('textbox')
     await user.clear(textarea)
     await user.type(textarea, '変更内容')
     await user.click(screen.getByText('キャンセル'))
 
-    // Textarea should be gone, original content should be visible
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
     expect(screen.getByText('キャンセルテスト')).toBeInTheDocument()
   })
@@ -362,9 +342,7 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // First button is vote, second is reaction picker
-    const buttons = screen.getAllByRole('button')
-    await user.click(buttons[0])
+    await user.click(screen.getByTestId('vote-button'))
 
     expect(api.addVote).toHaveBeenCalledWith('vote-slug', 'card-1', 'p-1')
   })
@@ -383,9 +361,7 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // First button is vote, second is reaction picker
-    const buttons = screen.getAllByRole('button')
-    await user.click(buttons[0])
+    await user.click(screen.getByTestId('vote-button'))
 
     expect(api.removeVote).toHaveBeenCalledWith('vote-slug', 'card-1', 'p-1')
   })
@@ -404,9 +380,7 @@ describe('CardItem', () => {
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
-    // For author in WRITING phase, buttons are: drag handle, edit (Pencil), delete (Trash2), reaction picker
-    const buttons = screen.getAllByRole('button')
-    await user.click(buttons[2]) // Delete is the third button
+    await user.click(screen.getByLabelText('カードを削除'))
 
     expect(api.deleteCard).toHaveBeenCalledWith('del-slug', 'card-1', 'p-1')
   })
@@ -568,5 +542,65 @@ describe('CardItem', () => {
     await user.click(screen.getByLabelText('アクションアイテムに変換'))
 
     expect(api.createActionItem).toHaveBeenCalledWith('convert-slug', '変換テスト', 'p-1', 'card-1')
+  })
+
+  it('clicking card text opens detail modal', async () => {
+    const user = userEvent.setup()
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={defaultCard} columnColor="#22c55e" columnName="Keep" />)
+
+    await user.click(screen.getByLabelText('カード詳細を表示'))
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+  })
+
+  it('shows character counter in edit mode', async () => {
+    const user = userEvent.setup()
+    const card = createCard({ content: 'テスト', participantId: 'p-1' })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant({ id: 'p-1', isFacilitator: false }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={card} columnColor="#22c55e" />)
+
+    await user.click(screen.getByLabelText('カードを編集'))
+
+    expect(screen.getByText('3/2000')).toBeInTheDocument()
+  })
+
+  it('auto-expands memos when transitioning to DISCUSSION phase with memos', () => {
+    const card = createCard({
+      participantId: 'p-1',
+      memos: [createMemo()],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    const { rerender } = render(<CardItem card={card} columnColor="#22c55e" />)
+
+    // Transition to DISCUSSION phase
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    rerender(<CardItem card={card} columnColor="#22c55e" />)
+
+    // Memo content should be visible (auto-expanded)
+    expect(screen.getByText('Test memo content')).toBeInTheDocument()
   })
 })

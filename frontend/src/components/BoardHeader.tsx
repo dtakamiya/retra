@@ -5,12 +5,15 @@ import { useBoardStore } from '../store/boardStore';
 import { ExportMenu } from './ExportMenu';
 import { PhaseControl } from './PhaseControl';
 import { ThemeToggle } from './ThemeToggle';
+import { OverallDiscussionProgress } from './OverallDiscussionProgress';
 
 export function BoardHeader() {
   const { board } = useBoardStore();
   const [copied, setCopied] = useState(false);
 
   if (!board) return null;
+
+  const showDiscussionProgress = board.phase === 'DISCUSSION' || board.phase === 'ACTION_ITEMS';
 
   const handleCopyLink = async () => {
     const url = window.location.href;
@@ -43,6 +46,9 @@ export function BoardHeader() {
               )}
             </div>
           </div>
+          {showDiscussionProgress && (
+            <OverallDiscussionProgress columns={board.columns} />
+          )}
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">

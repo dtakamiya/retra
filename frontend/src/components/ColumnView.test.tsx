@@ -166,4 +166,41 @@ describe('ColumnView', () => {
     expect(cardContents[1]).toHaveTextContent('First tied')
     expect(cardContents[2]).toHaveTextContent('Second tied')
   })
+
+  it('shows discussion progress in DISCUSSION phase', () => {
+    const column = createColumn({
+      name: 'Keep',
+      cards: [
+        createCard({ id: 'c-1', isDiscussed: true }),
+        createCard({ id: 'c-2', isDiscussed: false }),
+      ],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant(),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<ColumnView column={column} />)
+
+    expect(screen.getByLabelText('議論進捗 1/2')).toBeInTheDocument()
+  })
+
+  it('does NOT show discussion progress in WRITING phase', () => {
+    const column = createColumn({
+      name: 'Keep',
+      cards: [createCard({ id: 'c-1' })],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant(),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<ColumnView column={column} />)
+
+    expect(screen.queryByLabelText(/議論進捗/)).not.toBeInTheDocument()
+  })
 })
