@@ -1,4 +1,4 @@
-import { Copy, Check, EyeOff, Home } from 'lucide-react';
+import { Copy, Check, EyeOff, Home, Heart } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useBoardStore } from '../store/boardStore';
@@ -7,7 +7,13 @@ import { PhaseControl } from './PhaseControl';
 import { ThemeToggle } from './ThemeToggle';
 import { OverallDiscussionProgress } from './OverallDiscussionProgress';
 
-export function BoardHeader() {
+interface Props {
+  isKudosOpen: boolean;
+  kudosCount: number;
+  onKudosToggle: () => void;
+}
+
+export function BoardHeader({ isKudosOpen, kudosCount, onKudosToggle }: Props) {
   const { board } = useBoardStore();
   const [copied, setCopied] = useState(false);
 
@@ -55,6 +61,24 @@ export function BoardHeader() {
           <PhaseControl />
           <ExportMenu />
           <ThemeToggle />
+          <button
+            type="button"
+            onClick={onKudosToggle}
+            aria-label="Kudos"
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+              isKudosOpen
+                ? 'bg-amber-50 text-amber-600 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800'
+                : 'border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:border-slate-500'
+            }`}
+          >
+            <Heart size={14} />
+            Kudos
+            {kudosCount > 0 && (
+              <span className="px-1 py-0.5 text-[10px] bg-amber-500 text-white rounded-full min-w-[18px] text-center">
+                {kudosCount}
+              </span>
+            )}
+          </button>
           <button
             onClick={handleCopyLink}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${

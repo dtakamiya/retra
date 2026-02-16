@@ -21,6 +21,7 @@ async function createAnonymousBoardAndJoin(
 }
 
 // ヘルパー関数: 通常モード（非匿名）でボードを作成してニックネームで参加
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function createBoardAndJoin(
     page: import('@playwright/test').Page,
     nickname: string = 'ファシリテーター'

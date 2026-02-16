@@ -26,6 +26,9 @@ vi.mock('../api/client', () => ({
     getTimerState: vi.fn(),
     joinBoard: vi.fn(),
     getRemainingVotes: vi.fn(),
+    getKudos: vi.fn(),
+    sendKudos: vi.fn(),
+    deleteKudos: vi.fn(),
   },
 }))
 
@@ -38,7 +41,11 @@ vi.mock('../hooks/useTimerAlert', () => ({
 }))
 
 vi.mock('../components/BoardHeader', () => ({
-  BoardHeader: () => <div data-testid="board-header">BoardHeader</div>,
+  BoardHeader: ({ isKudosOpen, kudosCount, onKudosToggle }: { isKudosOpen: boolean; kudosCount: number; onKudosToggle: () => void }) => (
+    <div data-testid="board-header" data-kudos-open={isKudosOpen} data-kudos-count={kudosCount} onClick={onKudosToggle}>
+      BoardHeader
+    </div>
+  ),
 }))
 
 vi.mock('../components/BoardView', () => ({
@@ -91,10 +98,12 @@ function mockStoreState(overrides: Partial<ReturnType<typeof useBoardStore>> = {
     board: null as Board | null,
     participant: null as Participant | null,
     isConnected: true,
+    kudos: [],
     setBoard: vi.fn(),
     setParticipant: vi.fn(),
     setRemainingVotes: vi.fn(),
     setTimer: vi.fn(),
+    setKudos: vi.fn(),
   }
   vi.mocked(useBoardStore).mockReturnValue({
     ...defaults,
@@ -115,6 +124,7 @@ describe('BoardPage', () => {
     // Make api.getBoard return a pending promise so loading stays true
     vi.mocked(api.getBoard).mockReturnValue(new Promise(() => {}))
     vi.mocked(api.getTimerState).mockReturnValue(new Promise(() => {}))
+    vi.mocked(api.getKudos).mockReturnValue(new Promise(() => {}))
 
     renderBoardPage()
 
@@ -125,6 +135,7 @@ describe('BoardPage', () => {
     mockStoreState()
     vi.mocked(api.getBoard).mockRejectedValue(new Error('Not found'))
     vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
 
     renderBoardPage()
 
@@ -140,6 +151,7 @@ describe('BoardPage', () => {
     const board = createBoard()
     vi.mocked(api.getBoard).mockResolvedValue(board)
     vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
 
     renderBoardPage()
 
@@ -156,6 +168,7 @@ describe('BoardPage', () => {
     mockStoreState({ board, participant: null })
     vi.mocked(api.getBoard).mockResolvedValue(board)
     vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
 
     renderBoardPage()
 
@@ -172,6 +185,7 @@ describe('BoardPage', () => {
     mockStoreState({ board, participant, setParticipant })
     vi.mocked(api.getBoard).mockResolvedValue(board)
     vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
     localStorage.setItem('retra-participant-test1234', 'p-1')
 
     renderBoardPage()
@@ -186,6 +200,7 @@ describe('BoardPage', () => {
     mockStoreState({ board, participant: null })
     vi.mocked(api.getBoard).mockResolvedValue(board)
     vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
     localStorage.setItem('retra-participant-test1234', 'p-nonexistent')
 
     renderBoardPage()
@@ -203,6 +218,7 @@ describe('BoardPage', () => {
     mockStoreState({ board, participant, isConnected: true })
     vi.mocked(api.getBoard).mockResolvedValue(board)
     vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
     localStorage.setItem('retra-participant-test1234', 'p-1')
 
     renderBoardPage()
@@ -222,6 +238,7 @@ describe('BoardPage', () => {
     mockStoreState()
     vi.mocked(api.getBoard).mockRejectedValue(new Error('Not found'))
     vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
 
     renderBoardPage()
 

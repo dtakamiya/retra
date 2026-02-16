@@ -27,7 +27,9 @@ describe('BoardHeader', () => {
       setBoard: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    const { container } = render(<BoardHeader />)
+    const { container } = render(
+      <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
+    )
 
     expect(container.innerHTML).toBe('')
   })
@@ -39,7 +41,9 @@ describe('BoardHeader', () => {
       setBoard: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    renderWithRouter(<BoardHeader />)
+    renderWithRouter(
+      <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
+    )
 
     expect(screen.getByText('スプリント10 ふりかえり')).toBeInTheDocument()
   })
@@ -51,7 +55,9 @@ describe('BoardHeader', () => {
       setBoard: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    renderWithRouter(<BoardHeader />)
+    renderWithRouter(
+      <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
+    )
 
     expect(screen.getByText('FUN DONE LEARN')).toBeInTheDocument()
   })
@@ -72,7 +78,9 @@ describe('BoardHeader', () => {
       setBoard: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    renderWithRouter(<BoardHeader />)
+    renderWithRouter(
+      <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
+    )
 
     // Click the share button (initially shows "共有")
     const shareButton = screen.getByText('共有')
@@ -103,7 +111,9 @@ describe('BoardHeader', () => {
       setBoard: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    renderWithRouter(<BoardHeader />)
+    renderWithRouter(
+      <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
+    )
 
     expect(screen.getByText('議論済み')).toBeInTheDocument()
     expect(screen.getByText('1/2')).toBeInTheDocument()
@@ -116,8 +126,72 @@ describe('BoardHeader', () => {
       setBoard: vi.fn(),
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    renderWithRouter(<BoardHeader />)
+    renderWithRouter(
+      <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
+    )
 
     expect(screen.queryByText('議論済み')).not.toBeInTheDocument()
+  })
+
+  it('Kudosボタンが表示される', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ title: 'テストボード' }),
+      participant: createParticipant(),
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    renderWithRouter(
+      <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
+    )
+
+    expect(screen.getByLabelText('Kudos')).toBeInTheDocument()
+  })
+
+  it('Kudosカウントが0の場合バッジが表示されない', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ title: 'テストボード' }),
+      participant: createParticipant(),
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    renderWithRouter(
+      <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
+    )
+
+    const kudosButton = screen.getByLabelText('Kudos')
+    expect(kudosButton).toBeInTheDocument()
+    expect(kudosButton.textContent).not.toMatch(/\d+/)
+  })
+
+  it('Kudosカウントが1以上の場合バッジが表示される', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ title: 'テストボード' }),
+      participant: createParticipant(),
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    renderWithRouter(
+      <BoardHeader isKudosOpen={false} kudosCount={5} onKudosToggle={vi.fn()} />
+    )
+
+    expect(screen.getByText('5')).toBeInTheDocument()
+  })
+
+  it('KudosボタンクリックでonKudosToggleが呼ばれる', async () => {
+    const user = userEvent.setup()
+    const onKudosToggle = vi.fn()
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ title: 'テストボード' }),
+      participant: createParticipant(),
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    renderWithRouter(
+      <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={onKudosToggle} />
+    )
+
+    await user.click(screen.getByLabelText('Kudos'))
+    expect(onKudosToggle).toHaveBeenCalled()
   })
 })

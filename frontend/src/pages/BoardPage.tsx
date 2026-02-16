@@ -13,16 +13,19 @@ import { TimerDisplay } from '../components/TimerDisplay';
 import { ConnectionBanner } from '../components/ConnectionBanner';
 import { CarryOverPanel } from '../components/CarryOverPanel';
 import { BoardSkeleton } from '../components/BoardSkeleton';
+import { KudosPanel } from '../components/KudosPanel';
 import { useTimerAlert } from '../hooks/useTimerAlert';
+import type { KudosCategory } from '../types';
 
 export function BoardPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { board, participant, setBoard, setParticipant, setRemainingVotes, setTimer, isConnected } = useBoardStore();
+  const { board, participant, setBoard, setParticipant, setRemainingVotes, setTimer, isConnected, kudos, setKudos } = useBoardStore();
   const addToast = useToastStore((s) => s.addToast);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isKudosOpen, setIsKudosOpen] = useState(false);
 
   useWebSocket(slug, participant?.id);
   useTimerAlert();
@@ -49,12 +52,16 @@ export function BoardPage() {
       // Load timer state
       const timerState = await api.getTimerState(slug);
       setTimer(timerState);
+
+      // Load kudos
+      const kudosData = await api.getKudos(slug);
+      setKudos(kudosData);
     } catch {
       setError('ボードが見つかりません');
     } finally {
       setLoading(false);
     }
-  }, [slug, setBoard, setParticipant, setTimer]);
+  }, [slug, setBoard, setParticipant, setTimer, setKudos]);
 
   useEffect(() => {
     loadBoard();
@@ -83,6 +90,24 @@ export function BoardPage() {
     }
   };
 
+  const handleSendKudos = async (receiverId: string, category: KudosCategory, message?: string) => {
+    if (!board || !participant) return;
+    try {
+      await api.sendKudos(board.slug, participant.id, receiverId, category, message);
+    } catch {
+      addToast('error', 'Kudosの送信に失敗しました');
+    }
+  };
+
+  const handleDeleteKudos = async (kudosId: string) => {
+    if (!board || !participant) return;
+    try {
+      await api.deleteKudos(board.slug, kudosId, participant.id);
+    } catch {
+      addToast('error', 'Kudosの削除に失敗しました');
+    }
+  };
+
   if (loading) {
     return <BoardSkeleton />;
   }
@@ -108,7 +133,11 @@ export function BoardPage() {
     <div className="min-h-screen bg-gray-50/50 dark:bg-slate-900 flex flex-col">
       {!isConnected && <ConnectionBanner />}
 
-      <BoardHeader />
+      <BoardHeader
+        isKudosOpen={isKudosOpen}
+        kudosCount={kudos.length}
+        onKudosToggle={() => setIsKudosOpen(!isKudosOpen)}
+      />
       <PhaseGuidance phase={board.phase} />
 
       <div className="flex-1 flex">
@@ -132,6 +161,18 @@ export function BoardPage() {
 
       {showNicknameModal && (
         <NicknameModal onJoin={handleJoin} boardTitle={board.title} />
+      )}
+
+      {isKudosOpen && participant && (
+        <KudosPanel
+          kudos={kudos}
+          participants={board.participants}
+          currentParticipantId={participant.id}
+          isAnonymous={board.isAnonymous}
+          onSend={handleSendKudos}
+          onDelete={handleDeleteKudos}
+          onClose={() => setIsKudosOpen(false)}
+        />
       )}
     </div>
   );
