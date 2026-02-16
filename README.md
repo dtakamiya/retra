@@ -2,7 +2,7 @@
 
 スクラムチームのためのリアルタイム・レトロスペクティブボード
 
-![Retra ホームページ](docs/images/screenshot-01-home-create-board.png)
+![Retra ホームページ](docs/images/home/screenshot-01-home-create-board.png)
 
 ## 主要機能
 
@@ -92,67 +92,67 @@ cd frontend && npx tsc --noEmit
 ### ホームページ - ボード作成
 フレームワーク（KPT / Fun Done Learn / 4Ls / Start Stop Continue）の選択、チーム名、最大投票数、匿名モードを設定してボードを作成。
 
-![ホームページ - ボード作成](docs/images/screenshot-01-home-create-board.png)
+![ホームページ - ボード作成](docs/images/home/screenshot-01-home-create-board.png)
 
 ### ホームページ - ボード参加
 ボードコードまたはURLを入力して既存ボードに参加。
 
-![ホームページ - ボード参加](docs/images/screenshot-02-home-join-board.png)
+![ホームページ - ボード参加](docs/images/home/screenshot-02-home-join-board.png)
 
 ### ニックネーム入力モーダル
 ボード作成・参加時にニックネームを設定するモーダル。
 
-![ニックネーム入力](docs/images/screenshot-03-nickname-modal.png)
+![ニックネーム入力](docs/images/home/screenshot-03-nickname-modal.png)
 
 ### 記入フェーズ
 各カラムにカードを追加。カードにはドラッグ&ドロップ、編集、削除、リアクション機能がある。
 
-![記入フェーズ](docs/images/screenshot-04-writing-phase.png)
+![記入フェーズ](docs/images/phases/screenshot-04-writing-phase.png)
 
 ### 投票フェーズ
 カードに投票を行うフェーズ。投票数と投票進捗バーが表示され、1人あたりの最大投票数を管理。
 
-![投票フェーズ](docs/images/screenshot-05-voting-phase.png)
+![投票フェーズ](docs/images/phases/screenshot-05-voting-phase.png)
 
 ### 議論フェーズ
 投票結果を参考に議論を進めるフェーズ。リアクション、メモ、議論済みマーク機能を利用可能。
 
-![議論フェーズ](docs/images/screenshot-06-discussion-phase.png)
+![議論フェーズ](docs/images/phases/screenshot-06-discussion-phase.png)
 
 ### メモ機能
 カードに議論メモを追加・表示。チームの議論内容を記録できる。
 
-![メモ機能](docs/images/screenshot-07-memo-expanded.png)
+![メモ機能](docs/images/phases/screenshot-07-memo-expanded.png)
 
 ### アクションアイテムフェーズ
 議論を踏まえてアクションアイテムを作成・管理。期限・優先度（高/中/低）・ステータス管理に対応。
 
-![アクションアイテムフェーズ](docs/images/screenshot-08-action-items-phase.png)
+![アクションアイテムフェーズ](docs/images/phases/screenshot-08-action-items-phase.png)
 
 ### 完了フェーズ
 レトロスペクティブが完了した状態。ボードのスナップショットが自動保存され、アクションアイテムの一覧を確認可能。
 
-![完了フェーズ](docs/images/screenshot-09-closed-phase.png)
+![完了フェーズ](docs/images/phases/screenshot-09-closed-phase.png)
 
 ### タイマー機能
 フェーズごとの時間管理。開始・一時停止・リセット操作が可能。
 
-![タイマー機能](docs/images/screenshot-10-timer-running.png)
+![タイマー機能](docs/images/features/screenshot-10-timer-running.png)
 
 ### チームダッシュボード
 過去のレトロスペクティブの統計情報とトレンドグラフ。カード数・投票数・参加者数・AI完了率を可視化。
 
-![チームダッシュボード](docs/images/screenshot-11-dashboard.png)
+![チームダッシュボード](docs/images/dashboard/screenshot-11-dashboard.png)
 
 ### レトロスペクティブ履歴
 チームごとのレトロスペクティブ履歴一覧。各レトロの詳細にアクセス可能。
 
-![レトロ履歴](docs/images/screenshot-12-dashboard-history.png)
+![レトロ履歴](docs/images/dashboard/screenshot-12-dashboard-history.png)
 
 ### 404 ページ
 存在しないボードにアクセスした場合のエラーページ。
 
-![404ページ](docs/images/screenshot-13-not-found.png)
+![404ページ](docs/images/error/screenshot-13-not-found.png)
 
 </details>
 
