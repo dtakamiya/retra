@@ -40,6 +40,8 @@ function mockStoreHandlers() {
     handleCardCreated: vi.fn(),
     handleCardUpdated: vi.fn(),
     handleCardDeleted: vi.fn(),
+    handleCardMoved: vi.fn(),
+    handleCardDiscussionMarked: vi.fn(),
     handleVoteAdded: vi.fn(),
     handleVoteRemoved: vi.fn(),
     handlePhaseChanged: vi.fn(),
@@ -55,6 +57,8 @@ function mockStoreHandlers() {
     handleActionItemUpdated: vi.fn(),
     handleActionItemStatusChanged: vi.fn(),
     handleActionItemDeleted: vi.fn(),
+    handleKudosSent: vi.fn(),
+    handleKudosDeleted: vi.fn(),
   }
   vi.mocked(useBoardStore).mockReturnValue(handlers as unknown as ReturnType<typeof useBoardStore>)
   return handlers
@@ -92,7 +96,7 @@ describe('useWebSocket', () => {
     expect(capturedConfig.brokerURL).toContain('/ws')
   })
 
-  it('on connect: sets connected, registers session, and subscribes to 8 topics', () => {
+  it('on connect: sets connected, registers session, and subscribes to 9 topics', () => {
     const handlers = mockStoreHandlers()
 
     renderHook(() => useWebSocket('test1234', 'p-1'))
@@ -105,7 +109,7 @@ describe('useWebSocket', () => {
       destination: '/app/board/test1234/register',
       body: JSON.stringify({ participantId: 'p-1' }),
     })
-    expect(mockSubscribe).toHaveBeenCalledTimes(8)
+    expect(mockSubscribe).toHaveBeenCalledTimes(9)
     // Verify subscription destinations
     const destinations = mockSubscribe.mock.calls.map((call) => call[0])
     expect(destinations).toContain('/topic/board/test1234/cards')
@@ -116,6 +120,7 @@ describe('useWebSocket', () => {
     expect(destinations).toContain('/topic/board/test1234/reactions')
     expect(destinations).toContain('/topic/board/test1234/participants')
     expect(destinations).toContain('/topic/board/test1234/action-items')
+    expect(destinations).toContain('/topic/board/test1234/kudos')
   })
 
   it('calls correct handlers for each WebSocket message type', () => {
@@ -262,6 +267,30 @@ describe('useWebSocket', () => {
       body: JSON.stringify({ type: 'ACTION_ITEM_DELETED', payload: actionItemDeletedPayload }),
     })
     expect(handlers.handleActionItemDeleted).toHaveBeenCalledWith(actionItemDeletedPayload)
+
+    // KUDOS_SENT
+    const kudosSentPayload = {
+      id: 'kudos-1',
+      boardId: 'board-1',
+      senderId: 'p-1',
+      senderNickname: 'Alice',
+      receiverId: 'p-2',
+      receiverNickname: 'Bob',
+      category: 'GREAT_JOB',
+      message: 'Great work!',
+      createdAt: '2024-01-01',
+    }
+    callbackMap['/topic/board/test1234/kudos']({
+      body: JSON.stringify({ type: 'KUDOS_SENT', payload: kudosSentPayload }),
+    })
+    expect(handlers.handleKudosSent).toHaveBeenCalledWith(kudosSentPayload)
+
+    // KUDOS_DELETED
+    const kudosDeletedPayload = { id: 'kudos-1' }
+    callbackMap['/topic/board/test1234/kudos']({
+      body: JSON.stringify({ type: 'KUDOS_DELETED', payload: kudosDeletedPayload }),
+    })
+    expect(handlers.handleKudosDeleted).toHaveBeenCalledWith(kudosDeletedPayload)
   })
 
   it('sets connected false on disconnect', () => {

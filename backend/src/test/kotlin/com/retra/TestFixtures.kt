@@ -12,6 +12,8 @@ import com.retra.card.domain.Vote
 import com.retra.board.domain.Framework
 import com.retra.board.domain.Phase
 import com.retra.history.domain.BoardSnapshot
+import com.retra.kudos.domain.Kudos
+import com.retra.kudos.domain.KudosCategory
 import java.time.Instant
 import java.util.UUID
 
@@ -174,6 +176,24 @@ object TestFixtures {
         actionItemsTotal = actionItemsTotal,
         actionItemsDone = actionItemsDone,
         snapshotData = snapshotData,
+        createdAt = createdAt
+    )
+
+    fun kudos(
+        id: String = UUID.randomUUID().toString(),
+        board: Board? = null,
+        sender: Participant? = null,
+        receiver: Participant? = null,
+        category: KudosCategory = KudosCategory.GREAT_JOB,
+        message: String? = null,
+        createdAt: String = Instant.now().toString()
+    ): Kudos = Kudos(
+        id = id,
+        board = board,
+        sender = sender,
+        receiver = receiver,
+        category = category,
+        message = message,
         createdAt = createdAt
     )
 }

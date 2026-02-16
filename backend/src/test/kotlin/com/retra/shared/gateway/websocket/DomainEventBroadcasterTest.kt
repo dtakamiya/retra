@@ -7,6 +7,8 @@ import com.retra.card.domain.CardEvent
 import com.retra.card.domain.MemoEvent
 import com.retra.card.domain.ReactionEvent
 import com.retra.card.domain.VoteEvent
+import com.retra.kudos.domain.KudosCategory
+import com.retra.kudos.domain.KudosEvent
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -354,6 +356,47 @@ class DomainEventBroadcasterTest {
             messagingTemplate.convertAndSend(
                 "/topic/board/test1234/action-items",
                 match<WebSocketMessage> { it.type == "ACTION_ITEM_DELETED" }
+            )
+        }
+    }
+
+    @Test
+    fun `handleKudosSent sends KUDOS_SENT`() {
+        val event = KudosEvent.KudosSent(
+            boardSlug = "test-slug",
+            kudosId = "k-1",
+            senderId = "s-1",
+            senderNickname = "Alice",
+            receiverId = "r-1",
+            receiverNickname = "Bob",
+            category = KudosCategory.GREAT_JOB,
+            message = "Great work!",
+            createdAt = "2024-01-01T00:00:00Z"
+        )
+
+        broadcaster.handleKudosSent(event)
+
+        verify {
+            messagingTemplate.convertAndSend(
+                "/topic/board/test-slug/kudos",
+                match<WebSocketMessage> { it.type == "KUDOS_SENT" }
+            )
+        }
+    }
+
+    @Test
+    fun `handleKudosDeleted sends KUDOS_DELETED`() {
+        val event = KudosEvent.KudosDeleted(
+            boardSlug = "test-slug",
+            kudosId = "k-1"
+        )
+
+        broadcaster.handleKudosDeleted(event)
+
+        verify {
+            messagingTemplate.convertAndSend(
+                "/topic/board/test-slug/kudos",
+                match<WebSocketMessage> { it.type == "KUDOS_DELETED" }
             )
         }
     }

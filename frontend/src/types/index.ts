@@ -216,3 +216,21 @@ export interface CarryOverItemsResponse {
   items: CarryOverItem[];
   teamName: string;
 }
+
+export type KudosCategory = 'GREAT_JOB' | 'THANK_YOU' | 'INSPIRING' | 'HELPFUL' | 'CREATIVE' | 'TEAM_PLAYER';
+
+export interface Kudos {
+  id: string;
+  boardId: string;
+  senderId: string;
+  senderNickname: string;
+  receiverId: string;
+  receiverNickname: string;
+  category: KudosCategory;
+  message?: string;
+  createdAt: string;
+}
+
+export interface KudosDeletedPayload {
+  id: string;
+}

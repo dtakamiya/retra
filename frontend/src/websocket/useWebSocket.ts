@@ -9,6 +9,8 @@ import type {
   CardDeletedPayload,
   CardDiscussionMarkedPayload,
   CardMovedPayload,
+  Kudos,
+  KudosDeletedPayload,
   Memo,
   MemoDeletedPayload,
   Participant,
@@ -46,6 +48,8 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleActionItemUpdated,
     handleActionItemStatusChanged,
     handleActionItemDeleted,
+    handleKudosSent,
+    handleKudosDeleted,
   } = useBoardStore();
 
   const connect = useCallback(() => {
@@ -181,6 +185,19 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
               break;
           }
         });
+
+        // Subscribe to kudos events
+        client.subscribe(`/topic/board/${slug}/kudos`, (message) => {
+          const data: WebSocketMessage = JSON.parse(message.body);
+          switch (data.type) {
+            case 'KUDOS_SENT':
+              handleKudosSent(data.payload as Kudos);
+              break;
+            case 'KUDOS_DELETED':
+              handleKudosDeleted(data.payload as KudosDeletedPayload);
+              break;
+          }
+        });
       },
       onDisconnect: () => {
         setConnected(false);
@@ -218,6 +235,8 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleActionItemUpdated,
     handleActionItemStatusChanged,
     handleActionItemDeleted,
+    handleKudosSent,
+    handleKudosDeleted,
   ]);
 
   useEffect(() => {
