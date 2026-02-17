@@ -3,7 +3,7 @@ package com.retra.actionitem.usecase
 import com.retra.actionitem.domain.ActionItemRepository
 import com.retra.actionitem.domain.ActionItemStatus
 import com.retra.board.domain.BoardRepository
-import com.retra.shared.domain.BadRequestException
+import com.retra.shared.domain.EnumParser
 import com.retra.shared.domain.ForbiddenException
 import com.retra.shared.domain.NotFoundException
 import com.retra.shared.gateway.event.SpringDomainEventPublisher
@@ -29,11 +29,7 @@ class UpdateCarryOverItemStatusUseCase(
         val actionItem = actionItemRepository.findById(actionItemId)
             ?: throw NotFoundException("Action item not found")
 
-        val newStatus = try {
-            ActionItemStatus.valueOf(request.status)
-        } catch (e: IllegalArgumentException) {
-            throw BadRequestException("Invalid status: ${request.status}")
-        }
+        val newStatus = EnumParser.parse<ActionItemStatus>(request.status, "status")
 
         actionItem.changeStatus(newStatus, participant)
         actionItemRepository.save(actionItem)

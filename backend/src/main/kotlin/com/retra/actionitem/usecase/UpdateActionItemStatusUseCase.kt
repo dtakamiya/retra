@@ -4,6 +4,7 @@ import com.retra.actionitem.domain.ActionItemRepository
 import com.retra.actionitem.domain.ActionItemStatus
 import com.retra.board.domain.BoardRepository
 import com.retra.shared.domain.BadRequestException
+import com.retra.shared.domain.EnumParser
 import com.retra.shared.domain.NotFoundException
 import com.retra.shared.gateway.event.SpringDomainEventPublisher
 import org.springframework.stereotype.Service
@@ -34,11 +35,7 @@ class UpdateActionItemStatusUseCase(
 
         val executor = board.findParticipantById(request.participantId)
 
-        val newStatus = try {
-            ActionItemStatus.valueOf(request.status)
-        } catch (_: IllegalArgumentException) {
-            throw BadRequestException("Invalid status: ${request.status}. Valid values: ${ActionItemStatus.entries.joinToString()}")
-        }
+        val newStatus = EnumParser.parse<ActionItemStatus>(request.status, "status")
 
         actionItem.changeStatus(newStatus, executor)
         actionItemRepository.save(actionItem)

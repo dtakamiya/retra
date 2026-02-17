@@ -6,6 +6,7 @@ import com.retra.actionitem.domain.ActionItemRepository
 import com.retra.board.domain.BoardRepository
 import com.retra.card.domain.CardRepository
 import com.retra.shared.domain.BadRequestException
+import com.retra.shared.domain.EnumParser
 import com.retra.shared.domain.NotFoundException
 import com.retra.shared.gateway.event.SpringDomainEventPublisher
 import org.springframework.stereotype.Service
@@ -56,11 +57,7 @@ class CreateActionItemUseCase(
 
         val sortOrder = actionItemRepository.countByBoardId(board.id)
 
-        val priority = try {
-            ActionItemPriority.valueOf(request.priority.uppercase())
-        } catch (e: IllegalArgumentException) {
-            throw BadRequestException("Invalid priority: ${request.priority}. Must be one of: HIGH, MEDIUM, LOW")
-        }
+        val priority = EnumParser.parse<ActionItemPriority>(request.priority, "priority")
 
         val actionItem = ActionItem.create(
             board = board,

@@ -5,7 +5,7 @@ import com.retra.kudos.domain.Kudos
 import com.retra.kudos.domain.KudosCategory
 import com.retra.kudos.domain.KudosEvent
 import com.retra.kudos.domain.KudosRepository
-import com.retra.shared.domain.BadRequestException
+import com.retra.shared.domain.EnumParser
 import com.retra.shared.domain.NotFoundException
 import com.retra.shared.gateway.event.SpringDomainEventPublisher
 import org.springframework.stereotype.Service
@@ -22,16 +22,10 @@ class SendKudosUseCase(
         val board = boardRepository.findBySlug(slug)
             ?: throw NotFoundException("Board not found")
 
-        val sender = board.participants.find { it.id == request.senderId }
-            ?: throw NotFoundException("Sender not found")
-        val receiver = board.participants.find { it.id == request.receiverId }
-            ?: throw NotFoundException("Receiver not found")
+        val sender = board.findParticipantById(request.senderId)
+        val receiver = board.findParticipantById(request.receiverId)
 
-        val category = try {
-            KudosCategory.valueOf(request.category)
-        } catch (e: IllegalArgumentException) {
-            throw BadRequestException("Invalid kudos category: ${request.category}")
-        }
+        val category = EnumParser.parse<KudosCategory>(request.category, "kudos category")
 
         val kudos = Kudos.create(board, sender, receiver, category, request.message)
         kudosRepository.save(kudos)
