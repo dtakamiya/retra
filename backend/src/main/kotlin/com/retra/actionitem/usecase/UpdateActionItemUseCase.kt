@@ -4,6 +4,7 @@ import com.retra.actionitem.domain.ActionItemPriority
 import com.retra.actionitem.domain.ActionItemRepository
 import com.retra.board.domain.BoardRepository
 import com.retra.shared.domain.BadRequestException
+import com.retra.shared.domain.EnumParser
 import com.retra.shared.domain.NotFoundException
 import com.retra.shared.gateway.event.SpringDomainEventPublisher
 import org.springframework.stereotype.Service
@@ -48,11 +49,7 @@ class UpdateActionItemUseCase(
         }
 
         val priority = request.priority?.let {
-            try {
-                ActionItemPriority.valueOf(it.uppercase())
-            } catch (e: IllegalArgumentException) {
-                throw BadRequestException("Invalid priority: $it. Must be one of: HIGH, MEDIUM, LOW")
-            }
+            EnumParser.parse<ActionItemPriority>(it, "priority")
         }
 
         actionItem.update(request.content, assignee, request.dueDate, executor, priority)
