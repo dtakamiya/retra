@@ -158,8 +158,11 @@ Flyway で管理。マイグレーションファイルは `backend/src/main/res
 | `V10__create_board_snapshots.sql` | ボードスナップショットテーブル作成 |
 | `V11__add_ux_improvements.sql` | UX 改善（議論マーク等） |
 | `V12__add_team_name_to_boards.sql` | ボードに team_name カラム追加 |
+| `V13__create_kudos.sql` | Kudos（称賛）テーブル作成 |
+| `V14__add_indexes.sql` | パフォーマンス向上のためのインデックス追加 |
+| `V15__add_private_writing_to_boards.sql` | ボードにプライベート記入モードフラグ追加 |
 
-新しいマイグレーションを追加する場合は `V13__description.sql` のように命名してください。
+新しいマイグレーションを追加する場合は `V16__description.sql` のように命名してください。
 
 ### SQLite の制約
 

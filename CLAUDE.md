@@ -4,7 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 必須ルール
 - **全ての回答は日本語で行うこと**
-- 何か修正を行う時には、worktreeで修正を行うこと 
+- **何か修正を行う時には、以下のフローで修正を行うこと**
+  1. git worktreeで隔離ブランチを作成
+  2. 修正を行う
+  3. コミット & originにプッシュ
+  4. worktreeクリーンアップ
 
 ## Project Overview
 
@@ -12,7 +16,7 @@ Retra is a real-time retrospective board for Scrum teams. It supports multiple f
 
 - **Backend:** Spring Boot 3.4.1 + Kotlin 2.0.21 (`backend/`)
 - **Frontend:** React 19.2 + TypeScript 5.9 + Vite 7 + Zustand 5 + TailwindCSS v4 (`frontend/`)
-- **Database:** SQLite with Flyway migrations (V1-V12)
+- **Database:** SQLite with Flyway migrations (V1-V15)
 - **CI/CD:** なし（GitHub Actions、Docker等の設定は未導入）
 - **Realtime:** WebSocket via STOMP protocol (`@stomp/stompjs`)
 - **Drag & Drop:** @dnd-kit (core, sortable, utilities)
@@ -94,8 +98,8 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 #### `board/` - Board Module
 | Package | Purpose |
 |---------|---------|
-| `board/domain/` | `Board` (includes `teamName`), `BoardColumn`, `Participant`, `BoardSlug`, `VoteLimit`, `Framework`, `Phase`, `BoardAuthorizationService`, `BoardEvent`, repositories |
-| `board/usecase/` | `CreateBoardUseCase` (`CreateBoardRequest` includes `teamName`), `GetBoardUseCase`, `TransitionPhaseUseCase`, `JoinBoardUseCase`, `UpdateOnlineStatusUseCase`, `ExportBoardUseCase`, `BoardDtos`, `ExportDtos`, `BoardMapper` |
+| `board/domain/` | `Board` (includes `teamName`, `privateWriting`), `BoardColumn`, `Participant`, `BoardSlug`, `VoteLimit`, `Framework`, `Phase`, `BoardAuthorizationService`, `BoardEvent`, repositories |
+| `board/usecase/` | `CreateBoardUseCase` (`CreateBoardRequest` includes `teamName`, `privateWriting`), `GetBoardUseCase`, `TransitionPhaseUseCase`, `JoinBoardUseCase`, `UpdateOnlineStatusUseCase`, `ExportBoardUseCase`, `BoardDtos`, `ExportDtos`, `BoardMapper` |
 | `board/usecase/export/` | `CsvExportService`, `MarkdownExportService` (CSV/Markdownエクスポート) |
 | `board/gateway/controller/` | `BoardController` (REST) |
 | `board/gateway/db/` | JPA repository implementations (`JpaBoardRepository`, `JpaParticipantRepository`) + Spring Data interfaces (`SpringDataBoardRepository`, `SpringDataParticipantRepository`) |
@@ -105,7 +109,7 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 | Package | Purpose |
 |---------|---------|
 | `card/domain/` | `Card`, `Vote`, `Memo`, `Reaction`, `CardEvent`, `VoteEvent`, `MemoEvent`, `ReactionEvent`, repositories |
-| `card/usecase/` | `CreateCardUseCase`, `UpdateCardUseCase`, `DeleteCardUseCase`, `MoveCardUseCase`, `AddVoteUseCase`, `RemoveVoteUseCase`, `GetRemainingVotesUseCase`, `CreateMemoUseCase`, `UpdateMemoUseCase`, `DeleteMemoUseCase`, `AddReactionUseCase`, `RemoveReactionUseCase`, DTOs (`CardDtos`, `MemoDtos`, `ReactionDtos`), Mappers (`CardMapper`, `MemoMapper`, `ReactionMapper`) |
+| `card/usecase/` | `CreateCardUseCase`, `UpdateCardUseCase`, `DeleteCardUseCase`, `MoveCardUseCase`, `MarkCardDiscussedUseCase`, `AddVoteUseCase`, `RemoveVoteUseCase`, `GetRemainingVotesUseCase`, `CreateMemoUseCase`, `UpdateMemoUseCase`, `DeleteMemoUseCase`, `AddReactionUseCase`, `RemoveReactionUseCase`, DTOs (`CardDtos`, `MemoDtos`, `ReactionDtos`), Mappers (`CardMapper`, `MemoMapper`, `ReactionMapper`) |
 | `card/gateway/controller/` | `CardController`, `VoteController`, `MemoController`, `ReactionController` (REST) |
 | `card/gateway/db/` | JPA repository implementations (`JpaCardRepository`, `JpaVoteRepository`, `JpaMemoRepository`, `JpaReactionRepository`) + Spring Data interfaces (`SpringDataCardRepository`, `SpringDataVoteRepository`, `SpringDataMemoRepository`, `SpringDataReactionRepository`) |
 
@@ -135,7 +139,7 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 | Package | Purpose |
 |---------|---------|
 | `history/domain/` | `BoardSnapshot`, `BoardSnapshotRepository` |
-| `history/usecase/` | `CreateSnapshotUseCase`, `GetSnapshotUseCase`, `GetTeamHistoryUseCase`, DTOs (`SnapshotDtos` incl. `TrendPoint` with engagement metrics: `cardsPerParticipant`, `votesPerParticipant`, `votesPerCard`, `actionItemRate`), Mapper (`SnapshotMapper` with `safeDiv` helper) |
+| `history/usecase/` | `CreateSnapshotUseCase`, `GetSnapshotUseCase`, `GetTeamHistoryUseCase`, DTOs (`SnapshotDtos` incl. `TrendPoint` with engagement metrics: `cardsPerParticipant`, `votesPerParticipant`, `votesPerCard`, `actionItemRate`, `actionItemCompletionRate`), Mapper (`SnapshotMapper` with `safeDiv` helper) |
 | `history/gateway/controller/` | `HistoryController` (REST) |
 | `history/gateway/db/` | JPA repository implementations (`JpaBoardSnapshotRepository`) + Spring Data interfaces (`SpringDataBoardSnapshotRepository`) |
 
@@ -154,12 +158,13 @@ Entry point: `RetraApplication.kt`
 |-----------|---------|
 | `api/client.ts` | REST API wrapper (`/api/v1` base) |
 | `pages/` | `HomePage` (create/join), `BoardPage` (main board), `TeamDashboardPage` (history + trends), `SnapshotDetailPage` (snapshot detail), `NotFoundPage` |
-| `components/` | `BoardHeader`, `BoardView`, `ColumnView`, `CardItem`, `CardForm`, `MemoList`, `MemoItem`, `MemoForm`, `ReactionList`, `ReactionPicker`, `ParticipantList`, `PhaseControl`, `TimerDisplay`, `ConnectionBanner`, `NicknameModal`, `ExportMenu`, `ToastContainer`, `ActionItemList`, `ActionItemCard`, `ActionItemForm`, `ActionItemStatusBadge`, `CarryOverPanel`, `RetroHistoryList`, `RetroSummaryCard`, `TrendChart`, `SnapshotDetailView`, `KudosPanel`, `KudosCard`, `KudosSendForm` |
+| `components/` | `ActionItemCard`, `ActionItemForm`, `ActionItemList`, `ActionItemPriorityBadge`, `ActionItemStatusBadge`, `BoardFilterBar`, `BoardHeader`, `BoardSkeleton`, `BoardView`, `CardDetailModal`, `CardForm`, `CardItem`, `CarryOverPanel`, `CharacterCounter`, `ColumnView`, `ConnectionBanner`, `DiscussionProgress`, `ExportMenu`, `KudosCard`, `KudosPanel`, `KudosSendForm`, `MemoForm`, `MemoItem`, `MemoList`, `NicknameModal`, `OverallDiscussionProgress`, `ParticipantList`, `PhaseControl`, `PhaseGuidance`, `PhaseTransitionDialog`, `ReactionList`, `ReactionPicker`, `RetroHistoryList`, `RetroSummaryCard`, `SnapshotDetailView`, `ThemeToggle`, `TimerDisplay`, `ToastContainer`, `TrendChart`, `VoteProgressBar` |
 | `store/boardStore.ts` | Zustand store with WebSocket event handlers |
 | `store/toastStore.ts` | Toast notification store (success/error/info, 4秒自動削除) |
+| `store/themeStore.ts` | Theme state management (light/dark mode) |
 | `websocket/useWebSocket.ts` | STOMP client hook with auto-reconnect |
 | `hooks/useTimerAlert.ts` | Timer alert sound hook |
-| `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `Reaction`, `Kudos`, `ExportFormat`, `CardMovedPayload`, `ReactionRemovedPayload`, `KudosDeletedPayload`, etc.) |
+| `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `Reaction`, `Kudos`, `ExportFormat`, `CardMovedPayload`, `ReactionRemovedPayload`, `KudosDeletedPayload`, `PrivateCardCreatedPayload`, `PrivateCardUpdatedPayload`, `PrivateCardDeletedPayload`, etc.) |
 | `utils/` | Utility functions (`exportMarkdown.ts` - Markdown export conversion) |
 | `test/` | Test utilities: `setup.ts`, `fixtures.ts`, `test-utils.tsx`, `dnd-mocks.ts` |
 
@@ -224,6 +229,7 @@ Business rules are enforced in the usecase layer:
 - Action Items: create/edit/delete only in ACTION_ITEMS phase; view in CLOSED phase; priority (HIGH/MEDIUM/LOW)
 - Discussion mark: facilitator only, toggle in DISCUSSION/ACTION_ITEMS phases; discussed cards grayed out and sorted to bottom
 - Anonymous mode: set at board creation, cannot be changed; hides author names from other participants (self visible)
+- Private writing mode: set at board creation; hides cards from other participants during WRITING phase; cards become visible after phase transition
 - Phase transitions: facilitator only, must follow sequential order
 - Timer: facilitator only
 - Kudos: send in all phases; delete by sender only; categories (GREAT_JOB, THANK_YOU, INSPIRING, HELPFUL, CREATIVE, TEAM_PLAYER); anonymous mode hides sender name; 140 char message limit
@@ -268,7 +274,7 @@ Business rules are enforced in the usecase layer:
 ### E2E Tests (`frontend/e2e/`)
 - **Framework:** Playwright
 - **Config:** `playwright.config.ts`
-- **Test suites:** `home`, `board-creation`, `board-join`, `card-operations`, `card-edit-delete`, `card-drag-drop`, `voting`, `voting-limit`, `phase-control`, `timer`, `realtime-sync`, `authorization`, `memo-operations`, `reaction-operations`, `export`, `action-item-operations`, `dashboard`, `kudos-operations`
+- **Test suites:** `home`, `board-creation`, `board-join`, `card-operations`, `card-edit-delete`, `card-drag-drop`, `card-discussion`, `voting`, `voting-limit`, `phase-control`, `timer`, `realtime-sync`, `authorization`, `anonymous-mode`, `private-writing`, `memo-operations`, `reaction-operations`, `export`, `action-item-operations`, `carry-over`, `dashboard`, `kudos-operations`, `uat-full-retro-session`
 
 ## Technical Constraints
 
@@ -276,7 +282,7 @@ Business rules are enforced in the usecase layer:
 - **SQLite single-writer:** HikariCP `maximum-pool-size=1`, WAL mode, `busy_timeout=5000ms`, `foreign_keys=ON`
 - **Kotlin JPA entities** use `open class` (not data class) due to `allOpen` plugin with `@Entity`, `@MappedSuperclass`, `@Embeddable` annotations
 - **TailwindCSS v4:** Uses `@tailwindcss/vite` plugin with `@import "tailwindcss"` syntax. No `tailwind.config.js`.
-- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V14, do not modify existing migrations)
+- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V15, do not modify existing migrations)
 - **SPA fallback:** `SpaConfig.kt` serves `index.html` for non-API, non-static routes in production
 - **Vite proxy:** Dev server proxies `/api` to `http://localhost:8080` and `/ws` to `ws://localhost:8080`
 - **TypeScript strict mode:** `noUnusedLocals`, `noUnusedParameters`, `erasableSyntaxOnly`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports` all enabled
@@ -322,6 +328,6 @@ Business rules are enforced in the usecase layer:
 | lucide-react | ^0.563.0 | Icons |
 | react-router-dom | ^7.13.0 | Routing |
 | tailwindcss | ^4.1.18 | CSS framework |
-| recharts | ^2.x | Charts for dashboard |
+| recharts | ^3.7.0 | Charts for dashboard |
 | vitest | ^3.2.4 | Unit testing |
 | @playwright/test | ^1.58.2 | E2E testing |

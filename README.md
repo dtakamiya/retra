@@ -20,8 +20,11 @@
 - **議論済みマーク** - ファシリテーターがカードに議論済みマークを付けてグレーアウト・ソート
 - **フェーズベースのアクセス制御** - 記入フェーズでのみカード作成、投票フェーズでのみ投票など
 - **匿名モード** - ボード作成時に設定可能、カードの投稿者名を他の参加者から非表示
+- **プライベート記入モード** - 記入フェーズ中は他の参加者のカードを非表示、フェーズ遷移後に全カードを公開
+- **ダークモード** - ライト/ダークテーマの切り替え
 - **エクスポート機能** - ボード内容をCSVまたはMarkdown形式でダウンロード
 - **アクションアイテム引き継ぎ** - 同一チームの前回レトロから未完了アクションアイテムを引き継ぎ
+- **Kudos（称賛）機能** - チームメンバーへの称賛メッセージを送信（GREAT_JOB, THANK_YOU, INSPIRING, HELPFUL, CREATIVE, TEAM_PLAYER）
 - **自動スナップショット** - ボード完了時に自動でスナップショットを保存
 - **複数人参加** - URLを共有するだけでボードに参加可能
 
@@ -190,6 +193,10 @@ backend/src/main/kotlin/com/retra/
 │   ├── domain/          # ActionItem, ActionItemStatus
 │   ├── usecase/         # アクションアイテムCRUD・ステータス変更
 │   └── gateway/         # REST コントローラ, JPA リポジトリ
+├── kudos/
+│   ├── domain/          # Kudos, KudosCategory
+│   ├── usecase/         # Kudos送信・取得・削除
+│   └── gateway/         # REST コントローラ, JPA リポジトリ
 └── history/
     ├── domain/          # BoardSnapshot
     ├── usecase/         # スナップショット作成・取得・トレンド分析
@@ -198,7 +205,7 @@ backend/src/main/kotlin/com/retra/
 frontend/src/
 ├── api/                 # REST API クライアント
 ├── pages/               # ページコンポーネント（5ページ）
-├── components/          # UI コンポーネント（29）
+├── components/          # UI コンポーネント（40）
 ├── store/               # Zustand ストア
 ├── websocket/           # STOMP クライアント
 ├── hooks/               # カスタムフック
@@ -282,6 +289,14 @@ frontend/src/
 |---------|------|------|
 | `GET` | `/boards/{slug}/carry-over-items` | 前回レトロの引き継ぎアクションアイテム取得 |
 | `PATCH` | `/boards/{slug}/carry-over-items/{actionItemId}/status` | 引き継ぎアイテムステータス更新（ファシリテーターのみ） |
+
+### Kudos（称賛）
+
+| メソッド | パス | 説明 |
+|---------|------|------|
+| `POST` | `/boards/{slug}/kudos` | Kudos送信（全フェーズ） |
+| `GET` | `/boards/{slug}/kudos` | Kudos一覧取得 |
+| `DELETE` | `/boards/{slug}/kudos/{id}` | Kudos削除（送信者のみ） |
 
 ### 履歴・ダッシュボード
 
