@@ -27,7 +27,7 @@ test.describe('カード操作', () => {
 
         // カードの内容を入力
         await page.getByPlaceholder('意見を入力').fill('テストカード内容');
-        await page.locator('button', { hasText: '追加' }).click();
+        await page.getByRole('button', { name: '追加', exact: true }).click();
 
         // カードが表示される
         await expect(page.getByText('テストカード内容')).toBeVisible();
@@ -74,7 +74,7 @@ test.describe('カード操作', () => {
         await page.getByRole('button', { name: 'カードを追加' }).first().click();
 
         // 追加ボタンが無効
-        await expect(page.locator('button', { hasText: '追加' })).toBeDisabled();
+        await expect(page.getByRole('button', { name: '追加', exact: true })).toBeDisabled();
     });
 
     test('複数のカラムにカードを追加できる', async ({ page }) => {
@@ -83,19 +83,19 @@ test.describe('カード操作', () => {
         // Keepカラムにカード追加
         await page.getByRole('button', { name: 'カードを追加' }).first().click();
         await page.getByPlaceholder('意見を入力').fill('Keep内容');
-        await page.locator('button', { hasText: '追加' }).click();
+        await page.getByRole('button', { name: '追加', exact: true }).click();
         await expect(page.getByText('Keep内容')).toBeVisible();
 
         // Problemカラムにカード追加
         await page.getByRole('button', { name: 'カードを追加' }).nth(1).click();
         await page.getByPlaceholder('意見を入力').fill('Problem内容');
-        await page.locator('button', { hasText: '追加' }).click();
+        await page.getByRole('button', { name: '追加', exact: true }).click();
         await expect(page.getByText('Problem内容')).toBeVisible();
 
         // Tryカラムにカード追加
         await page.getByRole('button', { name: 'カードを追加' }).nth(2).click();
         await page.getByPlaceholder('意見を入力').fill('Try内容');
-        await page.locator('button', { hasText: '追加' }).click();
+        await page.getByRole('button', { name: '追加', exact: true }).click();
         await expect(page.getByText('Try内容')).toBeVisible();
     });
 });

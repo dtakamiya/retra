@@ -17,16 +17,18 @@ async function createBoardAndJoinAsFacilitator(page: import('@playwright/test').
 async function addCard(page: import('@playwright/test').Page, content: string, columnIndex: number = 0) {
     await page.getByRole('button', { name: 'カードを追加' }).nth(columnIndex).click();
     await page.getByPlaceholder('意見を入力').fill(content);
-    await page.locator('button', { hasText: '追加' }).click();
+    await page.getByRole('button', { name: '追加', exact: true }).click();
     await expect(page.getByText(content)).toBeVisible();
 }
 
 // ヘルパー関数: DISCUSSIONフェーズまで進める
 async function advanceToDicussion(page: import('@playwright/test').Page) {
     await page.locator('button', { hasText: '次へ: 投票' }).click();
+    await page.locator('button', { hasText: '投票へ進む' }).click();
     await expect(page.locator('.bg-indigo-600.text-white', { hasText: '投票' }).first()).toBeVisible();
 
     await page.locator('button', { hasText: '次へ: 議論' }).click();
+    await page.locator('button', { hasText: '議論へ進む' }).click();
     await expect(page.locator('.bg-indigo-600.text-white', { hasText: '議論' }).first()).toBeVisible();
 }
 

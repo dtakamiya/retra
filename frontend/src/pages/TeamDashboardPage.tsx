@@ -9,13 +9,13 @@ import type { SnapshotSummary, TrendData } from '../types';
 
 function KpiCard({ icon, label, value, sub, color }: { icon: React.ReactNode; label: string; value: string | number; sub?: string; color: string }) {
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-4 flex items-start gap-3 shadow-sm">
-      <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
+    <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-4 flex items-start gap-3 transition-all hover:-translate-y-0.5 hover:shadow-md" style={{ boxShadow: 'var(--shadow-card)' }}>
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
         {icon}
       </div>
       <div className="min-w-0">
-        <p className="text-xs text-gray-500 dark:text-slate-400">{label}</p>
-        <p className="text-lg font-bold text-gray-900 dark:text-slate-100 leading-tight">{value}</p>
+        <p className="text-xs text-gray-500 dark:text-slate-400 font-medium">{label}</p>
+        <p className="text-xl font-bold text-gray-900 dark:text-slate-100 leading-tight">{value}</p>
         {sub && <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-0.5">{sub}</p>}
       </div>
     </div>
@@ -67,12 +67,12 @@ export function TeamDashboardPage() {
   }, [history]);
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-slate-900">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-gray-100/50 dark:from-slate-900 dark:to-slate-900/95">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8 animate-[fadeIn_0.3s_ease-out]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/20 flex items-center justify-center border border-indigo-100 dark:border-indigo-800/50">
               <BarChart3 size={22} className="text-indigo-600 dark:text-indigo-400" />
             </div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-slate-100">
@@ -98,7 +98,7 @@ export function TeamDashboardPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="チーム名で検索..."
-            className="flex-1 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all"
+            className="flex-1 px-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all"
           />
           <button
             type="submit"
@@ -159,15 +159,21 @@ export function TeamDashboardPage() {
 
             {/* Trend Chart */}
             {trends && trends.snapshots.length > 1 && (
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-6">
-                <h2 className="text-base font-bold text-gray-800 dark:text-slate-100 mb-4">トレンド & エンゲージメント</h2>
+              <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
+                <h2 className="text-base font-bold text-gray-800 dark:text-slate-100 mb-4 flex items-center gap-2">
+                  <div className="w-1 h-5 rounded-full bg-indigo-500" />
+                  トレンド & エンゲージメント
+                </h2>
                 <TrendChart data={trends.snapshots} />
               </div>
             )}
 
             {/* History List */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-6">
-              <h2 className="text-base font-bold text-gray-800 dark:text-slate-100 mb-4">レトロスペクティブ履歴</h2>
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <h2 className="text-base font-bold text-gray-800 dark:text-slate-100 mb-4 flex items-center gap-2">
+                <div className="w-1 h-5 rounded-full bg-purple-500" />
+                レトロスペクティブ履歴
+              </h2>
               <RetroHistoryList history={history} />
             </div>
           </div>

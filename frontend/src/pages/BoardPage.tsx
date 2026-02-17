@@ -148,7 +148,7 @@ export function BoardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-slate-900 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-gray-100/50 dark:from-slate-900 dark:to-slate-900/95 flex flex-col">
       {!isConnected && <ConnectionBanner />}
 
       <BoardHeader
@@ -162,7 +162,7 @@ export function BoardPage() {
         <div className="flex-1 overflow-x-auto">
           <BoardView />
         </div>
-        <div className="hidden lg:block w-64 border-l border-gray-100 dark:border-slate-700/50 glass">
+        <div className="hidden lg:block w-64 border-l border-gray-200/60 dark:border-slate-700/50 glass">
           <div className="p-4 space-y-0">
             <TimerDisplay />
             <ParticipantList />

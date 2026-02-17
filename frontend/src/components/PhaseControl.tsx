@@ -58,16 +58,16 @@ export function PhaseControl() {
               <div
                 className={`px-2.5 py-1 text-[11px] rounded-md font-medium transition-all ${
                   i === currentIndex
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
+                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200 dark:shadow-indigo-900/50 scale-105'
                     : i < currentIndex
-                      ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300'
+                      ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300'
                       : 'text-gray-400 dark:text-slate-500'
                 }`}
               >
-                {phase.label}
+                {i < currentIndex ? `✓ ${phase.label}` : phase.label}
               </div>
               {i < PHASES.length - 1 && (
-                <ChevronRight size={12} className={`mx-0.5 ${i < currentIndex ? 'text-indigo-300 dark:text-indigo-400' : 'text-gray-300 dark:text-slate-600'}`} />
+                <ChevronRight size={12} className={`mx-0.5 ${i < currentIndex ? 'text-emerald-300 dark:text-emerald-400' : 'text-gray-300 dark:text-slate-600'}`} />
               )}
             </div>
           ))}
@@ -83,7 +83,7 @@ export function PhaseControl() {
           <button
             onClick={() => setShowDialog(true)}
             disabled={loading}
-            className="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white text-xs font-medium rounded-lg hover:from-indigo-700 hover:to-indigo-600 disabled:opacity-50 transition-all shadow-sm shadow-indigo-200 hover:shadow-md active:scale-[0.97]"
+            className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-xs font-medium rounded-lg hover:from-emerald-700 hover:to-emerald-600 disabled:opacity-50 transition-all shadow-sm shadow-emerald-200 dark:shadow-emerald-900/30 hover:shadow-md active:scale-[0.97]"
           >
             次へ: {PHASES.find((p) => p.key === nextPhase)?.label}
           </button>

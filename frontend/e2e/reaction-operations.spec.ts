@@ -17,7 +17,7 @@ async function createBoardAndJoin(page: import('@playwright/test').Page, nicknam
 async function addCard(page: import('@playwright/test').Page, content: string) {
     await page.getByRole('button', { name: 'カードを追加' }).first().click();
     await page.getByPlaceholder('意見を入力').fill(content);
-    await page.locator('button', { hasText: '追加' }).click();
+    await page.getByRole('button', { name: '追加', exact: true }).click();
     await expect(page.locator('p', { hasText: content })).toBeVisible();
 }
 
@@ -135,7 +135,7 @@ test.describe('リアクションのリアルタイム同期', () => {
         // ファシリテーターがカードを追加
         await facilitatorPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await facilitatorPage.getByPlaceholder('意見を入力').fill('同期テストカード');
-        await facilitatorPage.locator('button', { hasText: '追加' }).click();
+        await facilitatorPage.getByRole('button', { name: '追加', exact: true }).click();
         await expect(facilitatorPage.locator('p', { hasText: '同期テストカード' })).toBeVisible();
 
         // メンバー側でカードの同期を待つ
@@ -185,7 +185,7 @@ test.describe('リアクションのリアルタイム同期', () => {
         // ファシリテーターがカード追加
         await facilitatorPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await facilitatorPage.getByPlaceholder('意見を入力').fill('削除同期テストカード');
-        await facilitatorPage.locator('button', { hasText: '追加' }).click();
+        await facilitatorPage.getByRole('button', { name: '追加', exact: true }).click();
         await expect(facilitatorPage.locator('p', { hasText: '削除同期テストカード' })).toBeVisible();
 
         await expect(memberPage.getByText('削除同期テストカード')).toBeVisible({ timeout: 10000 });

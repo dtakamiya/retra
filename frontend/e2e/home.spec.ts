@@ -9,7 +9,7 @@ test.describe('ホームページ', () => {
 
         // メインヘッダーの確認
         await expect(page.getByRole('heading', { name: 'Retra' })).toBeVisible();
-        await expect(page.getByText('スクラムチームのためのレトロスペクティブボード')).toBeVisible();
+        await expect(page.getByText('スクラムチームのためのリアルタイム レトロスペクティブボード')).toBeVisible();
     });
 
     test('ボード作成タブがデフォルトで選択されている', async ({ page }) => {

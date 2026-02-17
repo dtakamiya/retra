@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { LayoutGrid, Users, BarChart3, EyeOff, Sparkles, Lock } from 'lucide-react';
+import { LayoutGrid, Users, BarChart3, EyeOff, Sparkles, Lock, RefreshCw, Target, Lightbulb, Play } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { api } from '../api/client';
 import { useToastStore } from '../store/toastStore';
 import { ThemeToggle } from '../components/ThemeToggle';
 import type { Framework } from '../types';
 
-const FRAMEWORKS: { value: Framework; label: string; description: string; icon: string }[] = [
-  { value: 'KPT', label: 'KPT', description: 'Keep / Problem / Try', icon: '🔄' },
-  { value: 'FUN_DONE_LEARN', label: 'Fun Done Learn', description: 'Fun / Done / Learn', icon: '🎯' },
-  { value: 'FOUR_LS', label: '4Ls', description: 'Liked / Learned / Lacked / Longed For', icon: '💡' },
-  { value: 'START_STOP_CONTINUE', label: 'Start Stop Continue', description: 'Start / Stop / Continue', icon: '🚀' },
+const FRAMEWORKS: { value: Framework; label: string; description: string; icon: LucideIcon }[] = [
+  { value: 'KPT', label: 'KPT', description: 'Keep / Problem / Try', icon: RefreshCw },
+  { value: 'FUN_DONE_LEARN', label: 'Fun Done Learn', description: 'Fun / Done / Learn', icon: Target },
+  { value: 'FOUR_LS', label: '4Ls', description: 'Liked / Learned / Lacked / Longed For', icon: Lightbulb },
+  { value: 'START_STOP_CONTINUE', label: 'Start Stop Continue', description: 'Start / Stop / Continue', icon: Play },
 ];
 
 export function HomePage() {
@@ -70,7 +71,7 @@ export function HomePage() {
             <Sparkles size={12} />
             チームのふりかえりをもっと効果的に
           </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 dark:from-indigo-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent mb-4 tracking-tight">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-indigo-600 dark:from-indigo-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent mb-4" style={{ letterSpacing: '-0.03em' }}>
             Retra
           </h1>
           <p className="text-lg text-gray-500 dark:text-slate-400 leading-relaxed">
@@ -130,7 +131,7 @@ export function HomePage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="スプリント42 ふりかえり"
-                  className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
                   required
                 />
               </div>
@@ -145,17 +146,17 @@ export function HomePage() {
                       key={fw.value}
                       type="button"
                       onClick={() => setFramework(fw.value)}
-                      className={`p-3 border-2 rounded-xl text-left transition-all hover:-translate-y-0.5 ${
+                      className={`p-3.5 border-2 rounded-xl text-left transition-all hover:-translate-y-0.5 ${
                         framework === fw.value
-                          ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-50/80 dark:bg-indigo-900/30 shadow-sm shadow-indigo-100 dark:shadow-indigo-900/30'
-                          : 'border-gray-100 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/50 hover:border-gray-200 dark:hover:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-800'
+                          ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-50/80 dark:bg-indigo-900/30 shadow-md shadow-indigo-100/50 dark:shadow-indigo-900/30'
+                          : 'border-gray-100 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/50 hover:border-gray-200 dark:hover:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-800 hover:shadow-sm'
                       }`}
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-base">{fw.icon}</span>
+                      <div className="flex items-center gap-2.5">
+                        <fw.icon size={16} className={framework === fw.value ? 'text-indigo-500 dark:text-indigo-400' : 'text-gray-400 dark:text-slate-500'} />
                         <span className="font-medium text-sm text-gray-900 dark:text-slate-100">{fw.label}</span>
                       </div>
-                      <div className="text-xs text-gray-400 dark:text-slate-500 mt-1 ml-7">{fw.description}</div>
+                      <div className="text-xs text-gray-400 dark:text-slate-500 mt-1.5 ml-[26px]">{fw.description}</div>
                     </button>
                   ))}
                 </div>
@@ -171,7 +172,7 @@ export function HomePage() {
                   onChange={(e) => setMaxVotes(Number(e.target.value))}
                   min={1}
                   max={20}
-                  className="w-24 px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-sm text-gray-900 dark:text-slate-100"
+                  className="w-24 px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-sm text-gray-900 dark:text-slate-100"
                 />
               </div>
 
@@ -185,7 +186,7 @@ export function HomePage() {
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
                   placeholder="チーム Alpha"
-                  className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
                 />
                 <p className="text-xs text-gray-400 dark:text-slate-500 mt-1.5">同じチーム名のレトロから前回のアクションアイテムを引き継ぎます</p>
               </div>
@@ -247,7 +248,7 @@ export function HomePage() {
               <button
                 type="submit"
                 disabled={loading || !title.trim()}
-                className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-indigo-200 dark:shadow-indigo-900/30 hover:shadow-md hover:shadow-indigo-200 dark:hover:shadow-indigo-900/30 active:scale-[0.98] text-sm"
+                className="w-full py-3 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-500 text-white rounded-xl font-medium hover:from-indigo-700 hover:via-indigo-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-indigo-200 dark:shadow-indigo-900/30 hover:shadow-md hover:shadow-indigo-200 dark:hover:shadow-indigo-900/30 active:scale-[0.98] text-sm"
               >
                 {loading ? '作成中...' : 'ボードを作成'}
               </button>
@@ -263,7 +264,7 @@ export function HomePage() {
                   value={joinSlug}
                   onChange={(e) => setJoinSlug(e.target.value)}
                   placeholder="ボードコードを入力またはURLを貼り付け"
-                  className="w-full px-4 py-2.5 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
                   required
                 />
               </div>
@@ -271,7 +272,7 @@ export function HomePage() {
               <button
                 type="submit"
                 disabled={!joinSlug.trim()}
-                className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-indigo-200 dark:shadow-indigo-900/30 hover:shadow-md hover:shadow-indigo-200 dark:hover:shadow-indigo-900/30 active:scale-[0.98] text-sm"
+                className="w-full py-3 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-500 text-white rounded-xl font-medium hover:from-indigo-700 hover:via-indigo-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-indigo-200 dark:shadow-indigo-900/30 hover:shadow-md hover:shadow-indigo-200 dark:hover:shadow-indigo-900/30 active:scale-[0.98] text-sm"
               >
                 ボードに参加
               </button>

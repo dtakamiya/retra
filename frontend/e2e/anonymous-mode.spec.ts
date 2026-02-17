@@ -9,8 +9,8 @@ async function createAnonymousBoardAndJoin(
     await page.getByPlaceholder('スプリント42 ふりかえり').fill('匿名モードテスト');
 
     // 匿名モードをON
-    await page.locator('div[role="switch"]').click();
-    await expect(page.locator('div[role="switch"][aria-checked="true"]')).toBeVisible();
+    await page.getByRole('switch', { name: '匿名モード' }).click();
+    await expect(page.getByRole('switch', { name: '匿名モード' })).toHaveAttribute('aria-checked', 'true');
 
     await page.locator('button[type="submit"]', { hasText: 'ボードを作成' }).click();
     await expect(page).toHaveURL(/\/board\/[a-zA-Z0-9-]+/);
@@ -40,7 +40,7 @@ async function createBoardAndJoin(
 async function addCard(page: import('@playwright/test').Page, content: string) {
     await page.getByRole('button', { name: 'カードを追加' }).first().click();
     await page.getByPlaceholder('意見を入力').fill(content);
-    await page.locator('button', { hasText: '追加' }).click();
+    await page.getByRole('button', { name: '追加', exact: true }).click();
     await expect(page.locator('p', { hasText: content })).toBeVisible();
 }
 
@@ -53,8 +53,8 @@ async function setupTwoUsersAnonymous(browser: import('@playwright/test').Browse
     await facilitatorPage.getByPlaceholder('スプリント42 ふりかえり').fill('匿名マルチユーザーテスト');
 
     // 匿名モードをON
-    await facilitatorPage.locator('div[role="switch"]').click();
-    await expect(facilitatorPage.locator('div[role="switch"][aria-checked="true"]')).toBeVisible();
+    await facilitatorPage.getByRole('switch', { name: '匿名モード' }).click();
+    await expect(facilitatorPage.getByRole('switch', { name: '匿名モード' })).toHaveAttribute('aria-checked', 'true');
 
     await facilitatorPage.locator('button[type="submit"]', { hasText: 'ボードを作成' }).click();
     await expect(facilitatorPage).toHaveURL(/\/board\/[a-zA-Z0-9-]+/);
@@ -108,7 +108,7 @@ test.describe('匿名モード', () => {
         await page.goto('/');
 
         // 初期状態: 匿名モードがOFF
-        const toggle = page.locator('div[role="switch"]');
+        const toggle = page.getByRole('switch', { name: '匿名モード' });
         await expect(toggle).toHaveAttribute('aria-checked', 'false');
 
         // クリックでON
@@ -126,7 +126,7 @@ test.describe('匿名モード', () => {
         // ファシリテーターがカードを追加
         await facilitatorPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await facilitatorPage.getByPlaceholder('意見を入力').fill('匿名テストカード');
-        await facilitatorPage.locator('button', { hasText: '追加' }).click();
+        await facilitatorPage.getByRole('button', { name: '追加', exact: true }).click();
         await expect(facilitatorPage.locator('p', { hasText: '匿名テストカード' })).toBeVisible();
 
         // メンバー側で同期を待つ
@@ -180,7 +180,7 @@ test.describe('匿名モード', () => {
         // ファシリテーターがカードを追加
         await facilitatorPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await facilitatorPage.getByPlaceholder('意見を入力').fill('通常モードカード');
-        await facilitatorPage.locator('button', { hasText: '追加' }).click();
+        await facilitatorPage.getByRole('button', { name: '追加', exact: true }).click();
         await expect(facilitatorPage.locator('p', { hasText: '通常モードカード' })).toBeVisible();
 
         // メンバー側で同期を待つ

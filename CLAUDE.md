@@ -4,6 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 必須ルール
 - **全ての回答は日本語で行うこと**
+- 何か修正を行う時には、worktreeで修正を行うこと 
 
 ## Project Overview
 

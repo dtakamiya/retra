@@ -17,7 +17,7 @@ async function createBoardAndJoin(page: import('@playwright/test').Page, title: 
 async function addCard(page: import('@playwright/test').Page, content: string) {
     await page.getByRole('button', { name: 'カードを追加' }).first().click();
     await page.getByPlaceholder('意見を入力').fill(content);
-    await page.locator('button', { hasText: '追加' }).click();
+    await page.getByRole('button', { name: '追加', exact: true }).click();
     // カード本文(p要素)が表示されることを確認
     await expect(page.locator('p', { hasText: content })).toBeVisible();
 }
@@ -33,6 +33,7 @@ async function advanceToPhase(page: import('@playwright/test').Page, targetPhase
 
     for (const step of steps) {
         await page.locator('button', { hasText: step.button }).click();
+        await page.locator('button', { hasText: `${step.label}へ進む` }).click();
         await expect(
             page.locator('.bg-indigo-600.text-white', { hasText: step.label }).first()
         ).toBeVisible({ timeout: 10000 });
@@ -214,8 +215,8 @@ test.describe('トレンドチャートの表示', () => {
         // トレンド & エンゲージメントセクションが表示される
         await expect(page.getByRole('heading', { name: 'トレンド & エンゲージメント' })).toBeVisible();
 
-        // エンゲージメントセクションのラベルが表示される
-        await expect(page.getByRole('heading', { name: 'エンゲージメント', exact: true })).toBeVisible();
+        // エンゲージメントタブが表示される
+        await expect(page.getByRole('button', { name: 'エンゲージメント' })).toBeVisible();
     });
 });
 

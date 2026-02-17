@@ -17,7 +17,7 @@ async function createBoardAndJoin(page: import('@playwright/test').Page, nicknam
 async function addCard(page: import('@playwright/test').Page, content: string) {
     await page.getByRole('button', { name: 'カードを追加' }).first().click();
     await page.getByPlaceholder('意見を入力').fill(content);
-    await page.locator('button', { hasText: '追加' }).click();
+    await page.getByRole('button', { name: '追加', exact: true }).click();
     // カード本文(p要素)が表示されることを確認（textareaにもテキストが残る場合があるため）
     await expect(page.locator('p', { hasText: content })).toBeVisible();
 }
@@ -33,6 +33,7 @@ async function advanceToPhase(page: import('@playwright/test').Page, targetPhase
 
     for (const step of steps) {
         await page.locator('button', { hasText: step.button }).click();
+        await page.locator('button', { hasText: `${step.label}へ進む` }).click();
         await expect(
             page.locator('.bg-indigo-600.text-white', { hasText: step.label }).first()
         ).toBeVisible({ timeout: 10000 });
@@ -268,10 +269,12 @@ test.describe('フェーズによるアクセス制御', () => {
 
         // ACTION_ITEMS -> CLOSEDまで遷移（DISCUSSIONからの続き）
         await page.locator('button', { hasText: '次へ: アクション' }).click();
+        await page.locator('button', { hasText: 'アクションへ進む' }).click();
         await expect(
             page.locator('.bg-indigo-600.text-white', { hasText: 'アクション' }).first()
         ).toBeVisible({ timeout: 10000 });
         await page.locator('button', { hasText: '次へ: 完了' }).click();
+        await page.locator('button', { hasText: '完了へ進む' }).click();
         await expect(
             page.locator('.bg-indigo-600.text-white', { hasText: '完了' }).first()
         ).toBeVisible({ timeout: 10000 });
@@ -323,7 +326,7 @@ test.describe('マルチユーザーシナリオ', () => {
         // ファシリテーターがカードを追加してDISCUSSIONに遷移
         await facilitatorPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await facilitatorPage.getByPlaceholder('意見を入力').fill('権限テストカード');
-        await facilitatorPage.locator('button', { hasText: '追加' }).click();
+        await facilitatorPage.getByRole('button', { name: '追加', exact: true }).click();
         await expect(facilitatorPage.locator('p', { hasText: '権限テストカード' })).toBeVisible();
 
         // メンバー側でカードが同期されるのを待つ
@@ -394,7 +397,7 @@ test.describe('マルチユーザーシナリオ', () => {
         // カード追加->DISCUSSIONに遷移
         await facilitatorPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await facilitatorPage.getByPlaceholder('意見を入力').fill('同期テストカード');
-        await facilitatorPage.locator('button', { hasText: '追加' }).click();
+        await facilitatorPage.getByRole('button', { name: '追加', exact: true }).click();
         await expect(facilitatorPage.locator('p', { hasText: '同期テストカード' })).toBeVisible();
 
         await expect(memberPage.getByText('同期テストカード')).toBeVisible({ timeout: 10000 });
@@ -448,7 +451,7 @@ test.describe('マルチユーザーシナリオ', () => {
         // カード追加->DISCUSSIONに遷移
         await facilitatorPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await facilitatorPage.getByPlaceholder('意見を入力').fill('削除同期テストカード');
-        await facilitatorPage.locator('button', { hasText: '追加' }).click();
+        await facilitatorPage.getByRole('button', { name: '追加', exact: true }).click();
         await expect(facilitatorPage.locator('p', { hasText: '削除同期テストカード' })).toBeVisible();
 
         await expect(memberPage.getByText('削除同期テストカード')).toBeVisible({ timeout: 10000 });

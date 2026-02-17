@@ -29,7 +29,7 @@ export function BoardHeader({ isKudosOpen, kudosCount, onKudosToggle }: Props) {
   };
 
   return (
-    <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-100 dark:border-slate-700 px-4 py-2.5 sticky top-0 z-20">
+    <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-100 dark:border-slate-700/80 px-4 py-3 sticky top-0 z-20">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <Link
@@ -42,7 +42,7 @@ export function BoardHeader({ isKudosOpen, kudosCount, onKudosToggle }: Props) {
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <h1 className="text-base font-bold text-gray-900 dark:text-slate-100 truncate">{board.title}</h1>
-              <span className="flex-shrink-0 px-2 py-0.5 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300 text-[10px] font-semibold rounded-full uppercase tracking-wide">
+              <span className="flex-shrink-0 px-2.5 py-0.5 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300 text-[10px] font-semibold rounded-full uppercase tracking-wider border border-indigo-100 dark:border-indigo-800/50">
                 {board.framework.replace(/_/g, ' ')}
               </span>
               {board.isAnonymous && (
@@ -66,7 +66,7 @@ export function BoardHeader({ isKudosOpen, kudosCount, onKudosToggle }: Props) {
           )}
         </div>
 
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2.5 flex-shrink-0">
           <PhaseControl />
           <ExportMenu />
           <ThemeToggle />

@@ -17,7 +17,7 @@ async function createBoardAndJoin(page: import('@playwright/test').Page, nicknam
 async function addCard(page: import('@playwright/test').Page, content: string, columnIndex: number = 0) {
     await page.getByRole('button', { name: 'カードを追加' }).nth(columnIndex).click();
     await page.getByPlaceholder('意見を入力').fill(content);
-    await page.locator('button', { hasText: '追加' }).click();
+    await page.getByRole('button', { name: '追加', exact: true }).click();
     await expect(page.locator('p', { hasText: content })).toBeVisible();
 }
 
@@ -32,6 +32,7 @@ async function advanceToPhase(page: import('@playwright/test').Page, targetPhase
 
     for (const step of steps) {
         await page.locator('button', { hasText: step.button }).click();
+        await page.locator('button', { hasText: `${step.label}へ進む` }).click();
         await expect(
             page.locator('.bg-indigo-600.text-white', { hasText: step.label }).first()
         ).toBeVisible({ timeout: 10000 });
@@ -121,7 +122,7 @@ test.describe('ドラッグハンドルのマルチユーザー制御', () => {
         // ファシリテーターがカード追加
         await facilitatorPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await facilitatorPage.getByPlaceholder('意見を入力').fill('ファシリテーターのカード');
-        await facilitatorPage.locator('button', { hasText: '追加' }).click();
+        await facilitatorPage.getByRole('button', { name: '追加', exact: true }).click();
         await expect(facilitatorPage.locator('p', { hasText: 'ファシリテーターのカード' })).toBeVisible();
 
         // メンバーが参加
@@ -167,7 +168,7 @@ test.describe('ドラッグハンドルのマルチユーザー制御', () => {
         // カード追加
         await facilitatorPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await facilitatorPage.getByPlaceholder('意見を入力').fill('DISCUSSIONカード');
-        await facilitatorPage.locator('button', { hasText: '追加' }).click();
+        await facilitatorPage.getByRole('button', { name: '追加', exact: true }).click();
         await expect(facilitatorPage.locator('p', { hasText: 'DISCUSSIONカード' })).toBeVisible();
 
         // メンバーが参加

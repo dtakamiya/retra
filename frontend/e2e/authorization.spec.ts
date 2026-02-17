@@ -40,6 +40,7 @@ async function advanceToPhase(page: import('@playwright/test').Page, targetPhase
 
     for (const step of steps) {
         await page.locator('button', { hasText: step.button }).click();
+        await page.locator('button', { hasText: `${step.label}へ進む` }).click();
         await expect(
             page.locator('.bg-indigo-600.text-white', { hasText: step.label }).first()
         ).toBeVisible({ timeout: 10000 });
@@ -66,6 +67,7 @@ test.describe('フェーズ遷移の権限制限', () => {
 
         // ファシリテーターがVOTINGフェーズに遷移
         await facilitatorPage.locator('button', { hasText: '次へ: 投票' }).click();
+        await facilitatorPage.locator('button', { hasText: '投票へ進む' }).click();
         await expect(
             facilitatorPage.locator('.bg-indigo-600.text-white', { hasText: '投票' }).first()
         ).toBeVisible({ timeout: 10000 });
@@ -131,7 +133,7 @@ test.describe('カード操作の権限制限', () => {
         // メンバーがカードを追加
         await memberPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await memberPage.getByPlaceholder('意見を入力').fill('メンバーのカード');
-        await memberPage.locator('button', { hasText: '追加' }).click();
+        await memberPage.getByRole('button', { name: '追加', exact: true }).click();
         await expect(memberPage.locator('p', { hasText: 'メンバーのカード' })).toBeVisible();
 
         // ファシリテーター側でカードの同期を待つ
@@ -159,7 +161,7 @@ test.describe('カード操作の権限制限', () => {
         // ファシリテーターがカードを追加
         await facilitatorPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await facilitatorPage.getByPlaceholder('意見を入力').fill('投票フェーズカード');
-        await facilitatorPage.locator('button', { hasText: '追加' }).click();
+        await facilitatorPage.getByRole('button', { name: '追加', exact: true }).click();
         await expect(facilitatorPage.locator('p', { hasText: '投票フェーズカード' })).toBeVisible();
 
         // VOTINGフェーズに遷移
@@ -194,7 +196,7 @@ test.describe('カード操作の権限制限', () => {
         // ファシリテーターがカードを追加
         await facilitatorPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await facilitatorPage.getByPlaceholder('意見を入力').fill('投票テストカード');
-        await facilitatorPage.locator('button', { hasText: '追加' }).click();
+        await facilitatorPage.getByRole('button', { name: '追加', exact: true }).click();
         await expect(facilitatorPage.locator('p', { hasText: '投票テストカード' })).toBeVisible();
 
         // メンバー側で同期を待つ

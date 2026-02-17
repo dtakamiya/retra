@@ -49,7 +49,7 @@ async function joinBoardAsMember(browser: Browser, boardUrl: string, nickname: s
 async function addCard(page: Page, content: string, columnIndex: number = 0) {
     await page.getByRole('button', { name: 'カードを追加' }).nth(columnIndex).click();
     await page.getByPlaceholder('意見を入力').fill(content);
-    await page.locator('button', { hasText: '追加' }).click();
+    await page.getByRole('button', { name: '追加', exact: true }).click();
     await expect(page.locator('p', { hasText: content })).toBeVisible();
 }
 
@@ -64,6 +64,7 @@ async function advanceToPhase(page: Page, targetPhase: string) {
 
     for (const step of steps) {
         await page.locator('button', { hasText: step.button }).click();
+        await page.locator('button', { hasText: `${step.label}へ進む` }).click();
         await expect(
             page.locator('.bg-indigo-600.text-white', { hasText: step.label }).first()
         ).toBeVisible({ timeout: 10000 });
@@ -100,10 +101,10 @@ test.describe('UAT: 完全なレトロスペクティブセッション（単独
         await createBoardAndJoinAsFacilitator(page, 'スプリント42 ふりかえり');
 
         // ボードタイトルが表示される
-        await expect(page.getByText('スプリント42 ふりかえり')).toBeVisible();
+        await expect(page.locator('h1', { hasText: 'スプリント42 ふりかえり' })).toBeVisible();
 
         // 参加者リストにファシリテーターが表示される
-        await expect(page.getByText('ファシリテーター')).toBeVisible();
+        await expect(page.getByText('ファシリテーター').first()).toBeVisible();
 
         // 3つのカラム（Keep, Problem, Try）が表示される
         await expect(page.locator('h2', { hasText: 'Keep' })).toBeVisible();
@@ -206,7 +207,7 @@ test.describe('UAT: チームでのレトロスペクティブ（複数参加者
         // 全員の参加者リストが同期される
         await expect(facilitatorPage.getByText('田中')).toBeVisible({ timeout: 10000 });
         await expect(facilitatorPage.getByText('佐藤')).toBeVisible({ timeout: 10000 });
-        await expect(member1.page.getByText('ファシリテーター')).toBeVisible({ timeout: 10000 });
+        await expect(member1.page.getByText('ファシリテーター').first()).toBeVisible({ timeout: 10000 });
         await expect(member1.page.getByText('佐藤')).toBeVisible({ timeout: 10000 });
 
         // === 記入フェーズ: 各メンバーがカードを追加 ===
@@ -426,7 +427,7 @@ test.describe('UAT: エラーケースとエッジケース', () => {
         await expect(page).toHaveURL('/');
 
         // ホームページが正常に表示される
-        await expect(page.getByText('ボードを作成')).toBeVisible();
+        await expect(page.locator('button[type="submit"]', { hasText: 'ボードを作成' })).toBeVisible();
     });
 
     test('日本語の長いカード内容を正しく表示できる', async ({ page }) => {
@@ -597,8 +598,8 @@ test.describe('UAT: タイマーを使ったタイムボックス運営', () => 
         // 一時停止
         await page.locator('button', { hasText: '一時停止' }).click();
 
-        // リセット
-        await page.locator('button', { hasText: 'リセット' }).click();
+        // リセット（アイコンのみのボタン）
+        await page.locator('button').filter({ has: page.locator('svg') }).last().click();
         await expect(page.getByText('--:--').first()).toBeVisible({ timeout: 5000 });
     });
 });

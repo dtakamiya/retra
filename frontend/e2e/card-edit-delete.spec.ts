@@ -17,7 +17,7 @@ async function createBoardAndJoin(page: import('@playwright/test').Page, nicknam
 async function addCard(page: import('@playwright/test').Page, content: string) {
     await page.getByRole('button', { name: 'カードを追加' }).first().click();
     await page.getByPlaceholder('意見を入力').fill(content);
-    await page.locator('button', { hasText: '追加' }).click();
+    await page.getByRole('button', { name: '追加', exact: true }).click();
     await expect(page.locator('p', { hasText: content })).toBeVisible();
 }
 
@@ -138,7 +138,7 @@ test.describe('カード削除機能', () => {
         // メンバーがカードを追加
         await memberPage.getByRole('button', { name: 'カードを追加' }).first().click();
         await memberPage.getByPlaceholder('意見を入力').fill('メンバーのカード');
-        await memberPage.locator('button', { hasText: '追加' }).click();
+        await memberPage.getByRole('button', { name: '追加', exact: true }).click();
         await expect(memberPage.locator('p', { hasText: 'メンバーのカード' })).toBeVisible();
 
         // ファシリテーターのページでカードが表示されるのを待つ
@@ -169,6 +169,7 @@ test.describe('投票フェーズでの編集・削除制限', () => {
 
         // 投票フェーズに進める
         await page.locator('button', { hasText: '次へ: 投票' }).click();
+        await page.locator('button', { hasText: '投票へ進む' }).click();
         await expect(page.locator('.bg-indigo-600.text-white', { hasText: '投票' }).first()).toBeVisible();
 
         // 投票フェーズでは編集・削除ボタンが非表示

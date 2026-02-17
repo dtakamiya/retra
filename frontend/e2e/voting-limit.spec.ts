@@ -24,6 +24,7 @@ async function setupVotingWithMultipleCards(page: import('@playwright/test').Pag
 
     // 投票フェーズに進める
     await page.locator('button', { hasText: '次へ: 投票' }).click();
+    await page.locator('button', { hasText: '投票へ進む' }).click();
     await expect(page.locator('.bg-indigo-600.text-white', { hasText: '投票' }).first()).toBeVisible();
 }
 

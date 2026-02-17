@@ -30,7 +30,7 @@ test.describe('リアルタイム同期', () => {
         // ユーザー1がカードを追加
         await page1.getByRole('button', { name: 'カードを追加' }).first().click();
         await page1.getByPlaceholder('意見を入力').fill('リアルタイム同期テスト内容');
-        await page1.locator('button', { hasText: '追加' }).click();
+        await page1.getByRole('button', { name: '追加', exact: true }).click();
 
         // ユーザー1でカードが表示される
         await expect(page1.getByText('リアルタイム同期テスト内容')).toBeVisible();
@@ -59,7 +59,7 @@ test.describe('リアルタイム同期', () => {
         await expect(page1.locator('h2', { hasText: 'Keep' })).toBeVisible({ timeout: 10000 });
 
         // 最初のユーザーが参加者リストに表示される
-        await expect(page1.getByText('最初のユーザー')).toBeVisible();
+        await expect(page1.getByText('最初のユーザー').first()).toBeVisible();
 
         // 2つ目のブラウザで参加
         const context2 = await browser.newContext();

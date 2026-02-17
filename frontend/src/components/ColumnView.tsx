@@ -70,8 +70,8 @@ export function ColumnView({ column }: Props) {
   return (
     <div className="flex-1 min-w-[280px] max-w-[400px] flex flex-col">
       <div
-        className="rounded-t-xl px-4 py-3 flex items-center justify-between"
-        style={{ backgroundColor: column.color + '15', borderTop: `3px solid ${column.color}` }}
+        className="rounded-t-xl px-4 py-3.5 flex items-center justify-between"
+        style={{ backgroundColor: column.color + '12', borderTop: `4px solid ${column.color}` }}
       >
         <div>
           <div className="flex items-center gap-2">
@@ -81,7 +81,7 @@ export function ColumnView({ column }: Props) {
             />
             <h2 className="font-semibold text-gray-800 text-sm">{column.name}</h2>
             <span
-              className="text-[11px] font-medium px-1.5 py-0.5 rounded-full"
+              className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
               style={{ backgroundColor: column.color + '20', color: column.color }}
             >
               {column.cards.length}
@@ -110,7 +110,7 @@ export function ColumnView({ column }: Props) {
         )}
       </div>
 
-      <div ref={setNodeRef} className="flex-1 bg-gray-50/80 dark:bg-slate-800/30 rounded-b-xl p-2 space-y-2 overflow-y-auto">
+      <div ref={setNodeRef} className="flex-1 bg-gray-50/80 dark:bg-slate-800/30 rounded-b-xl p-2.5 space-y-2 overflow-y-auto shadow-sm">
         {showForm && isWriting && (
           <CardForm columnId={column.id} onClose={() => setShowForm(false)} />
         )}
@@ -120,19 +120,19 @@ export function ColumnView({ column }: Props) {
           ))}
         </SortableContext>
         {column.cards.length === 0 && !showForm && (
-          <div className="text-center py-10 text-gray-300 dark:text-slate-600 text-xs">
+          <div className="text-center py-12 text-gray-300 dark:text-slate-600 text-xs">
             {isWriting ? (
               <button
                 onClick={() => setShowForm(true)}
-                className="flex flex-col items-center gap-2 mx-auto hover:text-gray-400 dark:hover:text-slate-500 transition-colors group"
+                className="flex flex-col items-center gap-2.5 mx-auto hover:text-gray-400 dark:hover:text-slate-500 transition-all group"
               >
-                <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-slate-700 transition-colors">
-                  <Plus size={18} className="text-gray-400" />
+                <div className="w-11 h-11 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-slate-700 transition-all group-hover:scale-105 border-2 border-dashed border-gray-200 dark:border-slate-700">
+                  <Plus size={20} className="text-gray-400 dark:text-slate-500" />
                 </div>
-                <span>カードを追加</span>
+                <span className="text-gray-400 dark:text-slate-500">カードを追加</span>
               </button>
             ) : (
-              'カードはありません'
+              <span className="text-gray-300 dark:text-slate-600">カードはありません</span>
             )}
           </div>
         )}

@@ -20,6 +20,7 @@ async function setupVotingPhase(page: import('@playwright/test').Page) {
 
     // 投票フェーズに進める
     await page.locator('button', { hasText: '次へ: 投票' }).click();
+    await page.locator('button', { hasText: '投票へ進む' }).click();
     await expect(page.locator('.bg-indigo-600.text-white', { hasText: '投票' }).first()).toBeVisible();
 }
 
@@ -27,25 +28,27 @@ test.describe('投票機能', () => {
     test('投票フェーズでカードに投票できる', async ({ page }) => {
         await setupVotingPhase(page);
 
-        // 投票ボタン(0)をクリック - getByRoleで確実に取得
-        await page.getByRole('button', { name: '0' }).first().click();
+        // 投票ボタン(0)をクリック - data-testidで確実に取得
+        const voteButton = page.locator('[data-testid="vote-button"]').first();
+        await voteButton.click();
 
         // 投票数が1になることを確認
-        await expect(page.getByRole('button', { name: '1' }).first()).toBeVisible();
+        await expect(voteButton).toContainText('1');
     });
 
     test('投票を取り消せる', async ({ page }) => {
         await setupVotingPhase(page);
 
         // 投票
-        await page.getByRole('button', { name: '0' }).first().click();
-        await expect(page.getByRole('button', { name: '1' }).first()).toBeVisible();
+        const voteButton = page.locator('[data-testid="vote-button"]').first();
+        await voteButton.click();
+        await expect(voteButton).toContainText('1');
 
         // 投票を取り消し
-        await page.getByRole('button', { name: '1' }).first().click();
+        await voteButton.click();
 
         // 投票数が0に戻る
-        await expect(page.getByRole('button', { name: '0' }).first()).toBeVisible();
+        await expect(voteButton).toContainText('0');
     });
 });
 
@@ -55,6 +58,7 @@ test.describe('議論フェーズでの投票数表示', () => {
 
         // 議論フェーズに進める
         await page.locator('button', { hasText: '次へ: 議論' }).click();
+        await page.locator('button', { hasText: '議論へ進む' }).click();
         await expect(page.locator('.bg-indigo-600.text-white', { hasText: '議論' }).first()).toBeVisible();
     });
 });

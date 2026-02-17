@@ -221,11 +221,13 @@ export function CardItem({ card, columnColor, columnName, isOverlay, maxVoteCoun
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={isOverlay ? style : { ...style, boxShadow: 'var(--shadow-card)' }}
       {...safeAttributes}
       className={`bg-white dark:bg-slate-800 rounded-xl border p-3 group transition-all ${
-        isOverlay ? 'shadow-xl ring-2 ring-indigo-300/50 dark:ring-indigo-500/30 border-indigo-200 dark:border-indigo-600' : 'shadow-sm hover:shadow-md hover:-translate-y-0.5 border-gray-100 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600'
+        isOverlay ? 'shadow-xl ring-2 ring-indigo-300/50 dark:ring-indigo-500/30 border-indigo-200 dark:border-indigo-600' : 'border-gray-100/80 dark:border-slate-700 hover:border-gray-200 dark:hover:border-slate-600 hover:-translate-y-0.5'
       } ${card.isDiscussed ? 'opacity-50' : ''} ${hasMyVoteHighlight ? 'border-l-[3px] border-l-indigo-500' : ''}`}
+      onMouseEnter={(e) => { if (!isOverlay) e.currentTarget.style.boxShadow = 'var(--shadow-elevated)'; }}
+      onMouseLeave={(e) => { if (!isOverlay) e.currentTarget.style.boxShadow = 'var(--shadow-card)'; }}
     >
       <div className="flex gap-2">
         {isDndEnabled && (
@@ -252,7 +254,8 @@ export function CardItem({ card, columnColor, columnName, isOverlay, maxVoteCoun
           </button>
         )}
         <p
-          className="text-sm text-gray-700 dark:text-slate-200 whitespace-pre-wrap break-words flex-1 leading-relaxed cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          className="text-sm text-gray-700 dark:text-slate-200 whitespace-pre-wrap break-words flex-1 cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          style={{ lineHeight: '1.7' }}
           onClick={() => setShowDetailModal(true)}
           role="button"
           tabIndex={0}
@@ -365,7 +368,7 @@ export function CardItem({ card, columnColor, columnName, isOverlay, maxVoteCoun
 
       {/* Reactions */}
       {card.reactions.length > 0 && (
-        <div className="mt-1.5">
+        <div className="mt-2">
           <ReactionList
             reactions={card.reactions}
             myParticipantId={participant?.id}
