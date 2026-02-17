@@ -25,6 +25,7 @@
   --shadow-soft-ui-input: inset 1px 1px 4px rgba(0, 0, 0, 0.04);
   --shadow-soft-ui-btn: 4px 4px 16px rgba(99, 102, 241, 0.2), -2px -2px 8px rgba(255, 255, 255, 0.6);
   --shadow-soft-ui-btn-pressed: inset 2px 2px 6px rgba(0, 0, 0, 0.1);
+  --shadow-soft-ui-btn-hover: 6px 6px 20px rgba(99, 102, 241, 0.25), -3px -3px 12px rgba(255, 255, 255, 0.5);
   --scrollbar-thumb: #cbd5e1;
   --scrollbar-thumb-hover: #94a3b8;
 }
@@ -50,6 +51,7 @@
   --shadow-soft-ui-input: inset 1px 1px 4px rgba(0, 0, 0, 0.15);
   --shadow-soft-ui-btn: 4px 4px 16px rgba(99, 102, 241, 0.3), -2px -2px 8px rgba(255, 255, 255, 0.02);
   --shadow-soft-ui-btn-pressed: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-soft-ui-btn-hover: 6px 6px 20px rgba(99, 102, 241, 0.35), -3px -3px 12px rgba(255, 255, 255, 0.03);
   --scrollbar-thumb: #475569;
   --scrollbar-thumb-hover: #64748b;
 }
@@ -222,16 +224,6 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-/* Button shimmer loading animation */
-@keyframes btnShimmer {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
   }
 }
 

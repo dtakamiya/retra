@@ -252,9 +252,9 @@ export function HomePage() {
               <button
                 type="submit"
                 disabled={loading || !title.trim()}
-                className="w-full py-3 bg-gradient-to-b from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[var(--shadow-soft-ui-btn)] hover:shadow-[6px_6px_20px_rgba(99,102,241,0.25),-3px_-3px_12px_rgba(255,255,255,0.5)] active:scale-[0.97] active:shadow-[var(--shadow-soft-ui-btn-pressed)] text-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800"
+                className="w-full py-3 bg-gradient-to-b from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[var(--shadow-soft-ui-btn)] hover:shadow-[var(--shadow-soft-ui-btn-hover)] active:scale-[0.97] active:shadow-[var(--shadow-soft-ui-btn-pressed)] text-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800"
               >
-                {loading ? '作成中...' : 'ボードを作成'}
+                {loading ? <span className="inline-flex items-center gap-2"><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />作成中...</span> : 'ボードを作成'}
               </button>
             </form>
           ) : (
@@ -277,7 +277,7 @@ export function HomePage() {
               <button
                 type="submit"
                 disabled={!joinSlug.trim()}
-                className="w-full py-3 bg-gradient-to-b from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[var(--shadow-soft-ui-btn)] hover:shadow-[6px_6px_20px_rgba(99,102,241,0.25),-3px_-3px_12px_rgba(255,255,255,0.5)] active:scale-[0.97] active:shadow-[var(--shadow-soft-ui-btn-pressed)] text-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800"
+                className="w-full py-3 bg-gradient-to-b from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[var(--shadow-soft-ui-btn)] hover:shadow-[var(--shadow-soft-ui-btn-hover)] active:scale-[0.97] active:shadow-[var(--shadow-soft-ui-btn-pressed)] text-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800"
               >
                 ボードに参加
               </button>
