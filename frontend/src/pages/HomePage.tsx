@@ -55,8 +55,9 @@ export function HomePage() {
     <div className="min-h-screen bg-[var(--color-bg-base)] relative overflow-hidden">
       {/* Subtle decorative background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-indigo-100/60 dark:bg-indigo-950/30 rounded-full blur-[100px]" />
-        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-purple-100/40 dark:bg-purple-950/20 rounded-full blur-[80px]" />
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-indigo-200/40 dark:bg-indigo-950/30 rounded-full blur-[100px] animate-[float_8s_ease-in-out_infinite]" />
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-purple-200/30 dark:bg-purple-950/20 rounded-full blur-[80px] animate-[float_12s_ease-in-out_infinite_2s]" />
+        <div className="absolute -bottom-20 right-1/4 w-72 h-72 bg-emerald-200/20 dark:bg-emerald-950/15 rounded-full blur-[90px] animate-[float_10s_ease-in-out_infinite_4s]" />
       </div>
 
       {/* Theme toggle */}
@@ -83,14 +84,14 @@ export function HomePage() {
         </div>
 
         {/* Main card */}
-        <div className="bg-white dark:bg-slate-800/80 rounded-2xl border border-gray-200/80 dark:border-slate-700/60 shadow-[var(--shadow-elevated)] p-7 animate-[scaleFadeIn_0.5s_ease-out]">
+        <div className="bg-white/90 dark:bg-slate-800/80 rounded-3xl border border-gray-200/80 dark:border-slate-700/60 shadow-[var(--shadow-soft-ui)] backdrop-blur-sm p-7 animate-[scaleFadeIn_0.5s_ease-out]">
           {/* Tab Switcher */}
           <div className="flex gap-1 mb-7 p-1 bg-gray-100 dark:bg-slate-900/60 rounded-xl">
             <button
               onClick={() => setMode('create')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium transition-all text-sm cursor-pointer ${
                 mode === 'create'
-                  ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-sm'
+                  ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-[var(--shadow-soft-ui-tab)]'
                   : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
               }`}
             >
@@ -101,7 +102,7 @@ export function HomePage() {
               onClick={() => setMode('join')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium transition-all text-sm cursor-pointer ${
                 mode === 'join'
-                  ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-sm'
+                  ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-[var(--shadow-soft-ui-tab)]'
                   : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
               }`}
             >
@@ -118,7 +119,7 @@ export function HomePage() {
           )}
 
           {mode === 'create' ? (
-            <form onSubmit={handleCreate} className="space-y-5">
+            <form onSubmit={handleCreate} className="space-y-5 animate-[fadeIn_0.3s_ease-out]">
               <div>
                 <label htmlFor="board-title" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
                   ボードタイトル
@@ -257,7 +258,7 @@ export function HomePage() {
               </button>
             </form>
           ) : (
-            <form onSubmit={handleJoin} className="space-y-5">
+            <form onSubmit={handleJoin} className="space-y-5 animate-[fadeIn_0.3s_ease-out]">
               <div>
                 <label htmlFor="join-slug" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
                   ボードURLまたはコード
