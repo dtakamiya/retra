@@ -119,6 +119,7 @@ export const useBoardStore = create<BoardState>((set) => ({
       };
       const columns = state.board.columns.map((col) => {
         if (col.id === cardWithDefaults.columnId) {
+          if (col.cards.some((c) => c.id === cardWithDefaults.id)) return col;
           return { ...col, cards: [...col.cards, cardWithDefaults] };
         }
         return col;

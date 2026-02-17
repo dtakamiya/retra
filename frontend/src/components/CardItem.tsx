@@ -24,7 +24,7 @@ interface Props {
 }
 
 export function CardItem({ card, columnColor, columnName, isOverlay, maxVoteCount }: Props) {
-  const { board, participant, remainingVotes } = useBoardStore();
+  const { board, participant, remainingVotes, handleCardUpdated } = useBoardStore();
   const addToast = useToastStore((s) => s.addToast);
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(card.content);
@@ -115,7 +115,8 @@ export function CardItem({ card, columnColor, columnName, isOverlay, maxVoteCoun
     if (!editContent.trim() || editContent.length > MAX_CONTENT_LENGTH) return;
     setLoading(true);
     try {
-      await api.updateCard(board.slug, card.id, editContent.trim(), participant.id);
+      const updatedCard = await api.updateCard(board.slug, card.id, editContent.trim(), participant.id);
+      handleCardUpdated(updatedCard);
       setEditing(false);
     } catch {
       addToast('error', 'カードの更新に失敗しました');

@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function CardForm({ columnId, onClose }: Props) {
-  const { board, participant } = useBoardStore();
+  const { board, participant, handleCardCreated } = useBoardStore();
   const addToast = useToastStore((s) => s.addToast);
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,8 @@ export function CardForm({ columnId, onClose }: Props) {
     if (!content.trim() || content.length > MAX_CONTENT_LENGTH || !board || !participant) return;
     setLoading(true);
     try {
-      await api.createCard(board.slug, columnId, content.trim(), participant.id);
+      const card = await api.createCard(board.slug, columnId, content.trim(), participant.id);
+      handleCardCreated(card);
       setContent('');
       onClose();
     } catch {
