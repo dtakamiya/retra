@@ -80,6 +80,7 @@ open class Card(
                 voteCount = votes.size,
                 sortOrder = sortOrder,
                 isAnonymous = board?.isAnonymous ?: false,
+                isPrivateWriting = board?.privateWriting ?: false,
                 createdAt = createdAt,
                 updatedAt = updatedAt
             )

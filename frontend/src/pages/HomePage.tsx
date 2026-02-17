@@ -195,6 +195,7 @@ export function HomePage() {
                   <div
                     role="switch"
                     aria-checked={isAnonymous}
+                    aria-label="匿名モード"
                     tabIndex={0}
                     onClick={() => setIsAnonymous(!isAnonymous)}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsAnonymous(!isAnonymous); } }}
@@ -221,6 +222,7 @@ export function HomePage() {
                   <div
                     role="switch"
                     aria-checked={isPrivateWriting}
+                    aria-label="プライベート記述モード"
                     tabIndex={0}
                     onClick={() => setIsPrivateWriting(!isPrivateWriting)}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsPrivateWriting(!isPrivateWriting); } }}

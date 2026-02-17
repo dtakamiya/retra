@@ -118,6 +118,86 @@ class DomainEventBroadcasterTest {
     }
 
     @Test
+    fun `CardCreated プライベートモードでは CARD_CREATED_PRIVATE で最小限の情報のみ送信`() {
+        val event = CardEvent.CardCreated(
+            boardSlug = "test1234", cardId = "c-1", columnId = "col-1",
+            content = "Secret content", authorNickname = "Alice", participantId = "p-1",
+            voteCount = 0, sortOrder = 0, isAnonymous = false,
+            isPrivateWriting = true,
+            createdAt = "2024-01-01", updatedAt = "2024-01-01"
+        )
+
+        broadcaster.handleCardCreated(event)
+
+        val msgSlot = slot<WebSocketMessage>()
+        verify {
+            messagingTemplate.convertAndSend(
+                eq("/topic/board/test1234/cards"),
+                capture(msgSlot)
+            )
+        }
+        assertEquals("CARD_CREATED_PRIVATE", msgSlot.captured.type)
+        val payload = msgSlot.captured.payload as Map<*, *>
+        assertEquals("col-1", payload["columnId"])
+        assertEquals("p-1", payload["participantId"])
+        // content と authorNickname が含まれないことを確認
+        assertNull(payload["content"])
+        assertNull(payload["authorNickname"])
+        assertNull(payload["cardId"])
+    }
+
+    @Test
+    fun `CardUpdated プライベートモードでは CARD_UPDATED_PRIVATE で最小限の情報のみ送信`() {
+        val event = CardEvent.CardUpdated(
+            boardSlug = "test1234", cardId = "c-1", columnId = "col-1",
+            content = "Secret updated content", authorNickname = "Alice", participantId = "p-1",
+            voteCount = 2, sortOrder = 1, isAnonymous = false,
+            isPrivateWriting = true,
+            createdAt = "2024-01-01", updatedAt = "2024-01-02"
+        )
+
+        broadcaster.handleCardUpdated(event)
+
+        val msgSlot = slot<WebSocketMessage>()
+        verify {
+            messagingTemplate.convertAndSend(
+                eq("/topic/board/test1234/cards"),
+                capture(msgSlot)
+            )
+        }
+        assertEquals("CARD_UPDATED_PRIVATE", msgSlot.captured.type)
+        val payload = msgSlot.captured.payload as Map<*, *>
+        assertEquals("c-1", payload["cardId"])
+        assertEquals("p-1", payload["participantId"])
+        // content と authorNickname が含まれないことを確認
+        assertNull(payload["content"])
+        assertNull(payload["authorNickname"])
+    }
+
+    @Test
+    fun `CardDeleted プライベートモードでは CARD_DELETED_PRIVATE で participantId も送信`() {
+        val event = CardEvent.CardDeleted(
+            boardSlug = "test1234", cardId = "c-1", columnId = "col-1",
+            isPrivateWriting = true, participantId = "p-1"
+        )
+
+        broadcaster.handleCardDeleted(event)
+
+        val msgSlot = slot<WebSocketMessage>()
+        verify {
+            messagingTemplate.convertAndSend(
+                eq("/topic/board/test1234/cards"),
+                capture(msgSlot)
+            )
+        }
+        assertEquals("CARD_DELETED_PRIVATE", msgSlot.captured.type)
+        val payload = msgSlot.captured.payload as Map<*, *>
+        assertEquals("c-1", payload["cardId"])
+        assertEquals("col-1", payload["columnId"])
+        assertEquals("p-1", payload["participantId"])
+    }
+
+    @Test
     fun `CardMoved イベントで cards トピックに送信`() {
         val event = CardEvent.CardMoved(
             boardSlug = "test1234", cardId = "c-1",

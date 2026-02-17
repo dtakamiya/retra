@@ -18,6 +18,8 @@ import type {
   Participant,
   ParticipantOnlinePayload,
   Phase,
+  PrivateCardCreatedPayload,
+  PrivateCardDeletedPayload,
   Reaction,
   ReactionRemovedPayload,
   RemainingVotes,
@@ -53,6 +55,9 @@ interface BoardState {
   handleCardCreated: (card: Card) => void;
   handleCardUpdated: (card: Card) => void;
   handleCardDeleted: (payload: CardDeletedPayload) => void;
+  handlePrivateCardCreated: (payload: PrivateCardCreatedPayload, currentParticipantId: string | undefined) => void;
+  handlePrivateCardUpdated: () => void;
+  handlePrivateCardDeleted: (payload: PrivateCardDeletedPayload, currentParticipantId: string | undefined) => void;
   handleCardMoved: (payload: CardMovedPayload) => void;
   handleCardDiscussionMarked: (payload: CardDiscussionMarkedPayload) => void;
   handleVoteAdded: (vote: Vote) => void;
@@ -142,6 +147,46 @@ export const useBoardStore = create<BoardState>((set) => ({
         ...col,
         cards: col.cards.filter((c) => c.id !== payload.cardId),
       }));
+      return { board: { ...state.board, columns } };
+    }),
+
+  handlePrivateCardCreated: (payload, currentParticipantId) =>
+    set((state) => {
+      if (!state.board) return state;
+      // 自分のカードは REST レスポンスで既に表示済みなので無視
+      if (payload.participantId === currentParticipantId) return state;
+      // 他者のカードは hiddenCardCount をインクリメント
+      const columns = state.board.columns.map((col) => {
+        if (col.id === payload.columnId) {
+          return { ...col, hiddenCardCount: col.hiddenCardCount + 1 };
+        }
+        return col;
+      });
+      return { board: { ...state.board, columns } };
+    }),
+
+  handlePrivateCardUpdated: () => {
+    // プライベートモード中の更新は表示上の変更不要（内容は見えない）
+  },
+
+  handlePrivateCardDeleted: (payload, currentParticipantId) =>
+    set((state) => {
+      if (!state.board) return state;
+      if (payload.participantId === currentParticipantId) {
+        // 自分のカードなら通常削除
+        const columns = state.board.columns.map((col) => ({
+          ...col,
+          cards: col.cards.filter((c) => c.id !== payload.cardId),
+        }));
+        return { board: { ...state.board, columns } };
+      }
+      // 他者のカードなら hiddenCardCount をデクリメント
+      const columns = state.board.columns.map((col) => {
+        if (col.id === payload.columnId) {
+          return { ...col, hiddenCardCount: Math.max(0, col.hiddenCardCount - 1) };
+        }
+        return col;
+      });
       return { board: { ...state.board, columns } };
     }),
 
@@ -249,7 +294,7 @@ export const useBoardStore = create<BoardState>((set) => ({
     set((state) => {
       if (!state.board) return state;
       const previousPhase = state.board.phase;
-      const needsRefresh = previousPhase !== phase;
+      const needsRefresh = state.board.privateWriting && previousPhase === 'WRITING' && phase === 'VOTING';
       return { board: { ...state.board, phase }, needsRefresh };
     }),
 

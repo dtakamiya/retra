@@ -77,13 +77,19 @@ export function BoardPage() {
   // Re-fetch board when needsRefresh is set (e.g., phase transition to reveal private cards)
   useEffect(() => {
     if (!needsRefresh || !slug) return;
+    let cancelled = false;
     const savedParticipantId = localStorage.getItem(`retra-participant-${slug}`);
     api.getBoard(slug, savedParticipantId ?? undefined).then((boardData) => {
-      setBoard(boardData);
-      clearNeedsRefresh();
+      if (!cancelled) {
+        setBoard(boardData);
+        clearNeedsRefresh();
+      }
     }).catch(() => {
-      clearNeedsRefresh();
+      if (!cancelled) {
+        clearNeedsRefresh();
+      }
     });
+    return () => { cancelled = true; };
   }, [needsRefresh, slug, setBoard, clearNeedsRefresh]);
 
   const handleJoin = async (nickname: string) => {

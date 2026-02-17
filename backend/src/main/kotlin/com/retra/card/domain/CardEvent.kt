@@ -29,6 +29,7 @@ sealed class CardEvent : DomainEvent() {
         val voteCount: Int,
         val sortOrder: Int,
         val isAnonymous: Boolean,
+        val isPrivateWriting: Boolean = false,
         val createdAt: String,
         val updatedAt: String
     ) : CardEvent()
@@ -36,7 +37,9 @@ sealed class CardEvent : DomainEvent() {
     data class CardDeleted(
         val boardSlug: String,
         val cardId: String,
-        val columnId: String
+        val columnId: String,
+        val isPrivateWriting: Boolean = false,
+        val participantId: String? = null
     ) : CardEvent()
 
     data class CardMoved(

@@ -42,6 +42,9 @@ function mockStoreHandlers() {
     handleCardDeleted: vi.fn(),
     handleCardMoved: vi.fn(),
     handleCardDiscussionMarked: vi.fn(),
+    handlePrivateCardCreated: vi.fn(),
+    handlePrivateCardUpdated: vi.fn(),
+    handlePrivateCardDeleted: vi.fn(),
     handleVoteAdded: vi.fn(),
     handleVoteRemoved: vi.fn(),
     handlePhaseChanged: vi.fn(),
@@ -291,6 +294,63 @@ describe('useWebSocket', () => {
       body: JSON.stringify({ type: 'KUDOS_DELETED', payload: kudosDeletedPayload }),
     })
     expect(handlers.handleKudosDeleted).toHaveBeenCalledWith(kudosDeletedPayload)
+  })
+
+  it('routes CARD_CREATED_PRIVATE to handlePrivateCardCreated', () => {
+    const handlers = mockStoreHandlers()
+
+    renderHook(() => useWebSocket('test1234', 'p-1'))
+
+    capturedConfig.onConnect!()
+
+    const callbackMap: Record<string, (msg: { body: string }) => void> = {}
+    for (const call of mockSubscribe.mock.calls) {
+      callbackMap[call[0] as string] = call[1] as (msg: { body: string }) => void
+    }
+
+    const payload = { columnId: 'col-1', participantId: 'p-other' }
+    callbackMap['/topic/board/test1234/cards']({
+      body: JSON.stringify({ type: 'CARD_CREATED_PRIVATE', payload }),
+    })
+    expect(handlers.handlePrivateCardCreated).toHaveBeenCalledWith(payload, 'p-1')
+  })
+
+  it('routes CARD_UPDATED_PRIVATE to handlePrivateCardUpdated', () => {
+    const handlers = mockStoreHandlers()
+
+    renderHook(() => useWebSocket('test1234', 'p-1'))
+
+    capturedConfig.onConnect!()
+
+    const callbackMap: Record<string, (msg: { body: string }) => void> = {}
+    for (const call of mockSubscribe.mock.calls) {
+      callbackMap[call[0] as string] = call[1] as (msg: { body: string }) => void
+    }
+
+    const payload = { cardId: 'c-1', participantId: 'p-other' }
+    callbackMap['/topic/board/test1234/cards']({
+      body: JSON.stringify({ type: 'CARD_UPDATED_PRIVATE', payload }),
+    })
+    expect(handlers.handlePrivateCardUpdated).toHaveBeenCalled()
+  })
+
+  it('routes CARD_DELETED_PRIVATE to handlePrivateCardDeleted', () => {
+    const handlers = mockStoreHandlers()
+
+    renderHook(() => useWebSocket('test1234', 'p-1'))
+
+    capturedConfig.onConnect!()
+
+    const callbackMap: Record<string, (msg: { body: string }) => void> = {}
+    for (const call of mockSubscribe.mock.calls) {
+      callbackMap[call[0] as string] = call[1] as (msg: { body: string }) => void
+    }
+
+    const payload = { cardId: 'c-1', columnId: 'col-1', participantId: 'p-other' }
+    callbackMap['/topic/board/test1234/cards']({
+      body: JSON.stringify({ type: 'CARD_DELETED_PRIVATE', payload }),
+    })
+    expect(handlers.handlePrivateCardDeleted).toHaveBeenCalledWith(payload, 'p-1')
   })
 
   it('sets connected false on disconnect', () => {

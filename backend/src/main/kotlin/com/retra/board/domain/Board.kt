@@ -34,7 +34,7 @@ open class Board(
     @Column(name = "is_anonymous", nullable = false, updatable = false)
     open var isAnonymous: Boolean = false,
 
-    @Column(name = "private_writing", nullable = false)
+    @Column(name = "private_writing", nullable = false, updatable = false)
     open var privateWriting: Boolean = false,
 
     @Column(name = "team_name")

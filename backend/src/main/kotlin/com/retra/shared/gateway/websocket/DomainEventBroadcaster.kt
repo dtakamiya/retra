@@ -41,32 +41,52 @@ class DomainEventBroadcaster(
 
     @TransactionalEventListener(fallbackExecution = true)
     fun handleCardCreated(event: CardEvent.CardCreated) {
-        messagingTemplate.convertAndSend(
-            "/topic/board/${event.boardSlug}/cards",
-            WebSocketMessage("CARD_CREATED", buildCardPayload(
-                cardId = event.cardId, columnId = event.columnId, content = event.content,
-                authorNickname = if (event.isAnonymous) null else event.authorNickname,
-                participantId = if (event.isAnonymous) null else event.participantId,
-                voteCount = event.voteCount, sortOrder = event.sortOrder,
-                isAnonymous = event.isAnonymous,
-                createdAt = event.createdAt, updatedAt = event.updatedAt
-            ) + mapOf("isPrivateWriting" to event.isPrivateWriting))
-        )
+        if (event.isPrivateWriting) {
+            messagingTemplate.convertAndSend(
+                "/topic/board/${event.boardSlug}/cards",
+                WebSocketMessage("CARD_CREATED_PRIVATE", mapOf(
+                    "columnId" to event.columnId,
+                    "participantId" to event.participantId
+                ))
+            )
+        } else {
+            messagingTemplate.convertAndSend(
+                "/topic/board/${event.boardSlug}/cards",
+                WebSocketMessage("CARD_CREATED", buildCardPayload(
+                    cardId = event.cardId, columnId = event.columnId, content = event.content,
+                    authorNickname = if (event.isAnonymous) null else event.authorNickname,
+                    participantId = if (event.isAnonymous) null else event.participantId,
+                    voteCount = event.voteCount, sortOrder = event.sortOrder,
+                    isAnonymous = event.isAnonymous,
+                    createdAt = event.createdAt, updatedAt = event.updatedAt
+                ))
+            )
+        }
     }
 
     @TransactionalEventListener(fallbackExecution = true)
     fun handleCardUpdated(event: CardEvent.CardUpdated) {
-        messagingTemplate.convertAndSend(
-            "/topic/board/${event.boardSlug}/cards",
-            WebSocketMessage("CARD_UPDATED", buildCardPayload(
-                cardId = event.cardId, columnId = event.columnId, content = event.content,
-                authorNickname = if (event.isAnonymous) null else event.authorNickname,
-                participantId = if (event.isAnonymous) null else event.participantId,
-                voteCount = event.voteCount, sortOrder = event.sortOrder,
-                isAnonymous = event.isAnonymous,
-                createdAt = event.createdAt, updatedAt = event.updatedAt
-            ))
-        )
+        if (event.isPrivateWriting) {
+            messagingTemplate.convertAndSend(
+                "/topic/board/${event.boardSlug}/cards",
+                WebSocketMessage("CARD_UPDATED_PRIVATE", mapOf(
+                    "cardId" to event.cardId,
+                    "participantId" to event.participantId
+                ))
+            )
+        } else {
+            messagingTemplate.convertAndSend(
+                "/topic/board/${event.boardSlug}/cards",
+                WebSocketMessage("CARD_UPDATED", buildCardPayload(
+                    cardId = event.cardId, columnId = event.columnId, content = event.content,
+                    authorNickname = if (event.isAnonymous) null else event.authorNickname,
+                    participantId = if (event.isAnonymous) null else event.participantId,
+                    voteCount = event.voteCount, sortOrder = event.sortOrder,
+                    isAnonymous = event.isAnonymous,
+                    createdAt = event.createdAt, updatedAt = event.updatedAt
+                ))
+            )
+        }
     }
 
     @TransactionalEventListener(fallbackExecution = true)
@@ -96,13 +116,24 @@ class DomainEventBroadcaster(
 
     @TransactionalEventListener(fallbackExecution = true)
     fun handleCardDeleted(event: CardEvent.CardDeleted) {
-        messagingTemplate.convertAndSend(
-            "/topic/board/${event.boardSlug}/cards",
-            WebSocketMessage("CARD_DELETED", mapOf(
-                "cardId" to event.cardId,
-                "columnId" to event.columnId
-            ))
-        )
+        if (event.isPrivateWriting) {
+            messagingTemplate.convertAndSend(
+                "/topic/board/${event.boardSlug}/cards",
+                WebSocketMessage("CARD_DELETED_PRIVATE", mapOf(
+                    "cardId" to event.cardId,
+                    "columnId" to event.columnId,
+                    "participantId" to event.participantId
+                ))
+            )
+        } else {
+            messagingTemplate.convertAndSend(
+                "/topic/board/${event.boardSlug}/cards",
+                WebSocketMessage("CARD_DELETED", mapOf(
+                    "cardId" to event.cardId,
+                    "columnId" to event.columnId
+                ))
+            )
+        }
     }
 
     @TransactionalEventListener(fallbackExecution = true)

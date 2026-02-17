@@ -236,3 +236,19 @@ export interface Kudos {
 export interface KudosDeletedPayload {
   id: string;
 }
+
+export interface PrivateCardCreatedPayload {
+  columnId: string;
+  participantId: string | null;
+}
+
+export interface PrivateCardUpdatedPayload {
+  cardId: string;
+  participantId: string | null;
+}
+
+export interface PrivateCardDeletedPayload {
+  cardId: string;
+  columnId: string;
+  participantId: string | null;
+}

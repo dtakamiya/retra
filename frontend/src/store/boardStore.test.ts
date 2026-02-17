@@ -310,6 +310,99 @@ describe('boardStore', () => {
     expect(state.board).toEqual(board);
   });
 
+  // --- handlePrivateCardCreated ---
+
+  it('handlePrivateCardCreated で他者のカードなら hiddenCardCount がインクリメントされる', () => {
+    const board = createBoard({ privateWriting: true });
+    useBoardStore.setState({ board });
+
+    useBoardStore.getState().handlePrivateCardCreated(
+      { columnId: 'col-1', participantId: 'p-other' },
+      'p-1'
+    );
+
+    const state = useBoardStore.getState();
+    const col1 = state.board!.columns.find((c) => c.id === 'col-1');
+    expect(col1!.hiddenCardCount).toBe(1);
+  });
+
+  it('handlePrivateCardCreated で自分のカードなら状態変更なし', () => {
+    const board = createBoard({ privateWriting: true });
+    useBoardStore.setState({ board });
+
+    useBoardStore.getState().handlePrivateCardCreated(
+      { columnId: 'col-1', participantId: 'p-1' },
+      'p-1'
+    );
+
+    const state = useBoardStore.getState();
+    const col1 = state.board!.columns.find((c) => c.id === 'col-1');
+    expect(col1!.hiddenCardCount).toBe(0);
+  });
+
+  it('handlePrivateCardCreated with null board returns unchanged state', () => {
+    useBoardStore.setState({ board: null });
+    useBoardStore.getState().handlePrivateCardCreated(
+      { columnId: 'col-1', participantId: 'p-other' },
+      'p-1'
+    );
+    expect(useBoardStore.getState().board).toBeNull();
+  });
+
+  // --- handlePrivateCardDeleted ---
+
+  it('handlePrivateCardDeleted で他者のカードなら hiddenCardCount がデクリメントされる', () => {
+    const board = createBoard({
+      privateWriting: true,
+      columns: [
+        createColumn({ id: 'col-1', hiddenCardCount: 2 }),
+        createColumn({ id: 'col-2' }),
+        createColumn({ id: 'col-3' }),
+      ],
+    });
+    useBoardStore.setState({ board });
+
+    useBoardStore.getState().handlePrivateCardDeleted(
+      { cardId: 'card-x', columnId: 'col-1', participantId: 'p-other' },
+      'p-1'
+    );
+
+    const state = useBoardStore.getState();
+    const col1 = state.board!.columns.find((c) => c.id === 'col-1');
+    expect(col1!.hiddenCardCount).toBe(1);
+  });
+
+  it('handlePrivateCardDeleted で自分のカードなら通常削除', () => {
+    const card = createCard({ id: 'card-1', columnId: 'col-1', participantId: 'p-1' });
+    const board = createBoard({
+      privateWriting: true,
+      columns: [
+        createColumn({ id: 'col-1', cards: [card] }),
+        createColumn({ id: 'col-2' }),
+        createColumn({ id: 'col-3' }),
+      ],
+    });
+    useBoardStore.setState({ board });
+
+    useBoardStore.getState().handlePrivateCardDeleted(
+      { cardId: 'card-1', columnId: 'col-1', participantId: 'p-1' },
+      'p-1'
+    );
+
+    const state = useBoardStore.getState();
+    const col1 = state.board!.columns.find((c) => c.id === 'col-1');
+    expect(col1!.cards).toHaveLength(0);
+  });
+
+  it('handlePrivateCardDeleted with null board returns unchanged state', () => {
+    useBoardStore.setState({ board: null });
+    useBoardStore.getState().handlePrivateCardDeleted(
+      { cardId: 'card-1', columnId: 'col-1', participantId: 'p-other' },
+      'p-1'
+    );
+    expect(useBoardStore.getState().board).toBeNull();
+  });
+
   // --- handlePhaseChanged ---
 
   it('handlePhaseChanged updates board phase', () => {
@@ -322,14 +415,34 @@ describe('boardStore', () => {
     expect(state.board!.phase).toBe('VOTING');
   });
 
-  it('handlePhaseChanged でフェーズ変更時に needsRefresh が true にセットされる', () => {
-    const board = createBoard({ phase: 'WRITING' });
+  it('handlePhaseChanged でプライベートモード WRITING→VOTING 時に needsRefresh が true', () => {
+    const board = createBoard({ phase: 'WRITING', privateWriting: true });
     useBoardStore.setState({ board, needsRefresh: false });
 
     useBoardStore.getState().handlePhaseChanged('VOTING');
 
     const state = useBoardStore.getState();
     expect(state.needsRefresh).toBe(true);
+  });
+
+  it('handlePhaseChanged で非プライベートモード時は needsRefresh が false', () => {
+    const board = createBoard({ phase: 'WRITING', privateWriting: false });
+    useBoardStore.setState({ board, needsRefresh: false });
+
+    useBoardStore.getState().handlePhaseChanged('VOTING');
+
+    const state = useBoardStore.getState();
+    expect(state.needsRefresh).toBe(false);
+  });
+
+  it('handlePhaseChanged でプライベートモードでも VOTING→DISCUSSION は needsRefresh false', () => {
+    const board = createBoard({ phase: 'VOTING', privateWriting: true });
+    useBoardStore.setState({ board, needsRefresh: false });
+
+    useBoardStore.getState().handlePhaseChanged('DISCUSSION');
+
+    const state = useBoardStore.getState();
+    expect(state.needsRefresh).toBe(false);
   });
 
   it('clearNeedsRefresh で needsRefresh が false にリセットされる', () => {

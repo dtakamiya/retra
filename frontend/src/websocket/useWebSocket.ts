@@ -15,6 +15,8 @@ import type {
   MemoDeletedPayload,
   Participant,
   ParticipantOnlinePayload,
+  PrivateCardCreatedPayload,
+  PrivateCardDeletedPayload,
   Reaction,
   ReactionRemovedPayload,
   TimerState,
@@ -33,6 +35,9 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleCardDeleted,
     handleCardMoved,
     handleCardDiscussionMarked,
+    handlePrivateCardCreated,
+    handlePrivateCardUpdated,
+    handlePrivateCardDeleted,
     handleVoteAdded,
     handleVoteRemoved,
     handlePhaseChanged,
@@ -75,14 +80,9 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
         client.subscribe(`/topic/board/${slug}/cards`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
           switch (data.type) {
-            case 'CARD_CREATED': {
-              const card = data.payload as Card & { isPrivateWriting?: boolean };
-              if (card.isPrivateWriting && card.participantId !== participantId) {
-                break;
-              }
-              handleCardCreated(card);
+            case 'CARD_CREATED':
+              handleCardCreated(data.payload as Card);
               break;
-            }
             case 'CARD_UPDATED':
               handleCardUpdated(data.payload as Card);
               break;
@@ -94,6 +94,15 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
               break;
             case 'CARD_DISCUSSION_MARKED':
               handleCardDiscussionMarked(data.payload as CardDiscussionMarkedPayload);
+              break;
+            case 'CARD_CREATED_PRIVATE':
+              handlePrivateCardCreated(data.payload as PrivateCardCreatedPayload, participantId);
+              break;
+            case 'CARD_UPDATED_PRIVATE':
+              handlePrivateCardUpdated();
+              break;
+            case 'CARD_DELETED_PRIVATE':
+              handlePrivateCardDeleted(data.payload as PrivateCardDeletedPayload, participantId);
               break;
           }
         });
@@ -225,6 +234,9 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleCardDeleted,
     handleCardMoved,
     handleCardDiscussionMarked,
+    handlePrivateCardCreated,
+    handlePrivateCardUpdated,
+    handlePrivateCardDeleted,
     handleVoteAdded,
     handleVoteRemoved,
     handlePhaseChanged,
