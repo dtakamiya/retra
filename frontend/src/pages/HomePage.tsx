@@ -52,69 +52,66 @@ export function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-indigo-100 dark:bg-indigo-900/30 rounded-full opacity-40 blur-3xl animate-[float_8s_ease-in-out_infinite]" />
-        <div className="absolute top-1/2 -left-24 w-72 h-72 bg-purple-100 dark:bg-purple-900/20 rounded-full opacity-30 blur-3xl animate-[float_6s_ease-in-out_infinite_1s]" />
-        <div className="absolute -bottom-12 right-1/3 w-64 h-64 bg-blue-100 dark:bg-blue-900/20 rounded-full opacity-30 blur-3xl animate-[float_7s_ease-in-out_infinite_2s]" />
+    <div className="min-h-screen bg-[var(--color-bg-base)] relative overflow-hidden">
+      {/* Subtle decorative background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-indigo-100/60 dark:bg-indigo-950/30 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-purple-100/40 dark:bg-purple-950/20 rounded-full blur-[80px]" />
       </div>
 
       {/* Theme toggle */}
-      <div className="absolute top-4 right-4 z-20">
+      <div className="absolute top-5 right-5 z-20">
         <ThemeToggle />
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-16 relative z-10">
-        <div className="text-center mb-12 animate-[fadeIn_0.6s_ease-out]">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-100/80 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs font-medium rounded-full mb-6 backdrop-blur-sm">
-            <Sparkles size={12} />
-            チームのふりかえりをもっと効果的に
-          </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-indigo-600 dark:from-indigo-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent mb-4" style={{ letterSpacing: '-0.03em' }}>
+      <div className="max-w-lg mx-auto px-5 py-20 relative z-10">
+        {/* Hero */}
+        <div className="text-center mb-10 animate-[fadeIn_0.6s_ease-out]">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
             Retra
           </h1>
-          <p className="text-lg text-gray-500 dark:text-slate-400 leading-relaxed">
+          <p className="text-base text-gray-500 dark:text-slate-400 leading-relaxed">
             スクラムチームのためのリアルタイム<br className="sm:hidden" />レトロスペクティブボード
           </p>
           <Link
             to="/dashboard"
-            className="inline-flex items-center gap-2 text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 text-sm mt-5 transition-colors group"
+            className="inline-flex items-center gap-1.5 text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 text-sm mt-4 transition-colors"
           >
-            <BarChart3 size={16} className="group-hover:scale-110 transition-transform" />
+            <BarChart3 size={14} />
             チームダッシュボード
           </Link>
         </div>
 
-        <div className="glass-strong rounded-2xl shadow-xl shadow-indigo-100/50 dark:shadow-black/20 p-8 animate-[scaleFadeIn_0.5s_ease-out]">
+        {/* Main card */}
+        <div className="bg-white dark:bg-slate-800/80 rounded-2xl border border-gray-200/80 dark:border-slate-700/60 shadow-[var(--shadow-elevated)] p-7 animate-[scaleFadeIn_0.5s_ease-out]">
           {/* Tab Switcher */}
-          <div className="flex gap-2 mb-8 p-1 bg-gray-100/80 dark:bg-slate-800/80 rounded-xl">
+          <div className="flex gap-1 mb-7 p-1 bg-gray-100 dark:bg-slate-900/60 rounded-xl">
             <button
               onClick={() => setMode('create')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium transition-all text-sm ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium transition-all text-sm cursor-pointer ${
                 mode === 'create'
-                  ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-sm'
+                  ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-sm'
                   : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
               }`}
             >
-              <LayoutGrid size={16} />
+              <LayoutGrid size={15} />
               ボードを作成
             </button>
             <button
               onClick={() => setMode('join')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium transition-all text-sm ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium transition-all text-sm cursor-pointer ${
                 mode === 'join'
-                  ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-sm'
+                  ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-sm'
                   : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
               }`}
             >
-              <Users size={16} />
+              <Users size={15} />
               ボードに参加
             </button>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 text-red-600 dark:text-red-400 rounded-xl text-sm flex items-center gap-2 animate-[scaleFadeIn_0.2s_ease-out]">
+            <div className="mb-5 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400 rounded-xl text-sm flex items-center gap-2 animate-[scaleFadeIn_0.2s_ease-out]">
               <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
               {error}
             </div>
@@ -123,76 +120,87 @@ export function HomePage() {
           {mode === 'create' ? (
             <form onSubmit={handleCreate} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor="board-title" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
                   ボードタイトル
                 </label>
                 <input
+                  id="board-title"
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="スプリント42 ふりかえり"
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                   フレームワーク
                 </label>
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-2 gap-2">
                   {FRAMEWORKS.map((fw) => (
                     <button
                       key={fw.value}
                       type="button"
                       onClick={() => setFramework(fw.value)}
-                      className={`p-3.5 border-2 rounded-xl text-left transition-all hover:-translate-y-0.5 ${
+                      className={`p-3 border rounded-xl text-left transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800 ${
                         framework === fw.value
-                          ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-50/80 dark:bg-indigo-900/30 shadow-md shadow-indigo-100/50 dark:shadow-indigo-900/30'
-                          : 'border-gray-100 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/50 hover:border-gray-200 dark:hover:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-800 hover:shadow-sm'
+                          ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 ring-1 ring-indigo-400/30 dark:ring-indigo-500/30'
+                          : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/30 hover:border-gray-300 dark:hover:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-800/50'
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
-                        <fw.icon size={16} className={framework === fw.value ? 'text-indigo-500 dark:text-indigo-400' : 'text-gray-400 dark:text-slate-500'} />
+                        <fw.icon size={15} className={framework === fw.value ? 'text-indigo-500 dark:text-indigo-400' : 'text-gray-400 dark:text-slate-500'} />
                         <span className="font-medium text-sm text-gray-900 dark:text-slate-100">{fw.label}</span>
                       </div>
-                      <div className="text-xs text-gray-400 dark:text-slate-500 mt-1.5 ml-[26px]">{fw.description}</div>
+                      <div className="text-xs text-gray-400 dark:text-slate-500 mt-1 ml-[25px]">{fw.description}</div>
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
-                  1人あたりの最大投票数
-                </label>
-                <input
-                  type="number"
-                  value={maxVotes}
-                  onChange={(e) => setMaxVotes(Number(e.target.value))}
-                  min={1}
-                  max={20}
-                  className="w-24 px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-sm text-gray-900 dark:text-slate-100"
-                />
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label htmlFor="teamName" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
+                    チーム名（オプション）
+                  </label>
+                  <input
+                    id="teamName"
+                    type="text"
+                    value={teamName}
+                    onChange={(e) => setTeamName(e.target.value)}
+                    placeholder="チーム Alpha"
+                    className="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
+                  />
+                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">前回のアクションアイテムを引き継ぎます</p>
+                </div>
+                <div className="w-24 flex-shrink-0">
+                  <label htmlFor="max-votes" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
+                    1人あたりの最大投票数
+                  </label>
+                  <input
+                    id="max-votes"
+                    type="number"
+                    value={maxVotes}
+                    onChange={(e) => setMaxVotes(Number(e.target.value))}
+                    min={1}
+                    max={20}
+                    className="w-full px-3 py-2.5 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 text-center"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label htmlFor="teamName" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
-                  チーム名（オプション）
-                </label>
-                <input
-                  id="teamName"
-                  type="text"
-                  value={teamName}
-                  onChange={(e) => setTeamName(e.target.value)}
-                  placeholder="チーム Alpha"
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
-                />
-                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1.5">同じチーム名のレトロから前回のアクションアイテムを引き継ぎます</p>
-              </div>
-
-              <div>
-                <label className="flex items-center gap-3 cursor-pointer group">
+              {/* Options */}
+              <div className="space-y-3 pt-1">
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-2.5">
+                    <EyeOff size={15} className="text-gray-400 dark:text-slate-500" />
+                    <div>
+                      <span className="text-sm font-medium text-gray-700 dark:text-slate-300">匿名モード</span>
+                      <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">作成者名を非表示（変更不可）</p>
+                    </div>
+                  </div>
                   <div
                     role="switch"
                     aria-checked={isAnonymous}
@@ -200,8 +208,8 @@ export function HomePage() {
                     tabIndex={0}
                     onClick={() => setIsAnonymous(!isAnonymous)}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsAnonymous(!isAnonymous); } }}
-                    className={`relative w-11 h-6 rounded-full transition-all ${
-                      isAnonymous ? 'bg-indigo-600 shadow-sm shadow-indigo-200 dark:shadow-indigo-900' : 'bg-gray-300 dark:bg-slate-600 group-hover:bg-gray-400 dark:group-hover:bg-slate-500'
+                    className={`relative w-11 h-6 rounded-full transition-all cursor-pointer flex-shrink-0 ${
+                      isAnonymous ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-slate-600 hover:bg-gray-400 dark:hover:bg-slate-500'
                     }`}
                   >
                     <div
@@ -210,16 +218,16 @@ export function HomePage() {
                       }`}
                     />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <EyeOff size={15} className="text-gray-400 dark:text-slate-500" />
-                    <span className="text-sm font-medium text-gray-700 dark:text-slate-300">匿名モード</span>
-                  </div>
-                </label>
-                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 ml-14">カードの作成者名を非表示にします（作成後は変更不可）</p>
-              </div>
+                </div>
 
-              <div>
-                <label className="flex items-center gap-3 cursor-pointer group">
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-2.5">
+                    <Lock size={15} className="text-gray-400 dark:text-slate-500" />
+                    <div>
+                      <span className="text-sm font-medium text-gray-700 dark:text-slate-300">プライベート記述モード</span>
+                      <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">記入中は他の参加者のカードが非表示</p>
+                    </div>
+                  </div>
                   <div
                     role="switch"
                     aria-checked={isPrivateWriting}
@@ -227,8 +235,8 @@ export function HomePage() {
                     tabIndex={0}
                     onClick={() => setIsPrivateWriting(!isPrivateWriting)}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsPrivateWriting(!isPrivateWriting); } }}
-                    className={`relative w-11 h-6 rounded-full transition-all ${
-                      isPrivateWriting ? 'bg-indigo-600 shadow-sm shadow-indigo-200 dark:shadow-indigo-900' : 'bg-gray-300 dark:bg-slate-600 group-hover:bg-gray-400 dark:group-hover:bg-slate-500'
+                    className={`relative w-11 h-6 rounded-full transition-all cursor-pointer flex-shrink-0 ${
+                      isPrivateWriting ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-slate-600 hover:bg-gray-400 dark:hover:bg-slate-500'
                     }`}
                   >
                     <div
@@ -237,18 +245,13 @@ export function HomePage() {
                       }`}
                     />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Lock size={15} className="text-gray-400 dark:text-slate-500" />
-                    <span className="text-sm font-medium text-gray-700 dark:text-slate-300">プライベート記述モード</span>
-                  </div>
-                </label>
-                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 ml-14">記入フェーズ中は他の参加者のカードが見えません（投票フェーズで一斉公開）</p>
+                </div>
               </div>
 
               <button
                 type="submit"
                 disabled={loading || !title.trim()}
-                className="w-full py-3 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-500 text-white rounded-xl font-medium hover:from-indigo-700 hover:via-indigo-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-indigo-200 dark:shadow-indigo-900/30 hover:shadow-md hover:shadow-indigo-200 dark:hover:shadow-indigo-900/30 active:scale-[0.98] text-sm"
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm active:scale-[0.98] text-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800"
               >
                 {loading ? '作成中...' : 'ボードを作成'}
               </button>
@@ -256,15 +259,16 @@ export function HomePage() {
           ) : (
             <form onSubmit={handleJoin} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor="join-slug" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
                   ボードURLまたはコード
                 </label>
                 <input
+                  id="join-slug"
                   type="text"
                   value={joinSlug}
                   onChange={(e) => setJoinSlug(e.target.value)}
                   placeholder="ボードコードを入力またはURLを貼り付け"
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-700 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
                   required
                 />
               </div>
@@ -272,12 +276,28 @@ export function HomePage() {
               <button
                 type="submit"
                 disabled={!joinSlug.trim()}
-                className="w-full py-3 bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-500 text-white rounded-xl font-medium hover:from-indigo-700 hover:via-indigo-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-indigo-200 dark:shadow-indigo-900/30 hover:shadow-md hover:shadow-indigo-200 dark:hover:shadow-indigo-900/30 active:scale-[0.98] text-sm"
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm active:scale-[0.98] text-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800"
               >
                 ボードに参加
               </button>
             </form>
           )}
+        </div>
+
+        {/* Feature hints */}
+        <div className="flex justify-center gap-6 mt-8 text-xs text-gray-400 dark:text-slate-500">
+          <div className="flex items-center gap-1.5">
+            <Sparkles size={12} />
+            リアルタイム同期
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Users size={12} />
+            チームコラボレーション
+          </div>
+          <div className="flex items-center gap-1.5">
+            <BarChart3 size={12} />
+            トレンド分析
+          </div>
         </div>
       </div>
     </div>
