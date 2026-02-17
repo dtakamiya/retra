@@ -5,7 +5,7 @@
    Design Tokens (CSS Custom Properties)
    ============================================ */
 :root {
-  --color-bg-base: #f8fafc;
+  --color-bg-base: #F5F3FF;
   --color-bg-surface: #ffffff;
   --color-bg-muted: #f1f5f9;
   --color-bg-subtle: #e2e8f0;
@@ -18,6 +18,14 @@
   --shadow-soft: 0 2px 8px -2px rgba(0, 0, 0, 0.06);
   --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
   --shadow-elevated: 0 10px 30px -8px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-soft-ui: 8px 8px 24px rgba(0, 0, 0, 0.06), -4px -4px 16px rgba(255, 255, 255, 0.8);
+  --shadow-soft-ui-inset: inset 2px 2px 6px rgba(0, 0, 0, 0.04), inset -2px -2px 6px rgba(255, 255, 255, 0.7);
+  --shadow-soft-ui-active: 4px 4px 12px rgba(99, 102, 241, 0.1), -2px -2px 8px rgba(255, 255, 255, 0.8);
+  --shadow-soft-ui-tab: 4px 4px 12px rgba(0, 0, 0, 0.05), -2px -2px 8px rgba(255, 255, 255, 0.8);
+  --shadow-soft-ui-input: inset 1px 1px 4px rgba(0, 0, 0, 0.04);
+  --shadow-soft-ui-btn: 4px 4px 16px rgba(99, 102, 241, 0.2), -2px -2px 8px rgba(255, 255, 255, 0.6);
+  --shadow-soft-ui-btn-pressed: inset 2px 2px 6px rgba(0, 0, 0, 0.1);
+  --shadow-soft-ui-btn-hover: 6px 6px 20px rgba(99, 102, 241, 0.25), -3px -3px 12px rgba(255, 255, 255, 0.5);
   --scrollbar-thumb: #cbd5e1;
   --scrollbar-thumb-hover: #94a3b8;
 }
@@ -36,6 +44,14 @@
   --shadow-soft: 0 2px 8px -2px rgba(0, 0, 0, 0.3);
   --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px -1px rgba(0, 0, 0, 0.15);
   --shadow-elevated: 0 10px 30px -8px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+  --shadow-soft-ui: 8px 8px 24px rgba(0, 0, 0, 0.3), -4px -4px 16px rgba(255, 255, 255, 0.03);
+  --shadow-soft-ui-inset: inset 2px 2px 6px rgba(0, 0, 0, 0.2), inset -2px -2px 6px rgba(255, 255, 255, 0.02);
+  --shadow-soft-ui-active: 4px 4px 12px rgba(99, 102, 241, 0.2), -2px -2px 8px rgba(255, 255, 255, 0.02);
+  --shadow-soft-ui-tab: 4px 4px 12px rgba(0, 0, 0, 0.2), -2px -2px 8px rgba(255, 255, 255, 0.02);
+  --shadow-soft-ui-input: inset 1px 1px 4px rgba(0, 0, 0, 0.15);
+  --shadow-soft-ui-btn: 4px 4px 16px rgba(99, 102, 241, 0.3), -2px -2px 8px rgba(255, 255, 255, 0.02);
+  --shadow-soft-ui-btn-pressed: inset 2px 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-soft-ui-btn-hover: 6px 6px 20px rgba(99, 102, 241, 0.35), -3px -3px 12px rgba(255, 255, 255, 0.03);
   --scrollbar-thumb: #475569;
   --scrollbar-thumb-hover: #64748b;
 }
@@ -196,6 +212,18 @@ body {
   }
   100% {
     background-position: 0% 50%;
+  }
+}
+
+/* Staggered fade-in for feature hints */
+@keyframes staggerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
