@@ -55,8 +55,9 @@ export function HomePage() {
     <div className="min-h-screen bg-[var(--color-bg-base)] relative overflow-hidden">
       {/* Subtle decorative background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-indigo-100/60 dark:bg-indigo-950/30 rounded-full blur-[100px]" />
-        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-purple-100/40 dark:bg-purple-950/20 rounded-full blur-[80px]" />
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-indigo-200/40 dark:bg-indigo-950/30 rounded-full blur-[100px] animate-[float_8s_ease-in-out_infinite]" />
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-purple-200/30 dark:bg-purple-950/20 rounded-full blur-[80px] animate-[float_12s_ease-in-out_infinite_2s]" />
+        <div className="absolute -bottom-20 right-1/4 w-72 h-72 bg-emerald-200/20 dark:bg-emerald-950/15 rounded-full blur-[90px] animate-[float_10s_ease-in-out_infinite_4s]" />
       </div>
 
       {/* Theme toggle */}
@@ -83,14 +84,14 @@ export function HomePage() {
         </div>
 
         {/* Main card */}
-        <div className="bg-white dark:bg-slate-800/80 rounded-2xl border border-gray-200/80 dark:border-slate-700/60 shadow-[var(--shadow-elevated)] p-7 animate-[scaleFadeIn_0.5s_ease-out]">
+        <div className="bg-white/90 dark:bg-slate-800/80 rounded-3xl border border-gray-200/80 dark:border-slate-700/60 shadow-[var(--shadow-soft-ui)] backdrop-blur-sm p-7 animate-[scaleFadeIn_0.5s_ease-out]">
           {/* Tab Switcher */}
           <div className="flex gap-1 mb-7 p-1 bg-gray-100 dark:bg-slate-900/60 rounded-xl">
             <button
               onClick={() => setMode('create')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium transition-all text-sm cursor-pointer ${
                 mode === 'create'
-                  ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-sm'
+                  ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-[var(--shadow-soft-ui-tab)]'
                   : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
               }`}
             >
@@ -101,7 +102,7 @@ export function HomePage() {
               onClick={() => setMode('join')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium transition-all text-sm cursor-pointer ${
                 mode === 'join'
-                  ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-sm'
+                  ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 shadow-[var(--shadow-soft-ui-tab)]'
                   : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
               }`}
             >
@@ -118,7 +119,7 @@ export function HomePage() {
           )}
 
           {mode === 'create' ? (
-            <form onSubmit={handleCreate} className="space-y-5">
+            <form onSubmit={handleCreate} className="space-y-5 animate-[fadeIn_0.3s_ease-out]">
               <div>
                 <label htmlFor="board-title" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
                   ボードタイトル
@@ -129,7 +130,7 @@ export function HomePage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="スプリント42 ふりかえり"
-                  className="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-gray-200/60 dark:border-slate-700 shadow-[var(--shadow-soft-ui-input)] rounded-xl focus:ring-2 focus:ring-indigo-500/15 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.1)] focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
                   required
                 />
               </div>
@@ -146,8 +147,8 @@ export function HomePage() {
                       onClick={() => setFramework(fw.value)}
                       className={`p-3 border rounded-xl text-left transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800 ${
                         framework === fw.value
-                          ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 ring-1 ring-indigo-400/30 dark:ring-indigo-500/30'
-                          : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/30 hover:border-gray-300 dark:hover:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-800/50'
+                          ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-50/80 dark:bg-indigo-950/40 shadow-[var(--shadow-soft-ui-active)] ring-1 ring-indigo-400/30 dark:ring-indigo-500/30'
+                          : 'border-gray-200/60 dark:border-slate-700 bg-white/60 dark:bg-slate-900/30 shadow-[var(--shadow-soft-ui-inset)] hover:shadow-[var(--shadow-soft-ui-tab)] hover:scale-[1.02] hover:bg-white dark:hover:bg-slate-800/50'
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
@@ -171,7 +172,7 @@ export function HomePage() {
                     value={teamName}
                     onChange={(e) => setTeamName(e.target.value)}
                     placeholder="チーム Alpha"
-                    className="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
+                    className="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-gray-200/60 dark:border-slate-700 shadow-[var(--shadow-soft-ui-input)] rounded-xl focus:ring-2 focus:ring-indigo-500/15 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.1)] focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
                   />
                   <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">前回のアクションアイテムを引き継ぎます</p>
                 </div>
@@ -186,7 +187,7 @@ export function HomePage() {
                     onChange={(e) => setMaxVotes(Number(e.target.value))}
                     min={1}
                     max={20}
-                    className="w-full px-3 py-2.5 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 text-center"
+                    className="w-full px-3 py-2.5 bg-white dark:bg-slate-900/50 border border-gray-200/60 dark:border-slate-700 shadow-[var(--shadow-soft-ui-input)] rounded-xl focus:ring-2 focus:ring-indigo-500/15 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.1)] focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 text-center"
                   />
                 </div>
               </div>
@@ -251,13 +252,13 @@ export function HomePage() {
               <button
                 type="submit"
                 disabled={loading || !title.trim()}
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm active:scale-[0.98] text-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800"
+                className="w-full py-3 bg-gradient-to-b from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[var(--shadow-soft-ui-btn)] hover:shadow-[var(--shadow-soft-ui-btn-hover)] active:scale-[0.97] active:shadow-[var(--shadow-soft-ui-btn-pressed)] text-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800"
               >
-                {loading ? '作成中...' : 'ボードを作成'}
+                {loading ? <span className="inline-flex items-center gap-2"><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />作成中...</span> : 'ボードを作成'}
               </button>
             </form>
           ) : (
-            <form onSubmit={handleJoin} className="space-y-5">
+            <form onSubmit={handleJoin} className="space-y-5 animate-[fadeIn_0.3s_ease-out]">
               <div>
                 <label htmlFor="join-slug" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
                   ボードURLまたはコード
@@ -268,7 +269,7 @@ export function HomePage() {
                   value={joinSlug}
                   onChange={(e) => setJoinSlug(e.target.value)}
                   placeholder="ボードコードを入力またはURLを貼り付け"
-                  className="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-gray-200/60 dark:border-slate-700 shadow-[var(--shadow-soft-ui-input)] rounded-xl focus:ring-2 focus:ring-indigo-500/15 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.1)] focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
                   required
                 />
               </div>
@@ -276,7 +277,7 @@ export function HomePage() {
               <button
                 type="submit"
                 disabled={!joinSlug.trim()}
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm active:scale-[0.98] text-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800"
+                className="w-full py-3 bg-gradient-to-b from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[var(--shadow-soft-ui-btn)] hover:shadow-[var(--shadow-soft-ui-btn-hover)] active:scale-[0.97] active:shadow-[var(--shadow-soft-ui-btn-pressed)] text-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-800"
               >
                 ボードに参加
               </button>
@@ -286,15 +287,15 @@ export function HomePage() {
 
         {/* Feature hints */}
         <div className="flex justify-center gap-6 mt-8 text-xs text-gray-400 dark:text-slate-500">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 animate-[staggerFadeIn_0.5s_ease-out_0.3s_both]">
             <Sparkles size={12} />
             リアルタイム同期
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 animate-[staggerFadeIn_0.5s_ease-out_0.4s_both]">
             <Users size={12} />
             チームコラボレーション
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 animate-[staggerFadeIn_0.5s_ease-out_0.5s_both]">
             <BarChart3 size={12} />
             トレンド分析
           </div>
