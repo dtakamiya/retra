@@ -34,6 +34,9 @@ open class Board(
     @Column(name = "is_anonymous", nullable = false, updatable = false)
     open var isAnonymous: Boolean = false,
 
+    @Column(name = "private_writing", nullable = false)
+    open var privateWriting: Boolean = false,
+
     @Column(name = "team_name")
     open var teamName: String? = null,
 
@@ -108,6 +111,7 @@ open class Board(
             framework: Framework,
             maxVotesPerPerson: Int = 5,
             isAnonymous: Boolean = false,
+            privateWriting: Boolean = false,
             teamName: String? = null
         ): Board {
             val slug = BoardSlug.generate()
@@ -119,6 +123,7 @@ open class Board(
                 framework = framework,
                 maxVotesPerPerson = maxVotesPerPerson,
                 isAnonymous = isAnonymous,
+                privateWriting = privateWriting,
                 teamName = teamName,
                 createdAt = now,
                 updatedAt = now

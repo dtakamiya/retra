@@ -14,6 +14,7 @@ sealed class CardEvent : DomainEvent() {
         val voteCount: Int,
         val sortOrder: Int,
         val isAnonymous: Boolean,
+        val isPrivateWriting: Boolean = false,
         val createdAt: String,
         val updatedAt: String
     ) : CardEvent()

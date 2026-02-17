@@ -1,0 +1,1 @@
+ALTER TABLE boards ADD COLUMN private_writing BOOLEAN NOT NULL DEFAULT 0;

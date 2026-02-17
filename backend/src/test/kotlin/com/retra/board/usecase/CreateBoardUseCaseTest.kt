@@ -47,4 +47,26 @@ class CreateBoardUseCaseTest {
 
         assertEquals(8, response.slug.length)
     }
+
+    @Test
+    fun `プライベート記述モードでボード作成`() {
+        every { boardRepository.save(any()) } answers { firstArg() }
+
+        val response = useCase.execute(
+            CreateBoardRequest("Private Retro", Framework.KPT, 5, isAnonymous = false, privateWriting = true)
+        )
+
+        assertEquals(true, response.privateWriting)
+    }
+
+    @Test
+    fun `プライベート記述モードOFFでボード作成するとfalse`() {
+        every { boardRepository.save(any()) } answers { firstArg() }
+
+        val response = useCase.execute(
+            CreateBoardRequest("Normal Retro", Framework.KPT, 5, isAnonymous = false, privateWriting = false)
+        )
+
+        assertEquals(false, response.privateWriting)
+    }
 }

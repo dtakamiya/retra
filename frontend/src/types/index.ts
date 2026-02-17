@@ -11,6 +11,7 @@ export interface Board {
   phase: Phase;
   maxVotesPerPerson: number;
   isAnonymous: boolean;
+  privateWriting: boolean;
   columns: Column[];
   participants: Participant[];
   createdAt: string;
@@ -23,6 +24,7 @@ export interface Column {
   sortOrder: number;
   color: string;
   cards: Card[];
+  hiddenCardCount: number;
 }
 
 export interface Memo {

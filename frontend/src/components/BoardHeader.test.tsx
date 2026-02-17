@@ -194,4 +194,62 @@ describe('BoardHeader', () => {
     await user.click(screen.getByLabelText('Kudos'))
     expect(onKudosToggle).toHaveBeenCalled()
   })
+
+  it('privateWriting=true のボードでプライベートバッジが表示される', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ title: 'テストボード', privateWriting: true }),
+      participant: createParticipant(),
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    renderWithRouter(
+      <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
+    )
+
+    expect(screen.getByText('プライベート')).toBeInTheDocument()
+  })
+
+  it('privateWriting=false のボードではプライベートバッジが表示されない', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ title: 'テストボード', privateWriting: false }),
+      participant: createParticipant(),
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    renderWithRouter(
+      <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
+    )
+
+    expect(screen.queryByText('プライベート')).not.toBeInTheDocument()
+  })
+
+  it('privateWriting=true かつ WRITINGフェーズ中はバッジがハイライトされる', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ title: 'テストボード', privateWriting: true, phase: 'WRITING' }),
+      participant: createParticipant(),
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    renderWithRouter(
+      <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
+    )
+
+    const badge = screen.getByText('プライベート').closest('span')
+    expect(badge?.className).toContain('bg-amber-100')
+  })
+
+  it('privateWriting=true かつ VOTINGフェーズ中はバッジがグレー表示される', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ title: 'テストボード', privateWriting: true, phase: 'VOTING' }),
+      participant: createParticipant(),
+      setBoard: vi.fn(),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    renderWithRouter(
+      <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
+    )
+
+    const badge = screen.getByText('プライベート').closest('span')
+    expect(badge?.className).toContain('bg-gray-100')
+  })
 })

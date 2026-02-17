@@ -62,6 +62,7 @@ export function createColumn(overrides: Partial<Column> = {}): Column {
     sortOrder: 0,
     color: '#22c55e',
     cards: [],
+    hiddenCardCount: 0,
     ...overrides,
   }
 }
@@ -76,6 +77,7 @@ export function createBoard(overrides: Partial<Board> = {}): Board {
     phase: 'WRITING',
     maxVotesPerPerson: 5,
     isAnonymous: false,
+    privateWriting: false,
     columns: [
       createColumn({ id: 'col-1', name: 'Keep', sortOrder: 0, color: '#22c55e' }),
       createColumn({ id: 'col-2', name: 'Problem', sortOrder: 1, color: '#ef4444', cards: [] }),

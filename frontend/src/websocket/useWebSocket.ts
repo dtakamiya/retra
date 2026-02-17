@@ -75,9 +75,14 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
         client.subscribe(`/topic/board/${slug}/cards`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
           switch (data.type) {
-            case 'CARD_CREATED':
-              handleCardCreated(data.payload as Card);
+            case 'CARD_CREATED': {
+              const card = data.payload as Card & { isPrivateWriting?: boolean };
+              if (card.isPrivateWriting && card.participantId !== participantId) {
+                break;
+              }
+              handleCardCreated(card);
               break;
+            }
             case 'CARD_UPDATED':
               handleCardUpdated(data.payload as Card);
               break;

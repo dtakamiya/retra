@@ -36,6 +36,7 @@ interface BoardState {
   carryOverItems: CarryOverItem[];
   carryOverTeamName: string;
   kudos: Kudos[];
+  needsRefresh: boolean;
 
   setBoard: (board: Board) => void;
   setParticipant: (participant: Participant) => void;
@@ -46,6 +47,7 @@ interface BoardState {
   setCarryOverItems: (response: CarryOverItemsResponse) => void;
   updateCarryOverItemStatus: (actionItemId: string, newStatus: ActionItemStatus) => void;
   setKudos: (kudos: Kudos[]) => void;
+  clearNeedsRefresh: () => void;
 
   // WebSocket event handlers
   handleCardCreated: (card: Card) => void;
@@ -82,6 +84,7 @@ export const useBoardStore = create<BoardState>((set) => ({
   carryOverItems: [],
   carryOverTeamName: '',
   kudos: [],
+  needsRefresh: false,
 
   setBoard: (board) => set({ board }),
   setParticipant: (participant) => set({ participant }),
@@ -96,6 +99,7 @@ export const useBoardStore = create<BoardState>((set) => ({
       .filter((item) => item.status !== 'DONE'),
   })),
   setKudos: (kudos) => set({ kudos }),
+  clearNeedsRefresh: () => set({ needsRefresh: false }),
 
   handleCardCreated: (card) =>
     set((state) => {
@@ -244,7 +248,9 @@ export const useBoardStore = create<BoardState>((set) => ({
   handlePhaseChanged: (phase) =>
     set((state) => {
       if (!state.board) return state;
-      return { board: { ...state.board, phase } };
+      const previousPhase = state.board.phase;
+      const needsRefresh = previousPhase !== phase;
+      return { board: { ...state.board, phase }, needsRefresh };
     }),
 
   handleParticipantJoined: (participant) =>

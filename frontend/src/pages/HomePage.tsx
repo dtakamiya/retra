@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { LayoutGrid, Users, BarChart3, EyeOff, Sparkles } from 'lucide-react';
+import { LayoutGrid, Users, BarChart3, EyeOff, Sparkles, Lock } from 'lucide-react';
 import { api } from '../api/client';
 import { useToastStore } from '../store/toastStore';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -23,6 +23,7 @@ export function HomePage() {
   const [joinSlug, setJoinSlug] = useState('');
   const [teamName, setTeamName] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [isPrivateWriting, setIsPrivateWriting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -32,7 +33,7 @@ export function HomePage() {
     setLoading(true);
     setError('');
     try {
-      const board = await api.createBoard(title.trim(), framework, maxVotes, isAnonymous, teamName.trim() || undefined);
+      const board = await api.createBoard(title.trim(), framework, maxVotes, isAnonymous, teamName.trim() || undefined, isPrivateWriting);
       addToast('success', 'ボードを作成しました');
       navigate(`/board/${board.slug}`);
     } catch (err) {
@@ -213,6 +214,32 @@ export function HomePage() {
                   </div>
                 </label>
                 <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 ml-14">カードの作成者名を非表示にします（作成後は変更不可）</p>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <div
+                    role="switch"
+                    aria-checked={isPrivateWriting}
+                    tabIndex={0}
+                    onClick={() => setIsPrivateWriting(!isPrivateWriting)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsPrivateWriting(!isPrivateWriting); } }}
+                    className={`relative w-11 h-6 rounded-full transition-all ${
+                      isPrivateWriting ? 'bg-indigo-600 shadow-sm shadow-indigo-200 dark:shadow-indigo-900' : 'bg-gray-300 dark:bg-slate-600 group-hover:bg-gray-400 dark:group-hover:bg-slate-500'
+                    }`}
+                  >
+                    <div
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${
+                        isPrivateWriting ? 'translate-x-5' : ''
+                      }`}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Lock size={15} className="text-gray-400 dark:text-slate-500" />
+                    <span className="text-sm font-medium text-gray-700 dark:text-slate-300">プライベート記述モード</span>
+                  </div>
+                </label>
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 ml-14">記入フェーズ中は他の参加者のカードが見えません（投票フェーズで一斉公開）</p>
               </div>
 
               <button

@@ -19,6 +19,7 @@ class CreateBoardUseCase(
             framework = request.framework,
             maxVotesPerPerson = request.maxVotesPerPerson,
             isAnonymous = request.isAnonymous,
+            privateWriting = request.privateWriting,
             teamName = request.teamName
         )
 

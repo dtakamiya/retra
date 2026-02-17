@@ -49,6 +49,7 @@ class BoardControllerTest {
         phase = Phase.WRITING,
         maxVotesPerPerson = 5,
         isAnonymous = false,
+        privateWriting = false,
         columns = listOf(
             ColumnResponse("col-1", "Keep", 0, "#22c55e", emptyList()),
             ColumnResponse("col-2", "Problem", 1, "#ef4444", emptyList()),

@@ -1,4 +1,4 @@
-import { Copy, Check, EyeOff, Home, Heart } from 'lucide-react';
+import { Copy, Check, EyeOff, Home, Heart, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useBoardStore } from '../store/boardStore';
@@ -48,6 +48,15 @@ export function BoardHeader({ isKudosOpen, kudosCount, onKudosToggle }: Props) {
               {board.isAnonymous && (
                 <span className="flex-shrink-0 inline-flex items-center gap-1 text-[10px] bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-slate-400 px-2 py-0.5 rounded-full">
                   <EyeOff size={10} /> 匿名
+                </span>
+              )}
+              {board.privateWriting && (
+                <span className={`flex-shrink-0 inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full ${
+                  board.phase === 'WRITING'
+                    ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'
+                    : 'bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-slate-400'
+                }`}>
+                  <Lock size={10} /> プライベート
                 </span>
               )}
             </div>

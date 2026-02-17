@@ -16,6 +16,7 @@ data class CreateBoardRequest(
     @field:Min(1) @field:Max(20)
     val maxVotesPerPerson: Int = 5,
     val isAnonymous: Boolean = false,
+    val privateWriting: Boolean = false,
     @field:Size(max = 100)
     val teamName: String? = null
 )
@@ -40,6 +41,7 @@ data class BoardResponse(
     val phase: Phase,
     val maxVotesPerPerson: Int,
     val isAnonymous: Boolean,
+    val privateWriting: Boolean,
     val columns: List<ColumnResponse>,
     val participants: List<ParticipantResponse>,
     val createdAt: String,
@@ -51,7 +53,8 @@ data class ColumnResponse(
     val name: String,
     val sortOrder: Int,
     val color: String,
-    val cards: List<CardResponse>
+    val cards: List<CardResponse>,
+    val hiddenCardCount: Int = 0
 )
 
 data class ParticipantResponse(

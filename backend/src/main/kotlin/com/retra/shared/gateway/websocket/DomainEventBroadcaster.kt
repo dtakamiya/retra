@@ -50,7 +50,7 @@ class DomainEventBroadcaster(
                 voteCount = event.voteCount, sortOrder = event.sortOrder,
                 isAnonymous = event.isAnonymous,
                 createdAt = event.createdAt, updatedAt = event.updatedAt
-            ))
+            ) + mapOf("isPrivateWriting" to event.isPrivateWriting))
         )
     }
 

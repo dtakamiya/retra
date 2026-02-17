@@ -203,4 +203,40 @@ describe('ColumnView', () => {
 
     expect(screen.queryByLabelText(/議論進捗/)).not.toBeInTheDocument()
   })
+
+  it('hiddenCardCount > 0 の場合に非表示バッジが表示される', () => {
+    const column = createColumn({
+      name: 'Keep',
+      cards: [createCard({ id: 'c-1' })],
+      hiddenCardCount: 3,
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant(),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<ColumnView column={column} />)
+
+    expect(screen.getByText('+3件非表示')).toBeInTheDocument()
+  })
+
+  it('hiddenCardCount === 0 の場合は非表示バッジが表示されない', () => {
+    const column = createColumn({
+      name: 'Keep',
+      cards: [createCard({ id: 'c-1' })],
+      hiddenCardCount: 0,
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant(),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<ColumnView column={column} />)
+
+    expect(screen.queryByText(/件非表示/)).not.toBeInTheDocument()
+  })
 })

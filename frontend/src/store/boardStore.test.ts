@@ -24,6 +24,7 @@ describe('boardStore', () => {
       actionItems: [],
       carryOverItems: [],
       carryOverTeamName: '',
+      needsRefresh: false,
     });
   });
 
@@ -319,6 +320,35 @@ describe('boardStore', () => {
 
     const state = useBoardStore.getState();
     expect(state.board!.phase).toBe('VOTING');
+  });
+
+  it('handlePhaseChanged でフェーズ変更時に needsRefresh が true にセットされる', () => {
+    const board = createBoard({ phase: 'WRITING' });
+    useBoardStore.setState({ board, needsRefresh: false });
+
+    useBoardStore.getState().handlePhaseChanged('VOTING');
+
+    const state = useBoardStore.getState();
+    expect(state.needsRefresh).toBe(true);
+  });
+
+  it('clearNeedsRefresh で needsRefresh が false にリセットされる', () => {
+    useBoardStore.setState({ needsRefresh: true });
+
+    useBoardStore.getState().clearNeedsRefresh();
+
+    const state = useBoardStore.getState();
+    expect(state.needsRefresh).toBe(false);
+  });
+
+  it('handlePhaseChanged with null board returns unchanged state', () => {
+    useBoardStore.setState({ board: null, needsRefresh: false });
+
+    useBoardStore.getState().handlePhaseChanged('VOTING');
+
+    const state = useBoardStore.getState();
+    expect(state.board).toBeNull();
+    expect(state.needsRefresh).toBe(false);
   });
 
   // --- handleParticipantJoined ---

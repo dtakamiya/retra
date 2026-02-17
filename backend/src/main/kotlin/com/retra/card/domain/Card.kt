@@ -179,6 +179,7 @@ open class Card(
                     voteCount = 0,
                     sortOrder = sortOrder,
                     isAnonymous = board.isAnonymous,
+                    isPrivateWriting = board.privateWriting,
                     createdAt = now,
                     updatedAt = now
                 )

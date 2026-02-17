@@ -48,10 +48,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export const api = {
   // Board
-  createBoard(title: string, framework: Framework, maxVotesPerPerson: number = 5, isAnonymous: boolean = false, teamName?: string): Promise<Board> {
+  createBoard(title: string, framework: Framework, maxVotesPerPerson: number = 5, isAnonymous: boolean = false, teamName?: string, privateWriting: boolean = false): Promise<Board> {
     return request('/boards', {
       method: 'POST',
-      body: JSON.stringify({ title, framework, maxVotesPerPerson, isAnonymous, teamName }),
+      body: JSON.stringify({ title, framework, maxVotesPerPerson, isAnonymous, teamName, privateWriting }),
     });
   },
 

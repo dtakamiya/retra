@@ -86,6 +86,11 @@ export function ColumnView({ column }: Props) {
             >
               {column.cards.length}
             </span>
+            {column.hiddenCardCount > 0 && (
+              <span className="text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+                +{column.hiddenCardCount}件非表示
+              </span>
+            )}
           </div>
           {columnDescriptions[column.name] && (
             <p className="text-[11px] text-gray-400 mt-0.5 ml-4">{columnDescriptions[column.name]}</p>

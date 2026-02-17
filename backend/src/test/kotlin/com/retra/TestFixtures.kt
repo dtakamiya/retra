@@ -27,6 +27,7 @@ object TestFixtures {
         phase: Phase = Phase.WRITING,
         maxVotesPerPerson: Int = 5,
         isAnonymous: Boolean = false,
+        privateWriting: Boolean = false,
         teamName: String? = null,
         createdAt: String = Instant.now().toString(),
         updatedAt: String = Instant.now().toString()
@@ -38,6 +39,7 @@ object TestFixtures {
         phase = phase,
         maxVotesPerPerson = maxVotesPerPerson,
         isAnonymous = isAnonymous,
+        privateWriting = privateWriting,
         teamName = teamName,
         createdAt = createdAt,
         updatedAt = updatedAt

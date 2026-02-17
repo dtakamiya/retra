@@ -20,7 +20,7 @@ import type { KudosCategory } from '../types';
 export function BoardPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { board, participant, setBoard, setParticipant, setRemainingVotes, setTimer, isConnected, kudos, setKudos } = useBoardStore();
+  const { board, participant, setBoard, setParticipant, setRemainingVotes, setTimer, isConnected, kudos, setKudos, needsRefresh, clearNeedsRefresh } = useBoardStore();
   const addToast = useToastStore((s) => s.addToast);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -73,6 +73,18 @@ export function BoardPage() {
       api.getRemainingVotes(slug, participant.id).then(setRemainingVotes);
     }
   }, [slug, participant, board?.phase, setRemainingVotes]);
+
+  // Re-fetch board when needsRefresh is set (e.g., phase transition to reveal private cards)
+  useEffect(() => {
+    if (!needsRefresh || !slug) return;
+    const savedParticipantId = localStorage.getItem(`retra-participant-${slug}`);
+    api.getBoard(slug, savedParticipantId ?? undefined).then((boardData) => {
+      setBoard(boardData);
+      clearNeedsRefresh();
+    }).catch(() => {
+      clearNeedsRefresh();
+    });
+  }, [needsRefresh, slug, setBoard, clearNeedsRefresh]);
 
   const handleJoin = async (nickname: string) => {
     if (!slug) return;
