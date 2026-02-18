@@ -1,4 +1,4 @@
-name: Dependabot Auto-Merge
+name: Auto-Merge
 
 on: pull_request
 
@@ -8,15 +8,10 @@ permissions:
 
 jobs:
   auto-merge:
-    name: Auto-merge Dependabot PRs
+    name: Enable Auto-Merge
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
     steps:
-      - uses: dependabot/fetch-metadata@v2
-        id: metadata
-
-      - name: Auto-merge patch and minor updates
-        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
+      - name: Enable auto-merge
         run: gh pr merge "$PR_URL" --auto --squash
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
