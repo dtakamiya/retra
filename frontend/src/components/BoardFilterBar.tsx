@@ -35,7 +35,7 @@ export function BoardFilterBar({ filter, onFilterChange, showDiscussionFilter }:
   const hasActiveFilter = filter.searchText || filter.sortByVotes || filter.undiscussedOnly || filter.myCardsOnly;
 
   return (
-    <div className="flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-slate-800/40 border-b border-gray-100 dark:border-slate-700/50">
+    <div className="flex items-center gap-2 px-3 py-1.5">
       {/* Search input */}
       <div className="relative flex-shrink-0 w-48">
         <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" />
