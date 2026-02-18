@@ -6,6 +6,14 @@ import { useToastStore } from '../store/toastStore';
 import type { Phase } from '../types';
 import { PhaseTransitionDialog } from './PhaseTransitionDialog';
 
+const PHASE_TOOLTIPS: Record<Phase, string> = {
+  WRITING: 'カードを追加して意見を書きましょう',
+  VOTING: 'カードに投票しましょう',
+  DISCUSSION: '投票の多いカードから議論しましょう',
+  ACTION_ITEMS: 'アクションアイテムを作成しましょう',
+  CLOSED: 'レトロスペクティブ完了',
+};
+
 const PHASES: { key: Phase; label: string }[] = [
   { key: 'WRITING', label: '記入' },
   { key: 'VOTING', label: '投票' },
@@ -63,6 +71,7 @@ export function PhaseControl() {
                       ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300'
                       : 'text-gray-400 dark:text-slate-500'
                 }`}
+                title={i === currentIndex ? PHASE_TOOLTIPS[phase.key] : undefined}
               >
                 {i < currentIndex ? `✓ ${phase.label}` : phase.label}
               </div>

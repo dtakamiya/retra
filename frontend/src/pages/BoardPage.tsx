@@ -7,7 +7,6 @@ import { useWebSocket } from '../websocket/useWebSocket';
 import { NicknameModal } from '../components/NicknameModal';
 import { BoardHeader } from '../components/BoardHeader';
 import { BoardView } from '../components/BoardView';
-import { PhaseGuidance } from '../components/PhaseGuidance';
 import { ParticipantList } from '../components/ParticipantList';
 import { TimerDisplay } from '../components/TimerDisplay';
 import { ConnectionBanner } from '../components/ConnectionBanner';
@@ -169,7 +168,6 @@ export function BoardPage() {
         kudosCount={kudos.length}
         onKudosToggle={() => setIsKudosOpen(!isKudosOpen)}
       />
-      <PhaseGuidance phase={board.phase} />
 
       <div className="flex-1 flex">
         <div className="flex-1 overflow-x-auto">
