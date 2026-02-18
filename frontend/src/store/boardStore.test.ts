@@ -821,4 +821,76 @@ describe('boardStore', () => {
     expect(state.carryOverItems).toHaveLength(1);
     expect(state.carryOverItems[0].status).toBe('OPEN');
   });
+
+  // --- handleCardDiscussionMarked ---
+
+  it('handleCardDiscussionMarked updates isDiscussed to true', () => {
+    const card = createCard({ id: 'card-1', isDiscussed: false, discussionOrder: 0 });
+    const board = createBoard({
+      columns: [createColumn({ id: 'col-1', cards: [card] })],
+    });
+    useBoardStore.setState({ board });
+
+    useBoardStore.getState().handleCardDiscussionMarked({
+      cardId: 'card-1',
+      isDiscussed: true,
+      discussionOrder: 1,
+    });
+
+    const state = useBoardStore.getState();
+    const updated = state.board!.columns[0].cards[0];
+    expect(updated.isDiscussed).toBe(true);
+    expect(updated.discussionOrder).toBe(1);
+  });
+
+  it('handleCardDiscussionMarked updates isDiscussed to false', () => {
+    const card = createCard({ id: 'card-1', isDiscussed: true, discussionOrder: 1 });
+    const board = createBoard({
+      columns: [createColumn({ id: 'col-1', cards: [card] })],
+    });
+    useBoardStore.setState({ board });
+
+    useBoardStore.getState().handleCardDiscussionMarked({
+      cardId: 'card-1',
+      isDiscussed: false,
+      discussionOrder: 0,
+    });
+
+    const state = useBoardStore.getState();
+    const updated = state.board!.columns[0].cards[0];
+    expect(updated.isDiscussed).toBe(false);
+    expect(updated.discussionOrder).toBe(0);
+  });
+
+  it('handleCardDiscussionMarked only updates matching card', () => {
+    const card1 = createCard({ id: 'card-1', isDiscussed: false });
+    const card2 = createCard({ id: 'card-2', isDiscussed: false });
+    const board = createBoard({
+      columns: [createColumn({ id: 'col-1', cards: [card1, card2] })],
+    });
+    useBoardStore.setState({ board });
+
+    useBoardStore.getState().handleCardDiscussionMarked({
+      cardId: 'card-1',
+      isDiscussed: true,
+      discussionOrder: 1,
+    });
+
+    const state = useBoardStore.getState();
+    const cards = state.board!.columns[0].cards;
+    expect(cards[0].isDiscussed).toBe(true);
+    expect(cards[1].isDiscussed).toBe(false);
+  });
+
+  it('handleCardDiscussionMarked with null board returns unchanged state', () => {
+    useBoardStore.setState({ board: null });
+
+    useBoardStore.getState().handleCardDiscussionMarked({
+      cardId: 'card-1',
+      isDiscussed: true,
+      discussionOrder: 1,
+    });
+
+    expect(useBoardStore.getState().board).toBeNull();
+  });
 });

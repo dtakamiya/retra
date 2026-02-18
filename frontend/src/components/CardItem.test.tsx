@@ -577,6 +577,165 @@ describe('CardItem', () => {
     expect(screen.getByText('3/2000')).toBeInTheDocument()
   })
 
+  // --- isDiscussed ---
+
+  it('applies opacity-50 style when card is discussed', () => {
+    const card = createCard({ participantId: 'p-1', isDiscussed: true })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    const { container } = render(<CardItem card={card} columnColor="#22c55e" />)
+
+    const cardEl = container.firstElementChild as HTMLElement
+    expect(cardEl.className).toContain('opacity-50')
+  })
+
+  it('does NOT apply opacity-50 when card is not discussed', () => {
+    const card = createCard({ participantId: 'p-1', isDiscussed: false })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    const { container } = render(<CardItem card={card} columnColor="#22c55e" />)
+
+    const cardEl = container.firstElementChild as HTMLElement
+    expect(cardEl.className).not.toContain('opacity-50')
+  })
+
+  it('shows discussion mark button for facilitator in DISCUSSION phase', () => {
+    const card = createCard({ participantId: 'p-1', isDiscussed: false })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1', isFacilitator: true }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={card} columnColor="#22c55e" />)
+
+    const btn = screen.getByLabelText('議論済みにマーク')
+    expect(btn).toBeInTheDocument()
+    expect(btn).not.toBeDisabled()
+  })
+
+  it('shows discussion mark button as disabled for non-facilitator in DISCUSSION phase', () => {
+    const card = createCard({ participantId: 'p-2', isDiscussed: false })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-2', isFacilitator: false }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={card} columnColor="#22c55e" />)
+
+    const btn = screen.getByLabelText('議論済みにマーク')
+    expect(btn).toBeDisabled()
+  })
+
+  it('does NOT show discussion mark button in WRITING phase', () => {
+    const card = createCard({ participantId: 'p-1' })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant({ id: 'p-1', isFacilitator: true }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={card} columnColor="#22c55e" />)
+
+    expect(screen.queryByLabelText('議論済みにマーク')).not.toBeInTheDocument()
+  })
+
+  it('clicking discussion mark button calls api.markCardDiscussed', async () => {
+    const user = userEvent.setup()
+    const card = createCard({ participantId: 'p-1', isDiscussed: false })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant({ id: 'p-1', isFacilitator: true }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+    vi.mocked(api.markCardDiscussed).mockResolvedValue(undefined as never)
+
+    render(<CardItem card={card} columnColor="#22c55e" />)
+
+    await user.click(screen.getByLabelText('議論済みにマーク'))
+
+    expect(api.markCardDiscussed).toHaveBeenCalledWith('test1234', 'card-1', 'p-1', true)
+  })
+
+  // --- isAnonymous ---
+
+  it('shows "匿名" label instead of author name when board is anonymous and authorNickname is null', () => {
+    const card = createCard({ participantId: 'p-2', authorNickname: null as unknown as string })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ isAnonymous: true }),
+      participant: createParticipant({ id: 'p-2' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={card} columnColor="#22c55e" />)
+
+    expect(screen.getByText('匿名')).toBeInTheDocument()
+    expect(screen.queryByText('TestUser')).not.toBeInTheDocument()
+  })
+
+  it('shows author name when board is not anonymous', () => {
+    const card = createCard({ participantId: 'p-1', authorNickname: 'TestUser' })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ isAnonymous: false }),
+      participant: createParticipant({ id: 'p-1' }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={card} columnColor="#22c55e" />)
+
+    expect(screen.getByText('TestUser')).toBeInTheDocument()
+    expect(screen.queryByText('匿名')).not.toBeInTheDocument()
+  })
+
+  // --- remainingVotes = 0 ---
+
+  it('disables vote button when remainingVotes is 0 and user has not voted', () => {
+    const card = createCard({ participantId: 'p-2', voteCount: 0, votedParticipantIds: [] })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'VOTING' }),
+      participant: createParticipant({ id: 'p-1', isFacilitator: false }),
+      remainingVotes: createRemainingVotes({ remaining: 0, used: 5 }),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={card} columnColor="#22c55e" />)
+
+    const voteBtn = screen.getByTestId('vote-button')
+    expect(voteBtn).toBeDisabled()
+  })
+
+  it('allows unvote even when remainingVotes is 0 (already voted)', () => {
+    const card = createCard({ participantId: 'p-2', voteCount: 1, votedParticipantIds: ['p-1'] })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'VOTING' }),
+      participant: createParticipant({ id: 'p-1', isFacilitator: false }),
+      remainingVotes: createRemainingVotes({ remaining: 0, used: 5 }),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<CardItem card={card} columnColor="#22c55e" />)
+
+    const voteBtn = screen.getByTestId('vote-button')
+    expect(voteBtn).not.toBeDisabled()
+  })
+
   it('auto-expands memos when transitioning to DISCUSSION phase with memos', () => {
     const card = createCard({
       participantId: 'p-1',
