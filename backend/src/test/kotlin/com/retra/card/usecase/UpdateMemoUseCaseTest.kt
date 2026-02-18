@@ -7,6 +7,7 @@ import com.retra.card.domain.Memo
 import com.retra.card.domain.MemoRepository
 import com.retra.shared.domain.BadRequestException
 import com.retra.shared.domain.ForbiddenException
+import com.retra.shared.domain.NotFoundException
 import com.retra.shared.gateway.event.SpringDomainEventPublisher
 import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
@@ -102,6 +103,26 @@ class UpdateMemoUseCaseTest {
         val longContent = "a".repeat(2001)
         assertFailsWith<BadRequestException> {
             useCase.execute("test1234", "card-1", "memo-1", UpdateMemoRequest(longContent, "p-1"))
+        }
+    }
+
+    @Test
+    fun `存在しないボードで NotFoundException`() {
+        every { boardRepository.findBySlug(any()) } returns null
+
+        assertFailsWith<NotFoundException> {
+            useCase.execute("unknown", "card-1", "memo-1", UpdateMemoRequest("Updated", "p-1"))
+        }
+    }
+
+    @Test
+    fun `存在しないメモで NotFoundException`() {
+        val board = TestFixtures.board(phase = Phase.DISCUSSION)
+        every { boardRepository.findBySlug(any()) } returns board
+        every { memoRepository.findById("memo-1") } returns null
+
+        assertFailsWith<NotFoundException> {
+            useCase.execute("test1234", "card-1", "memo-1", UpdateMemoRequest("Updated", "p-1"))
         }
     }
 }
