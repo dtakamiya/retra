@@ -1,10 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { BoardPage } from './BoardPage'
 import { useBoardStore } from '../store/boardStore'
+import { useToastStore } from '../store/toastStore'
 import { api } from '../api/client'
-import { createBoard, createParticipant, createTimerState } from '../test/fixtures'
+import { createBoard, createKudos, createParticipant, createTimerState } from '../test/fixtures'
 import type { Board, Participant } from '../types'
 
 // --- Mocks ---
@@ -20,6 +22,14 @@ vi.mock('react-router-dom', async () => {
 })
 
 vi.mock('../store/boardStore')
+vi.mock('../store/toastStore', () => ({
+  useToastStore: vi.fn((selector: (s: { addToast: ReturnType<typeof vi.fn> }) => unknown) =>
+    selector({ addToast: mockAddToast })
+  ),
+}))
+
+const mockAddToast = vi.fn()
+
 vi.mock('../api/client', () => ({
   api: {
     getBoard: vi.fn(),
@@ -81,6 +91,20 @@ vi.mock('../components/BoardSkeleton', () => ({
   BoardSkeleton: () => <div data-testid="board-skeleton">ボードを読み込み中...</div>,
 }))
 
+vi.mock('../components/CarryOverPanel', () => ({
+  CarryOverPanel: () => <div data-testid="carry-over-panel">CarryOverPanel</div>,
+}))
+
+vi.mock('../components/KudosPanel', () => ({
+  KudosPanel: ({ onSend, onDelete, onClose }: { onSend: (r: string, c: string, m?: string) => void; onDelete: (id: string) => void; onClose: () => void }) => (
+    <div data-testid="kudos-panel">
+      <button data-testid="kudos-send" onClick={() => onSend('p-2', 'GREAT_JOB', 'Nice!')}>Send</button>
+      <button data-testid="kudos-delete" onClick={() => onDelete('kudos-1')}>Delete</button>
+      <button data-testid="kudos-close" onClick={onClose}>Close</button>
+    </div>
+  ),
+}))
+
 // --- Helpers ---
 
 function renderBoardPage() {
@@ -99,11 +123,13 @@ function mockStoreState(overrides: Partial<ReturnType<typeof useBoardStore>> = {
     participant: null as Participant | null,
     isConnected: true,
     kudos: [],
+    needsRefresh: false,
     setBoard: vi.fn(),
     setParticipant: vi.fn(),
     setRemainingVotes: vi.fn(),
     setTimer: vi.fn(),
     setKudos: vi.fn(),
+    clearNeedsRefresh: vi.fn(),
   }
   vi.mocked(useBoardStore).mockReturnValue({
     ...defaults,
@@ -312,7 +338,6 @@ describe('BoardPage', () => {
   })
 
   it('navigates to "/" when "ホームに戻る" button is clicked in error state', async () => {
-    const { default: userEvent } = await import('@testing-library/user-event')
     const user = userEvent.setup()
 
     mockStoreState()
@@ -329,5 +354,340 @@ describe('BoardPage', () => {
     await user.click(screen.getByText('ホームに戻る'))
 
     expect(mockNavigate).toHaveBeenCalledWith('/')
+  })
+
+  it('handles join flow successfully', async () => {
+    const user = userEvent.setup()
+    const board = createBoard()
+    const newParticipant = createParticipant({ id: 'p-new', nickname: 'NewUser' })
+    const setParticipant = vi.fn()
+    const setBoard = vi.fn()
+
+    mockStoreState({ board, participant: null, setParticipant, setBoard })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
+    vi.mocked(api.joinBoard).mockResolvedValue(newParticipant)
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('nickname-modal')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByText('Join'))
+
+    await waitFor(() => {
+      expect(api.joinBoard).toHaveBeenCalledWith('test1234', 'NewUser')
+    })
+    expect(setParticipant).toHaveBeenCalledWith(newParticipant)
+    expect(localStorage.getItem('retra-participant-test1234')).toBe('p-new')
+    expect(mockAddToast).toHaveBeenCalledWith('success', 'NewUser としてボードに参加しました')
+  })
+
+  it('shows error toast when join fails', async () => {
+    const user = userEvent.setup()
+    const board = createBoard()
+
+    mockStoreState({ board, participant: null })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
+    vi.mocked(api.joinBoard).mockRejectedValue(new Error('Join failed'))
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('nickname-modal')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByText('Join'))
+
+    await waitFor(() => {
+      expect(mockAddToast).toHaveBeenCalledWith('error', 'ボードへの参加に失敗しました')
+    })
+  })
+
+  it('shows ConnectionBanner when disconnected', async () => {
+    const participant = createParticipant()
+    const board = createBoard()
+    mockStoreState({ board, participant, isConnected: false })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
+    localStorage.setItem('retra-participant-test1234', 'p-1')
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('connection-banner')).toBeInTheDocument()
+    })
+  })
+
+  it('does not show ConnectionBanner when connected', async () => {
+    const participant = createParticipant()
+    const board = createBoard()
+    mockStoreState({ board, participant, isConnected: true })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
+    localStorage.setItem('retra-participant-test1234', 'p-1')
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('board-header')).toBeInTheDocument()
+    })
+    expect(screen.queryByTestId('connection-banner')).not.toBeInTheDocument()
+  })
+
+  it('opens and closes sidebar panel', async () => {
+    const user = userEvent.setup()
+    const participant = createParticipant()
+    const board = createBoard()
+    mockStoreState({ board, participant, isConnected: true })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
+    localStorage.setItem('retra-participant-test1234', 'p-1')
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('サイドパネルを開く')).toBeInTheDocument()
+    })
+
+    // Open sidebar
+    await user.click(screen.getByLabelText('サイドパネルを開く'))
+
+    await waitFor(() => {
+      expect(screen.getByText('ボード情報')).toBeInTheDocument()
+    })
+    expect(screen.getByLabelText('サイドパネルを閉じる')).toBeInTheDocument()
+    expect(screen.getByTestId('timer-display')).toBeInTheDocument()
+    expect(screen.getByTestId('participant-list')).toBeInTheDocument()
+    expect(screen.getByTestId('carry-over-panel')).toBeInTheDocument()
+
+    // Close sidebar
+    await user.click(screen.getByLabelText('サイドパネルを閉じる'))
+
+    await waitFor(() => {
+      expect(screen.queryByText('ボード情報')).not.toBeInTheDocument()
+    })
+  })
+
+  it('toggles kudos panel via header', async () => {
+    const user = userEvent.setup()
+    const participant = createParticipant()
+    const board = createBoard()
+    mockStoreState({ board, participant, isConnected: true })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
+    localStorage.setItem('retra-participant-test1234', 'p-1')
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('board-header')).toBeInTheDocument()
+    })
+
+    // Toggle kudos open (click header mock which calls onKudosToggle)
+    await user.click(screen.getByTestId('board-header'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('kudos-panel')).toBeInTheDocument()
+    })
+  })
+
+  it('handles send kudos successfully', async () => {
+    const user = userEvent.setup()
+    const participant = createParticipant()
+    const board = createBoard()
+    mockStoreState({ board, participant, isConnected: true })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
+    vi.mocked(api.sendKudos).mockResolvedValue(createKudos())
+    localStorage.setItem('retra-participant-test1234', 'p-1')
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('board-header')).toBeInTheDocument()
+    })
+
+    // Open kudos panel
+    await user.click(screen.getByTestId('board-header'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('kudos-panel')).toBeInTheDocument()
+    })
+
+    // Send kudos
+    await user.click(screen.getByTestId('kudos-send'))
+
+    await waitFor(() => {
+      expect(api.sendKudos).toHaveBeenCalledWith('test1234', 'p-1', 'p-2', 'GREAT_JOB', 'Nice!')
+    })
+  })
+
+  it('shows error toast when send kudos fails', async () => {
+    const user = userEvent.setup()
+    const participant = createParticipant()
+    const board = createBoard()
+    mockStoreState({ board, participant, isConnected: true })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
+    vi.mocked(api.sendKudos).mockRejectedValue(new Error('Send failed'))
+    localStorage.setItem('retra-participant-test1234', 'p-1')
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('board-header')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByTestId('board-header'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('kudos-panel')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByTestId('kudos-send'))
+
+    await waitFor(() => {
+      expect(mockAddToast).toHaveBeenCalledWith('error', 'Kudosの送信に失敗しました')
+    })
+  })
+
+  it('handles delete kudos successfully', async () => {
+    const user = userEvent.setup()
+    const participant = createParticipant()
+    const board = createBoard()
+    mockStoreState({ board, participant, isConnected: true })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
+    vi.mocked(api.deleteKudos).mockResolvedValue(undefined)
+    localStorage.setItem('retra-participant-test1234', 'p-1')
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('board-header')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByTestId('board-header'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('kudos-panel')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByTestId('kudos-delete'))
+
+    await waitFor(() => {
+      expect(api.deleteKudos).toHaveBeenCalledWith('test1234', 'kudos-1', 'p-1')
+    })
+  })
+
+  it('shows error toast when delete kudos fails', async () => {
+    const user = userEvent.setup()
+    const participant = createParticipant()
+    const board = createBoard()
+    mockStoreState({ board, participant, isConnected: true })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
+    vi.mocked(api.deleteKudos).mockRejectedValue(new Error('Delete failed'))
+    localStorage.setItem('retra-participant-test1234', 'p-1')
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('board-header')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByTestId('board-header'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('kudos-panel')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByTestId('kudos-delete'))
+
+    await waitFor(() => {
+      expect(mockAddToast).toHaveBeenCalledWith('error', 'Kudosの削除に失敗しました')
+    })
+  })
+
+  it('loads remaining votes when phase is VOTING and participant exists', async () => {
+    const participant = createParticipant()
+    const board = createBoard({ phase: 'VOTING' })
+    const setRemainingVotes = vi.fn()
+    mockStoreState({ board, participant, setRemainingVotes })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
+    vi.mocked(api.getRemainingVotes).mockResolvedValue({ participantId: 'p-1', remaining: 5, max: 5, used: 0 })
+    localStorage.setItem('retra-participant-test1234', 'p-1')
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(api.getRemainingVotes).toHaveBeenCalledWith('test1234', 'p-1')
+    })
+  })
+
+  it('re-fetches board when needsRefresh is true', async () => {
+    const participant = createParticipant()
+    const board = createBoard()
+    const setBoard = vi.fn()
+    const clearNeedsRefresh = vi.fn()
+    mockStoreState({ board, participant, needsRefresh: true, setBoard, clearNeedsRefresh })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
+    localStorage.setItem('retra-participant-test1234', 'p-1')
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      // getBoard called twice: once for initial load, once for refresh
+      expect(api.getBoard).toHaveBeenCalledTimes(2)
+    })
+    expect(clearNeedsRefresh).toHaveBeenCalled()
+  })
+
+  it('closes kudos panel via close button', async () => {
+    const user = userEvent.setup()
+    const participant = createParticipant()
+    const board = createBoard()
+    mockStoreState({ board, participant, isConnected: true })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockResolvedValue([])
+    localStorage.setItem('retra-participant-test1234', 'p-1')
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('board-header')).toBeInTheDocument()
+    })
+
+    // Open kudos
+    await user.click(screen.getByTestId('board-header'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('kudos-panel')).toBeInTheDocument()
+    })
+
+    // Close kudos
+    await user.click(screen.getByTestId('kudos-close'))
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('kudos-panel')).not.toBeInTheDocument()
+    })
   })
 })
