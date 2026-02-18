@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { BarChart3, Search, ArrowLeft, FileText, Vote, Users, ListTodo } from 'lucide-react';
 import { api } from '../api/client';
+import { useToastStore } from '../store/toastStore';
 import { RetroHistoryList } from '../components/RetroHistoryList';
 import { TrendChart } from '../components/TrendChart';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -28,6 +29,7 @@ export function TeamDashboardPage() {
   const [history, setHistory] = useState<SnapshotSummary[]>([]);
   const [trends, setTrends] = useState<TrendData | null>(null);
   const [loading, setLoading] = useState(true);
+  const addToast = useToastStore((s) => s.addToast);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -39,11 +41,11 @@ export function TeamDashboardPage() {
       setHistory(historyData);
       setTrends(trendsData);
     } catch {
-      // handle error silently
+      addToast('error', 'データの読み込みに失敗しました');
     } finally {
       setLoading(false);
     }
-  }, [teamName]);
+  }, [teamName, addToast]);
 
   useEffect(() => {
     loadData();
