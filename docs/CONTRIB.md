@@ -4,7 +4,7 @@
 
 | Tool | Version | Notes |
 |------|---------|-------|
-| Java | 21 (Corretto) | `backend/gradle.properties` で JAVA_HOME を設定済み |
+| Java | 21 (Corretto) | `backend/gradle.properties` で `org.gradle.java.home` を設定可能 |
 | Node.js | 20+ | フロントエンド開発に必要 |
 | npm | 10+ | Node.js に同梱 |
 
@@ -24,7 +24,7 @@ cd backend
 ./gradlew build
 ```
 
-> Java 21 (Corretto) が必要です。`backend/gradle.properties` に `org.gradle.java.home` が設定されています。環境に合わせてパスを変更してください。
+> Java 21 (Corretto) が必要です。システムのデフォルト Java が 21 でない場合は、`backend/gradle.properties` に `org.gradle.java.home` を設定してください。
 
 ### 3. フロントエンドのセットアップ
 
@@ -214,15 +214,15 @@ Conventional Commits 形式を使用:
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Spring Boot | 3.4.1 | Web フレームワーク |
-| Kotlin | 2.0.21 | 言語 |
+| Spring Boot | 3.5.10 | Web フレームワーク |
+| Kotlin | 2.3.10 | 言語 |
 | Spring Data JPA | - | データアクセス |
 | Spring WebSocket | - | STOMP リアルタイム通信 |
 | Flyway | - | DB マイグレーション |
-| SQLite JDBC | 3.45.1.0 | DB ドライバ |
-| Hibernate SQLite Dialect | 6.4.2.Final | JPA Dialect |
+| SQLite JDBC | 3.51.2.0 | DB ドライバ |
+| Hibernate SQLite Dialect | (managed) | JPA Dialect |
 | Jackson Kotlin Module | - | JSON シリアライゼーション |
-| Apache Commons CSV | 1.12.0 | CSV エクスポート |
+| Apache Commons CSV | 1.14.1 | CSV エクスポート |
 
 ### Frontend
 
@@ -235,7 +235,7 @@ Conventional Commits 形式を使用:
 | TailwindCSS | ^4.1.18 | CSS フレームワーク |
 | @stomp/stompjs | ^7.3.0 | WebSocket (STOMP) クライアント |
 | React Router | ^7.13.0 | ルーティング |
-| Lucide React | ^0.563.0 | アイコン |
+| Lucide React | ^0.574.0 | アイコン |
 | @dnd-kit/core | ^6.3.1 | ドラッグ&ドロップ (コア) |
 | @dnd-kit/sortable | ^10.0.0 | ドラッグ&ドロップ (ソート) |
 | Recharts | ^3.7.0 | ダッシュボード用チャート |
