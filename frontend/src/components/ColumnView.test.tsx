@@ -189,6 +189,31 @@ describe('ColumnView', () => {
     expect(cardContents[2]).toHaveTextContent('Second tied')
   })
 
+  it('sorts discussed cards to bottom in DISCUSSION phase', () => {
+    const column = createColumn({
+      name: 'Keep',
+      cards: [
+        createCard({ id: 'c-1', content: 'Discussed card', sortOrder: 0, voteCount: 5, isDiscussed: true }),
+        createCard({ id: 'c-2', content: 'Undiscussed low', sortOrder: 1, voteCount: 1, isDiscussed: false }),
+        createCard({ id: 'c-3', content: 'Undiscussed high', sortOrder: 2, voteCount: 3, isDiscussed: false }),
+      ],
+    })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'DISCUSSION' }),
+      participant: createParticipant(),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<ColumnView column={column} />)
+
+    const cardContents = screen.getAllByText(/iscussed/)
+    // Undiscussed cards first (sorted by voteCount desc), then discussed cards
+    expect(cardContents[0]).toHaveTextContent('Undiscussed high')
+    expect(cardContents[1]).toHaveTextContent('Undiscussed low')
+    expect(cardContents[2]).toHaveTextContent('Discussed card')
+  })
+
   it('shows discussion progress in DISCUSSION phase', () => {
     const column = createColumn({
       name: 'Keep',
