@@ -32,7 +32,7 @@ test.describe('議論フェーズでの投票数表示', () => {
     test('議論フェーズに進められる', async ({ page }) => {
         await setupVotingPhase(page);
 
-        await page.locator('button', { hasText: '次へ: 議論' }).click();
+        await page.getByRole('button', { name: '次へ: 議論' }).click();
         await page.locator('button', { hasText: '議論へ進む' }).click();
         await expect(page.locator('.bg-indigo-600.text-white', { hasText: '議論' }).first()).toBeVisible();
     });

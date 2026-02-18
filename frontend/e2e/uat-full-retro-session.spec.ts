@@ -48,7 +48,7 @@ test.describe('UAT: 単独ファシリテーターKPT完走', () => {
         // === フェーズ5: 完了 ===
         await advanceToPhase(page, 'CLOSED');
 
-        await expect(page.locator('button', { hasText: '次へ' })).not.toBeVisible();
+        await expect(page.getByRole('button', { name: /次へ/ })).not.toBeVisible();
         await expect(page.getByText('チームの連携が良かった')).toBeVisible();
         await expect(page.getByText('デプロイに時間がかかった')).toBeVisible();
 
@@ -80,9 +80,12 @@ test.describe('UAT: チームでのレトロスペクティブ（複数参加者
         const member1 = await joinBoardAsMember(browser, boardUrl, '田中');
         const member2 = await joinBoardAsMember(browser, boardUrl, '佐藤');
 
-        // 参加者同期
+        // サイドパネルを開いて参加者同期を確認
+        await facilitatorPage.getByRole('button', { name: 'サイドパネルを開く' }).click();
         await expect(facilitatorPage.getByText('田中')).toBeVisible({ timeout: 10000 });
         await expect(facilitatorPage.getByText('佐藤')).toBeVisible({ timeout: 10000 });
+        // サイドパネルを閉じる
+        await facilitatorPage.getByRole('button', { name: 'サイドパネルを閉じる' }).click();
 
         // === 記入フェーズ ===
         await addCard(member1.page, '朝会が有意義だった', 0);
@@ -100,7 +103,7 @@ test.describe('UAT: チームでのレトロスペクティブ（複数参加者
         ).toBeVisible({ timeout: 10000 });
 
         // メンバーにはフェーズ制御ボタンが非表示
-        await expect(member1.page.locator('button', { hasText: '次へ' })).not.toBeVisible();
+        await expect(member1.page.getByRole('button', { name: /次へ/ })).not.toBeVisible();
 
         // 投票同期
         const member1VoteButtons = member1.page.locator('[data-testid="vote-button"]');
