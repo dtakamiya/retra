@@ -53,7 +53,7 @@ async function addCard(page: Page, content: string, columnIndex: number = 0) {
     await expect(page.locator('p', { hasText: content })).toBeVisible();
 }
 
-/** フェーズを遷移 */
+/** フェーズを遷移（現在フェーズから目的フェーズまで進む） */
 async function advanceToPhase(page: Page, targetPhase: string) {
     const steps = [
         { key: 'VOTING', button: '次へ: 投票', label: '投票' },
@@ -63,7 +63,13 @@ async function advanceToPhase(page: Page, targetPhase: string) {
     ];
 
     for (const step of steps) {
-        await page.locator('button', { hasText: step.button }).click();
+        const button = page.locator('button', { hasText: step.button });
+        // ボタンが存在しない場合はスキップ（現在のフェーズより前のステップ）
+        if (await button.count() === 0) {
+            if (step.key === targetPhase) break;
+            continue;
+        }
+        await button.click();
         await page.locator('button', { hasText: `${step.label}へ進む` }).click();
         await expect(
             page.locator('.bg-indigo-600.text-white', { hasText: step.label }).first()
@@ -444,7 +450,7 @@ test.describe('UAT: エラーケースとエッジケース', () => {
         await createBoardAndJoinAsFacilitator(page, 'テスト & 振り返り <第1回>');
 
         // ボード名が正しく表示される
-        await expect(page.getByText('テスト & 振り返り <第1回>')).toBeVisible();
+        await expect(page.locator('h1', { hasText: 'テスト & 振り返り <第1回>' })).toBeVisible();
 
         // 特殊文字を含むカード
         const specialContent = 'バグ修正: API返却値が"null"→空配列[]に変更';

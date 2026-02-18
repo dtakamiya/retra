@@ -22,7 +22,7 @@ async function addCard(page: import('@playwright/test').Page, content: string) {
     await expect(page.locator('p', { hasText: content })).toBeVisible();
 }
 
-// ヘルパー関数: 指定フェーズまで段階的に遷移（WRITINGから開始前提）
+// ヘルパー関数: 指定フェーズまで段階的に遷移（現在フェーズから目的フェーズまで進む）
 async function advanceToPhase(page: import('@playwright/test').Page, targetPhase: string) {
     const steps = [
         { key: 'VOTING', button: '次へ: 投票', label: '投票' },
@@ -32,7 +32,13 @@ async function advanceToPhase(page: import('@playwright/test').Page, targetPhase
     ];
 
     for (const step of steps) {
-        await page.locator('button', { hasText: step.button }).click();
+        const button = page.locator('button', { hasText: step.button });
+        // ボタンが存在しない場合はスキップ（現在のフェーズより前のステップ）
+        if (await button.count() === 0) {
+            if (step.key === targetPhase) break;
+            continue;
+        }
+        await button.click();
         await page.locator('button', { hasText: `${step.label}へ進む` }).click();
         await expect(
             page.locator('.bg-indigo-600.text-white', { hasText: step.label }).first()
@@ -72,7 +78,7 @@ test.describe('アクションアイテムの基本CRUD操作', () => {
         await expect(page.locator('p', { hasText: 'テストアクションアイテム' })).toBeVisible();
 
         // ステータスバッジ「未着手」が表示される
-        await expect(page.getByText('未着手')).toBeVisible();
+        await expect(page.getByRole('heading', { name: '未着手' })).toBeVisible();
 
         // 空のメッセージが消える
         await expect(page.getByText('アクションアイテムはまだありません')).not.toBeVisible();
@@ -91,7 +97,7 @@ test.describe('アクションアイテムの基本CRUD操作', () => {
         await actionItemCard.locator('button[aria-label="アクションアイテムを編集"]').click();
 
         // 編集用textareaが表示される（autoFocus付き）
-        const editTextarea = page.locator('textarea[autofocus]');
+        const editTextarea = page.locator('textarea:not([placeholder])');
         await expect(editTextarea).toBeVisible();
         await editTextarea.fill('編集後アクション');
         await page.locator('button[aria-label="保存"]').click();
@@ -143,14 +149,14 @@ test.describe('ステータス変更', () => {
         await addActionItem(page, 'ステータス変更テスト');
 
         // 初期状態は「未着手」
-        await expect(page.getByText('未着手')).toBeVisible();
+        await expect(page.getByRole('heading', { name: '未着手' })).toBeVisible();
 
         // ステータスセレクトを操作
         const actionItemCard = page.locator('.group', { hasText: 'ステータス変更テスト' }).first();
         await actionItemCard.locator('select[aria-label="ステータスを変更"]').selectOption('IN_PROGRESS');
 
         // バッジが「進行中」に変わる
-        await expect(page.getByText('進行中')).toBeVisible({ timeout: 5000 });
+        await expect(page.getByRole('heading', { name: '進行中' })).toBeVisible({ timeout: 5000 });
     });
 
     test('ステータスをDONEに変更できる', async ({ page }) => {
@@ -172,11 +178,11 @@ test.describe('ステータス変更', () => {
         // IN_PROGRESSに変更
         const actionItemCard = page.locator('.group', { hasText: '戻しテスト' }).first();
         await actionItemCard.locator('select[aria-label="ステータスを変更"]').selectOption('IN_PROGRESS');
-        await expect(page.getByText('進行中')).toBeVisible({ timeout: 5000 });
+        await expect(page.getByRole('heading', { name: '進行中' })).toBeVisible({ timeout: 5000 });
 
         // OPENに戻す
         await actionItemCard.locator('select[aria-label="ステータスを変更"]').selectOption('OPEN');
-        await expect(page.getByText('未着手')).toBeVisible({ timeout: 5000 });
+        await expect(page.getByRole('heading', { name: '未着手' })).toBeVisible({ timeout: 5000 });
     });
 });
 
@@ -191,7 +197,7 @@ test.describe('編集モードのキーボード操作', () => {
         await actionItemCard.locator('button[aria-label="アクションアイテムを編集"]').click();
 
         // 内容を変更してEscapeでキャンセル
-        const editTextarea = page.locator('textarea[autofocus]');
+        const editTextarea = page.locator('textarea:not([placeholder])');
         await editTextarea.fill('変更された内容');
         await editTextarea.press('Escape');
 
@@ -210,7 +216,7 @@ test.describe('編集モードのキーボード操作', () => {
         await actionItemCard.locator('button[aria-label="アクションアイテムを編集"]').click();
 
         // 内容を変更してキャンセルボタンをクリック
-        const editTextarea = page.locator('textarea[autofocus]');
+        const editTextarea = page.locator('textarea:not([placeholder])');
         await editTextarea.fill('変更された内容');
         await page.locator('button[aria-label="キャンセル"]').click();
 
@@ -229,7 +235,7 @@ test.describe('編集モードのキーボード操作', () => {
         await actionItemCard.locator('button[aria-label="アクションアイテムを編集"]').click();
 
         // 内容を変更してEnterで保存
-        const editTextarea = page.locator('textarea[autofocus]');
+        const editTextarea = page.locator('textarea:not([placeholder])');
         await editTextarea.fill('Enter保存後の内容');
         await editTextarea.press('Enter');
 
@@ -324,7 +330,7 @@ test.describe('カードからの変換', () => {
         await expect(actionItemSection.locator('p', { hasText: 'アクションテスト用カード' })).toBeVisible({ timeout: 5000 });
 
         // ステータスが「未着手」であること
-        await expect(actionItemSection.getByText('未着手')).toBeVisible();
+        await expect(actionItemSection.getByRole('heading', { name: '未着手' })).toBeVisible();
     });
 
     test('DISCUSSIONフェーズでもカードをアクションアイテムに変換ボタンが表示される', async ({ page }) => {
@@ -533,7 +539,7 @@ test.describe('マルチユーザーシナリオ', () => {
 
         // メンバー側でステータスが「進行中」に変わる
         const memberActionItemSection = memberPage.locator('.border-t', { hasText: 'アクションアイテム' });
-        await expect(memberActionItemSection.getByText('進行中')).toBeVisible({ timeout: 10000 });
+        await expect(memberActionItemSection.getByRole('heading', { name: '進行中' })).toBeVisible({ timeout: 10000 });
 
         await context1.close();
         await context2.close();

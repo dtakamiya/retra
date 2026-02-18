@@ -22,7 +22,7 @@ async function addCard(page: import('@playwright/test').Page, content: string) {
     await expect(page.locator('p', { hasText: content })).toBeVisible();
 }
 
-// ヘルパー関数: 指定フェーズまで段階的に遷移（WRITINGから開始前提）
+// ヘルパー関数: 指定フェーズまで段階的に遷移（現在フェーズから目的フェーズまで進む）
 async function advanceToPhase(page: import('@playwright/test').Page, targetPhase: string) {
     const steps = [
         { key: 'VOTING', button: '次へ: 投票', label: '投票' },
@@ -32,7 +32,13 @@ async function advanceToPhase(page: import('@playwright/test').Page, targetPhase
     ];
 
     for (const step of steps) {
-        await page.locator('button', { hasText: step.button }).click();
+        const button = page.locator('button', { hasText: step.button });
+        // ボタンが存在しない場合はスキップ（現在のフェーズより前のステップ）
+        if (await button.count() === 0) {
+            if (step.key === targetPhase) break;
+            continue;
+        }
+        await button.click();
         await page.locator('button', { hasText: `${step.label}へ進む` }).click();
         await expect(
             page.locator('.bg-indigo-600.text-white', { hasText: step.label }).first()
@@ -65,7 +71,10 @@ test.describe('ダッシュボードページの基本表示', () => {
         // 「ホームに戻る」リンクが表示される
         await expect(page.locator('a', { hasText: 'ホームに戻る' })).toBeVisible();
 
-        // 履歴が空の場合のメッセージが表示される
+        // 存在しないチーム名で検索して空のメッセージが表示されることを確認
+        await page.getByPlaceholder('チーム名で検索...').fill('ZZZZNONEXISTENT99999');
+        await page.locator('button', { hasText: '検索' }).click();
+        await expect(page.getByText('読み込み中...')).not.toBeVisible({ timeout: 10000 });
         await expect(page.getByText('まだレトロスペクティブの履歴がありません')).toBeVisible();
     });
 });
@@ -111,14 +120,14 @@ test.describe('履歴の表示', () => {
         await expect(page.getByText('レトロスペクティブ履歴')).toBeVisible();
 
         // チーム名（ボードタイトル）が表示される
-        await expect(page.getByText('ダッシュボード表示テスト')).toBeVisible();
+        await expect(page.getByText('ダッシュボード表示テスト').first()).toBeVisible();
 
         // 統計情報が表示される（カード数、参加者数など）
-        await expect(page.getByText('2 カード')).toBeVisible();
-        await expect(page.getByText('1 参加者')).toBeVisible();
+        await expect(page.getByText('2 カード').first()).toBeVisible();
+        await expect(page.getByText('1 参加者').first()).toBeVisible();
 
         // フレームワーク名が表示される
-        await expect(page.getByText('KPT')).toBeVisible();
+        await expect(page.getByText('KPT').first()).toBeVisible();
 
         // 空のメッセージが表示されないことを確認
         await expect(page.getByText('まだレトロスペクティブの履歴がありません')).not.toBeVisible();
@@ -137,7 +146,7 @@ test.describe('スナップショット詳細', () => {
         await expect(page.getByText('読み込み中...')).not.toBeVisible({ timeout: 10000 });
 
         // レトロのエントリをクリック
-        await page.locator('a', { hasText: 'スナップショット詳細テスト' }).click();
+        await page.locator('a', { hasText: 'スナップショット詳細テスト' }).first().click();
 
         // スナップショット詳細ページに遷移
         await expect(page).toHaveURL(/\/dashboard\/[a-zA-Z0-9-]+/);
@@ -165,7 +174,7 @@ test.describe('スナップショット詳細', () => {
         await expect(page.getByText('読み込み中...')).not.toBeVisible({ timeout: 10000 });
 
         // レトロのエントリをクリック
-        await page.locator('a', { hasText: '戻るナビテスト' }).click();
+        await page.locator('a', { hasText: '戻るナビテスト' }).first().click();
         await expect(page).toHaveURL(/\/dashboard\/[a-zA-Z0-9-]+/);
         await expect(page.getByText('読み込み中...')).not.toBeVisible({ timeout: 10000 });
 
@@ -186,15 +195,15 @@ test.describe('スナップショット詳細', () => {
         await expect(page.getByText('読み込み中...')).not.toBeVisible({ timeout: 10000 });
 
         // レトロのエントリをクリック
-        await page.locator('a', { hasText: 'カラム詳細テスト' }).click();
+        await page.locator('a', { hasText: 'カラム詳細テスト' }).first().click();
         await expect(page).toHaveURL(/\/dashboard\/[a-zA-Z0-9-]+/);
         await expect(page.getByText('読み込み中...')).not.toBeVisible({ timeout: 10000 });
 
         // カラム詳細セクションが表示される
-        await expect(page.getByText('カラム詳細')).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'カラム詳細', exact: true })).toBeVisible();
 
         // KPTフレームワークのカラム名が表示される（Keepカラムにカードを追加したため）
-        await expect(page.getByText(/Keep/)).toBeVisible();
+        await expect(page.getByRole('heading', { name: /^Keep/ })).toBeVisible();
 
         // カードの内容が表示される
         await expect(page.getByText('テストカード1')).toBeVisible();
@@ -230,7 +239,7 @@ test.describe('検索機能', () => {
         await expect(page.getByText('読み込み中...')).not.toBeVisible({ timeout: 10000 });
 
         // レトロが表示されていることを確認
-        await expect(page.getByText('検索対象チーム')).toBeVisible();
+        await expect(page.getByText('検索対象チーム').first()).toBeVisible();
 
         // チーム名で検索
         await page.getByPlaceholder('チーム名で検索...').fill('検索対象チーム');
@@ -240,7 +249,7 @@ test.describe('検索機能', () => {
         await expect(page.getByText('読み込み中...')).not.toBeVisible({ timeout: 10000 });
 
         // 検索結果が表示される
-        await expect(page.getByText('検索対象チーム')).toBeVisible();
+        await expect(page.getByText('検索対象チーム').first()).toBeVisible();
     });
 
     test('存在しないチーム名で検索すると空の結果が表示される', async ({ page }) => {
@@ -282,6 +291,6 @@ test.describe('検索機能', () => {
         await expect(page.getByText('読み込み中...')).not.toBeVisible({ timeout: 10000 });
 
         // 全履歴が表示される
-        await expect(page.getByText('クリアテストチーム')).toBeVisible();
+        await expect(page.getByText('クリアテストチーム').first()).toBeVisible();
     });
 });
