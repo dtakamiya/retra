@@ -99,3 +99,7 @@ tasks.register<Copy>("copyFrontend") {
     from("../frontend/dist")
     into("src/main/resources/static")
 }
+
+tasks.named("processResources") {
+    dependsOn("copyFrontend")
+}
