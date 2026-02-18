@@ -105,8 +105,8 @@ test.describe('アクションアイテムの引き継ぎ', () => {
         const carryOverPanel = page.locator('.border-t', { hasText: '前回のアクションアイテム' });
         await expect(carryOverPanel.locator('p', { hasText: actionItemContent })).toBeVisible();
 
-        // 6. ステータスが表示されることを確認
-        await expect(carryOverPanel.getByText('未着手')).toBeVisible();
+        // 6. ステータスが表示されることを確認（ファシリテーターにはselectが表示される）
+        await expect(carryOverPanel.getByLabel('ステータスを変更')).toHaveValue('OPEN');
     });
 
     test('異なるチーム名の場合はチームAのアクションアイテムが引き継がれない', async ({ page }) => {

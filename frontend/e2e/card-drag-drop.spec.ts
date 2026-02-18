@@ -221,12 +221,11 @@ test.describe('カードのドラッグ移動', () => {
         // カードをProblemカラムにドラッグ
         await dragCard(page, dragHandle, problemHeader);
 
-        // Problemカラムのh2の親コンテナ内にカードが移動していることを確認
-        // カラム識別はh2の隣にある(1)等のカウントで判別
+        // Problemカラムにカードが移動していることを確認
         await page.waitForTimeout(1000);
-        // Problemヘッダーの横のカード件数が1になっていることで移動を確認
+        // Problemヘッダーの横のカード件数バッジが1になっていることで移動を確認
         const problemColumnHeader = page.locator('h2', { hasText: 'Problem' }).locator('..');
-        await expect(problemColumnHeader.getByText('(1)')).toBeVisible({ timeout: 10000 });
+        await expect(problemColumnHeader.locator('span').filter({ hasText: /^1$/ })).toBeVisible({ timeout: 10000 });
     });
 
     test('WRITINGフェーズで同じカラム内でカードの順序を変更できる', async ({ page }) => {

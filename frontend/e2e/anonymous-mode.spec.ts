@@ -152,15 +152,15 @@ test.describe('匿名モード', () => {
     test('匿名モードインジケーターがボードヘッダーに表示される', async ({ page }) => {
         await createAnonymousBoardAndJoin(page);
 
-        // ヘッダーに「匿名モード」バッジが表示される
-        await expect(page.getByText('匿名モード', { exact: true })).toBeVisible();
+        // ヘッダーに「匿名」バッジが表示される
+        await expect(page.locator('span', { hasText: '匿名' }).first()).toBeVisible();
     });
 
     test('匿名モードがページリロード後も維持される', async ({ page }) => {
         await createAnonymousBoardAndJoin(page);
 
         // 匿名モードバッジが表示されることを確認
-        await expect(page.getByText('匿名モード', { exact: true })).toBeVisible();
+        await expect(page.locator('span', { hasText: '匿名' }).first()).toBeVisible();
 
         // ページをリロード
         await page.reload();
@@ -171,7 +171,7 @@ test.describe('匿名モード', () => {
         await expect(page.locator('h2', { hasText: 'Keep' })).toBeVisible({ timeout: 10000 });
 
         // リロード後も匿名モードバッジが表示される
-        await expect(page.getByText('匿名モード', { exact: true })).toBeVisible();
+        await expect(page.locator('span', { hasText: '匿名' }).first()).toBeVisible();
     });
 
     test('非匿名ボードではカード作成者名が通常表示される', async ({ browser }) => {
