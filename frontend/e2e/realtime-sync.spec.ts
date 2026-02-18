@@ -58,7 +58,8 @@ test.describe('リアルタイム同期', () => {
         await page1.locator('button[type="submit"]', { hasText: '参加' }).click();
         await expect(page1.locator('h2', { hasText: 'Keep' })).toBeVisible({ timeout: 10000 });
 
-        // 最初のユーザーが参加者リストに表示される
+        // サイドパネルを開いて参加者リストを表示
+        await page1.getByRole('button', { name: 'サイドパネルを開く' }).click();
         await expect(page1.getByText('最初のユーザー').first()).toBeVisible();
 
         // 2つ目のブラウザで参加
@@ -70,7 +71,7 @@ test.describe('リアルタイム同期', () => {
         await page2.locator('button[type="submit"]', { hasText: '参加' }).click();
         await expect(page2.locator('h2', { hasText: 'Keep' })).toBeVisible({ timeout: 10000 });
 
-        // 最初のユーザーのページでも新しいユーザーが表示される
+        // 最初のユーザーのページでも新しいユーザーが表示される（サイドパネルは既に開いている）
         await expect(page1.getByText('新しいユーザー')).toBeVisible({ timeout: 10000 });
 
         await context1.close();
