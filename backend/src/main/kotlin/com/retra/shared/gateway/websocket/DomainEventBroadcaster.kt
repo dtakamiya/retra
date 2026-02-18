@@ -254,13 +254,29 @@ class DomainEventBroadcaster(
         )
     }
 
+    private fun buildActionItemPayload(
+        actionItemId: String, boardId: String, cardId: String?,
+        content: String, assigneeId: String?, assigneeNickname: String?,
+        dueDate: String?, status: String, priority: String,
+        sortOrder: Int, createdAt: String, updatedAt: String
+    ) = mapOf(
+        "id" to actionItemId, "boardId" to boardId, "cardId" to cardId,
+        "content" to content, "assigneeId" to assigneeId,
+        "assigneeNickname" to assigneeNickname, "dueDate" to dueDate,
+        "status" to status, "priority" to priority, "sortOrder" to sortOrder,
+        "createdAt" to createdAt, "updatedAt" to updatedAt
+    )
+
     @TransactionalEventListener(fallbackExecution = true)
     fun handleActionItemCreated(event: ActionItemEvent.ActionItemCreated) {
         messagingTemplate.convertAndSend(
             "/topic/board/${event.boardSlug}/action-items",
-            WebSocketMessage("ACTION_ITEM_CREATED", mapOf(
-                "actionItemId" to event.actionItemId,
-                "boardId" to event.boardId
+            WebSocketMessage("ACTION_ITEM_CREATED", buildActionItemPayload(
+                actionItemId = event.actionItemId, boardId = event.boardId,
+                cardId = event.cardId, content = event.content,
+                assigneeId = event.assigneeId, assigneeNickname = event.assigneeNickname,
+                dueDate = event.dueDate, status = event.status, priority = event.priority,
+                sortOrder = event.sortOrder, createdAt = event.createdAt, updatedAt = event.updatedAt
             ))
         )
     }
@@ -269,8 +285,12 @@ class DomainEventBroadcaster(
     fun handleActionItemUpdated(event: ActionItemEvent.ActionItemUpdated) {
         messagingTemplate.convertAndSend(
             "/topic/board/${event.boardSlug}/action-items",
-            WebSocketMessage("ACTION_ITEM_UPDATED", mapOf(
-                "actionItemId" to event.actionItemId
+            WebSocketMessage("ACTION_ITEM_UPDATED", buildActionItemPayload(
+                actionItemId = event.actionItemId, boardId = event.boardId,
+                cardId = event.cardId, content = event.content,
+                assigneeId = event.assigneeId, assigneeNickname = event.assigneeNickname,
+                dueDate = event.dueDate, status = event.status, priority = event.priority,
+                sortOrder = event.sortOrder, createdAt = event.createdAt, updatedAt = event.updatedAt
             ))
         )
     }

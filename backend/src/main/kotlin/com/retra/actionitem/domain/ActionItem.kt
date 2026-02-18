@@ -70,10 +70,22 @@ open class ActionItem(
             this.priority = priority
         }
         this.updatedAt = Instant.now().toString()
+        val currentBoard = board ?: throw IllegalStateException("ActionItem must belong to a board")
         registerEvent(
             ActionItemEvent.ActionItemUpdated(
                 actionItemId = id,
-                boardSlug = board?.slug ?: throw IllegalStateException("ActionItem must belong to a board")
+                boardSlug = currentBoard.slug,
+                boardId = currentBoard.id,
+                cardId = card?.id,
+                content = this.content,
+                assigneeId = this.assignee?.id,
+                assigneeNickname = this.assignee?.nickname,
+                dueDate = this.dueDate,
+                status = this.status.name,
+                priority = this.priority.name,
+                sortOrder = this.sortOrder,
+                createdAt = this.createdAt,
+                updatedAt = this.updatedAt
             )
         )
     }
@@ -121,7 +133,17 @@ open class ActionItem(
                 ActionItemEvent.ActionItemCreated(
                     actionItemId = actionItem.id,
                     boardSlug = board.slug,
-                    boardId = board.id
+                    boardId = board.id,
+                    cardId = card?.id,
+                    content = content,
+                    assigneeId = assignee?.id,
+                    assigneeNickname = assignee?.nickname,
+                    dueDate = dueDate,
+                    status = ActionItemStatus.OPEN.name,
+                    priority = priority.name,
+                    sortOrder = sortOrder,
+                    createdAt = now,
+                    updatedAt = now
                 )
             )
             return actionItem
