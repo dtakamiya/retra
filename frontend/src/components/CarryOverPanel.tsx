@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, History } from 'lucide-react';
 import { useBoardStore } from '../store/boardStore';
+import { useToastStore } from '../store/toastStore';
 import { api } from '../api/client';
 import { ActionItemStatusBadge } from './ActionItemStatusBadge';
 import type { ActionItemStatus, CarryOverItem } from '../types';
@@ -25,6 +26,7 @@ const PRIORITY_LABELS: Record<string, string> = {
 
 export function CarryOverPanel() {
   const { board, participant, carryOverItems, carryOverTeamName, updateCarryOverItemStatus } = useBoardStore();
+  const addToast = useToastStore((s) => s.addToast);
   const [isExpanded, setIsExpanded] = useState(true);
 
   if (!board?.teamName) return null;
@@ -37,7 +39,7 @@ export function CarryOverPanel() {
       await api.updateCarryOverItemStatus(board.slug, item.id, newStatus, participant.id);
       updateCarryOverItemStatus(item.id, newStatus);
     } catch {
-      // エラーは無視
+      addToast('error', 'ステータスの変更に失敗しました');
     }
   };
 

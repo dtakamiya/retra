@@ -136,9 +136,15 @@ describe('TeamDashboardPage', () => {
     expect(screen.getByText('検索')).toBeInTheDocument()
   })
 
-  it('handles API error gracefully', async () => {
+  it('handles API error gracefully and shows toast notification', async () => {
+    const addToast = vi.fn()
     vi.mocked(api.getHistory).mockRejectedValue(new Error('Server error'))
     vi.mocked(api.getTrends).mockRejectedValue(new Error('Server error'))
+
+    // Spy on useToastStore to capture addToast calls
+    const { useToastStore } = await import('../store/toastStore')
+    const originalImpl = useToastStore.getState().addToast
+    useToastStore.setState({ addToast })
 
     render(<TeamDashboardPage />)
 
@@ -146,6 +152,12 @@ describe('TeamDashboardPage', () => {
     await waitFor(() => {
       expect(screen.queryByText('読み込み中...')).not.toBeInTheDocument()
     })
+
+    // Should show error toast
+    expect(addToast).toHaveBeenCalledWith('error', 'データの読み込みに失敗しました')
+
+    // Restore original
+    useToastStore.setState({ addToast: originalImpl })
   })
 
   it('displays KPI summary cards when history has data', async () => {

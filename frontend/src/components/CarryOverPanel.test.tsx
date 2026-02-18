@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { CarryOverPanel } from './CarryOverPanel'
 import { useBoardStore } from '../store/boardStore'
@@ -123,6 +123,46 @@ describe('CarryOverPanel', () => {
     const select = screen.getByRole('combobox')
     expect(select).toBeInTheDocument()
     expect(select).toHaveValue('OPEN')
+  })
+
+  it('ステータス変更失敗時にエラートーストを表示する', async () => {
+    const user = userEvent.setup()
+    const { api } = await import('../api/client')
+    vi.mocked(api.updateCarryOverItemStatus).mockRejectedValue(new Error('API error'))
+
+    const items = [
+      createCarryOverItem({ id: 'co-1', content: 'テストアイテム', status: 'OPEN' }),
+    ]
+    const updateCarryOverItemStatus = vi.fn()
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ teamName: 'Team Alpha' }),
+      participant: createParticipant({ isFacilitator: true }),
+      carryOverItems: items,
+      carryOverTeamName: 'Team Alpha',
+      updateCarryOverItemStatus,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    // Spy on useToastStore
+    const { useToastStore } = await import('../store/toastStore')
+    const addToast = vi.fn()
+    const originalImpl = useToastStore.getState().addToast
+    useToastStore.setState({ addToast })
+
+    render(<CarryOverPanel />)
+
+    const select = screen.getByRole('combobox')
+    await user.selectOptions(select, 'DONE')
+
+    // Should show error toast
+    await waitFor(() => {
+      expect(addToast).toHaveBeenCalledWith('error', 'ステータスの変更に失敗しました')
+    })
+
+    // Should NOT call optimistic update
+    expect(updateCarryOverItemStatus).not.toHaveBeenCalled()
+
+    // Restore
+    useToastStore.setState({ addToast: originalImpl })
   })
 
   it('非ファシリテーターにはステータスバッジを表示する', () => {

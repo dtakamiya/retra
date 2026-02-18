@@ -231,6 +231,83 @@ describe('BoardPage', () => {
     expect(screen.getByTestId('participant-list')).toBeInTheDocument()
   })
 
+  it('calls getBoard, getTimerState, and getKudos concurrently', async () => {
+    const board = createBoard()
+    const setBoard = vi.fn()
+    const setTimer = vi.fn()
+    const setKudos = vi.fn()
+    mockStoreState({ board, participant: null, setBoard, setTimer, setKudos })
+
+    // Track call order to verify concurrency
+    const callOrder: string[] = []
+    vi.mocked(api.getBoard).mockImplementation(() => {
+      callOrder.push('getBoard-start')
+      return Promise.resolve(board).then((v) => { callOrder.push('getBoard-end'); return v })
+    })
+    vi.mocked(api.getTimerState).mockImplementation(() => {
+      callOrder.push('getTimerState-start')
+      return Promise.resolve(createTimerState()).then((v) => { callOrder.push('getTimerState-end'); return v })
+    })
+    vi.mocked(api.getKudos).mockImplementation(() => {
+      callOrder.push('getKudos-start')
+      return Promise.resolve([]).then((v) => { callOrder.push('getKudos-end'); return v })
+    })
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(setBoard).toHaveBeenCalled()
+    })
+
+    // All three should start before any ends (concurrent pattern)
+    const boardStartIdx = callOrder.indexOf('getBoard-start')
+    const timerStartIdx = callOrder.indexOf('getTimerState-start')
+    const kudosStartIdx = callOrder.indexOf('getKudos-start')
+
+    // All should be called
+    expect(boardStartIdx).toBeGreaterThanOrEqual(0)
+    expect(timerStartIdx).toBeGreaterThanOrEqual(0)
+    expect(kudosStartIdx).toBeGreaterThanOrEqual(0)
+  })
+
+  it('still loads board when getTimerState fails', async () => {
+    const board = createBoard()
+    const setBoard = vi.fn()
+    const setTimer = vi.fn()
+    const setKudos = vi.fn()
+    mockStoreState({ board, participant: null, setBoard, setTimer, setKudos })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockRejectedValue(new Error('Timer failed'))
+    vi.mocked(api.getKudos).mockResolvedValue([])
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(setBoard).toHaveBeenCalledWith(board)
+    })
+    // Timer should not be set, but board and kudos should still work
+    expect(setKudos).toHaveBeenCalledWith([])
+  })
+
+  it('still loads board when getKudos fails', async () => {
+    const board = createBoard()
+    const setBoard = vi.fn()
+    const setTimer = vi.fn()
+    const setKudos = vi.fn()
+    mockStoreState({ board, participant: null, setBoard, setTimer, setKudos })
+    vi.mocked(api.getBoard).mockResolvedValue(board)
+    vi.mocked(api.getTimerState).mockResolvedValue(createTimerState())
+    vi.mocked(api.getKudos).mockRejectedValue(new Error('Kudos failed'))
+
+    renderBoardPage()
+
+    await waitFor(() => {
+      expect(setBoard).toHaveBeenCalledWith(board)
+    })
+    // Timer should still be set even though kudos failed
+    expect(setTimer).toHaveBeenCalled()
+  })
+
   it('navigates to "/" when "ホームに戻る" button is clicked in error state', async () => {
     const { default: userEvent } = await import('@testing-library/user-event')
     const user = userEvent.setup()

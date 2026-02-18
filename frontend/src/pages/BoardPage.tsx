@@ -34,11 +34,24 @@ export function BoardPage() {
     if (!slug) return;
     try {
       const savedParticipantId = localStorage.getItem(`retra-participant-${slug}`);
-      const boardData = await api.getBoard(slug, savedParticipantId ?? undefined);
-      setBoard(boardData);
+
+      // Load board, timer, and kudos concurrently
+      const [boardData, timerResult, kudosResult] = await Promise.allSettled([
+        api.getBoard(slug, savedParticipantId ?? undefined),
+        api.getTimerState(slug),
+        api.getKudos(slug),
+      ]);
+
+      // Board is required - fail if it doesn't load
+      if (boardData.status === 'rejected') {
+        setError('ボードが見つかりません');
+        return;
+      }
+
+      setBoard(boardData.value);
 
       if (savedParticipantId) {
-        const existing = boardData.participants.find((p) => p.id === savedParticipantId);
+        const existing = boardData.value.participants.find((p) => p.id === savedParticipantId);
         if (existing) {
           setParticipant(existing);
         } else {
@@ -49,13 +62,13 @@ export function BoardPage() {
         setShowNicknameModal(true);
       }
 
-      // Load timer state
-      const timerState = await api.getTimerState(slug);
-      setTimer(timerState);
-
-      // Load kudos
-      const kudosData = await api.getKudos(slug);
-      setKudos(kudosData);
+      // Timer and kudos are optional - apply if successful
+      if (timerResult.status === 'fulfilled') {
+        setTimer(timerResult.value);
+      }
+      if (kudosResult.status === 'fulfilled') {
+        setKudos(kudosResult.value);
+      }
     } catch {
       setError('ボードが見つかりません');
     } finally {
