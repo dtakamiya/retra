@@ -243,15 +243,25 @@ describe('useWebSocket', () => {
     })
     expect(handlers.handleReactionRemoved).toHaveBeenCalledWith(reactionRemovedPayload)
 
-    // ACTION_ITEM_CREATED
-    const actionItemCreatedPayload = { id: 'ai-1', boardId: 'board-1', content: 'New action', status: 'OPEN' }
+    // ACTION_ITEM_CREATED (full ActionItem payload from backend)
+    const actionItemCreatedPayload = {
+      id: 'ai-1', boardId: 'board-1', cardId: null,
+      content: 'New action', assigneeId: 'p-1', assigneeNickname: 'Alice',
+      dueDate: '2024-02-01', status: 'OPEN', priority: 'HIGH',
+      sortOrder: 0, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z',
+    }
     callbackMap['/topic/board/test1234/action-items']({
       body: JSON.stringify({ type: 'ACTION_ITEM_CREATED', payload: actionItemCreatedPayload }),
     })
     expect(handlers.handleActionItemCreated).toHaveBeenCalledWith(actionItemCreatedPayload)
 
-    // ACTION_ITEM_UPDATED
-    const actionItemUpdatedPayload = { id: 'ai-1', boardId: 'board-1', content: 'Updated action', status: 'OPEN' }
+    // ACTION_ITEM_UPDATED (full ActionItem payload from backend)
+    const actionItemUpdatedPayload = {
+      id: 'ai-1', boardId: 'board-1', cardId: 'card-1',
+      content: 'Updated action', assigneeId: 'p-2', assigneeNickname: 'Bob',
+      dueDate: '2024-03-01', status: 'IN_PROGRESS', priority: 'LOW',
+      sortOrder: 1, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-02T00:00:00Z',
+    }
     callbackMap['/topic/board/test1234/action-items']({
       body: JSON.stringify({ type: 'ACTION_ITEM_UPDATED', payload: actionItemUpdatedPayload }),
     })

@@ -385,31 +385,124 @@ class DomainEventBroadcasterTest {
     }
 
     @Test
-    fun `ActionItemCreated イベントで action-items トピックに送信`() {
-        val event = ActionItemEvent.ActionItemCreated("ai-1", "test1234", "board-1")
+    fun `ActionItemCreated イベントで完全なActionItemペイロードを送信`() {
+        val event = ActionItemEvent.ActionItemCreated(
+            actionItemId = "ai-1",
+            boardSlug = "test1234",
+            boardId = "board-1",
+            cardId = "card-1",
+            content = "Fix the bug",
+            assigneeId = "p-1",
+            assigneeNickname = "Alice",
+            dueDate = "2024-02-01",
+            status = "OPEN",
+            priority = "HIGH",
+            sortOrder = 0,
+            createdAt = "2024-01-01T00:00:00Z",
+            updatedAt = "2024-01-01T00:00:00Z"
+        )
 
         broadcaster.handleActionItemCreated(event)
 
+        val msgSlot = slot<WebSocketMessage>()
         verify {
             messagingTemplate.convertAndSend(
-                "/topic/board/test1234/action-items",
-                match<WebSocketMessage> { it.type == "ACTION_ITEM_CREATED" }
+                eq("/topic/board/test1234/action-items"),
+                capture(msgSlot)
             )
         }
+        assertEquals("ACTION_ITEM_CREATED", msgSlot.captured.type)
+        val payload = msgSlot.captured.payload as Map<*, *>
+        assertEquals("ai-1", payload["id"])
+        assertEquals("board-1", payload["boardId"])
+        assertEquals("card-1", payload["cardId"])
+        assertEquals("Fix the bug", payload["content"])
+        assertEquals("p-1", payload["assigneeId"])
+        assertEquals("Alice", payload["assigneeNickname"])
+        assertEquals("2024-02-01", payload["dueDate"])
+        assertEquals("OPEN", payload["status"])
+        assertEquals("HIGH", payload["priority"])
+        assertEquals(0, payload["sortOrder"])
+        assertEquals("2024-01-01T00:00:00Z", payload["createdAt"])
+        assertEquals("2024-01-01T00:00:00Z", payload["updatedAt"])
     }
 
     @Test
-    fun `ActionItemUpdated イベントで action-items トピックに送信`() {
-        val event = ActionItemEvent.ActionItemUpdated("ai-1", "test1234")
+    fun `ActionItemCreated assigneeなしの場合はnullを送信`() {
+        val event = ActionItemEvent.ActionItemCreated(
+            actionItemId = "ai-2",
+            boardSlug = "test1234",
+            boardId = "board-1",
+            cardId = null,
+            content = "Review the code",
+            assigneeId = null,
+            assigneeNickname = null,
+            dueDate = null,
+            status = "OPEN",
+            priority = "MEDIUM",
+            sortOrder = 1,
+            createdAt = "2024-01-01T00:00:00Z",
+            updatedAt = "2024-01-01T00:00:00Z"
+        )
+
+        broadcaster.handleActionItemCreated(event)
+
+        val msgSlot = slot<WebSocketMessage>()
+        verify {
+            messagingTemplate.convertAndSend(
+                eq("/topic/board/test1234/action-items"),
+                capture(msgSlot)
+            )
+        }
+        val payload = msgSlot.captured.payload as Map<*, *>
+        assertEquals("ai-2", payload["id"])
+        assertNull(payload["cardId"])
+        assertNull(payload["assigneeId"])
+        assertNull(payload["assigneeNickname"])
+        assertNull(payload["dueDate"])
+    }
+
+    @Test
+    fun `ActionItemUpdated イベントで完全なActionItemペイロードを送信`() {
+        val event = ActionItemEvent.ActionItemUpdated(
+            actionItemId = "ai-1",
+            boardSlug = "test1234",
+            boardId = "board-1",
+            cardId = "card-1",
+            content = "Updated content",
+            assigneeId = "p-2",
+            assigneeNickname = "Bob",
+            dueDate = "2024-03-01",
+            status = "IN_PROGRESS",
+            priority = "LOW",
+            sortOrder = 2,
+            createdAt = "2024-01-01T00:00:00Z",
+            updatedAt = "2024-01-02T00:00:00Z"
+        )
 
         broadcaster.handleActionItemUpdated(event)
 
+        val msgSlot = slot<WebSocketMessage>()
         verify {
             messagingTemplate.convertAndSend(
-                "/topic/board/test1234/action-items",
-                match<WebSocketMessage> { it.type == "ACTION_ITEM_UPDATED" }
+                eq("/topic/board/test1234/action-items"),
+                capture(msgSlot)
             )
         }
+        assertEquals("ACTION_ITEM_UPDATED", msgSlot.captured.type)
+        val payload = msgSlot.captured.payload as Map<*, *>
+        assertEquals("ai-1", payload["id"])
+        assertEquals("board-1", payload["boardId"])
+        assertEquals("card-1", payload["cardId"])
+        assertEquals("Updated content", payload["content"])
+        assertEquals("p-2", payload["assigneeId"])
+        assertEquals("Bob", payload["assigneeNickname"])
+        assertEquals("2024-03-01", payload["dueDate"])
+        assertEquals("IN_PROGRESS", payload["status"])
+        assertEquals("LOW", payload["priority"])
+        assertEquals(2, payload["sortOrder"])
+        assertEquals("2024-01-01T00:00:00Z", payload["createdAt"])
+        assertEquals("2024-01-02T00:00:00Z", payload["updatedAt"])
     }
 
     @Test
