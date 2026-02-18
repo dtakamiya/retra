@@ -3,6 +3,7 @@ package com.retra.card.usecase
 import com.retra.TestFixtures
 import com.retra.shared.domain.BadRequestException
 import com.retra.shared.domain.ConflictException
+import com.retra.shared.domain.NotFoundException
 import com.retra.board.domain.BoardRepository
 import com.retra.card.domain.CardRepository
 import com.retra.card.domain.VoteRepository
@@ -83,6 +84,42 @@ class AddVoteUseCaseTest {
         every { boardRepository.findBySlug(any()) } returns board
         every { cardRepository.findById("card-1") } returns card
         every { voteRepository.countByParticipantIdAndCardBoardId("p-1", board.id) } returns 3
+
+        assertFailsWith<BadRequestException> {
+            useCase.execute("test1234", VoteRequest("card-1", "p-1"))
+        }
+    }
+
+    @Test
+    fun `存在しないボードで NotFoundException`() {
+        every { boardRepository.findBySlug(any()) } returns null
+
+        assertFailsWith<NotFoundException> {
+            useCase.execute("unknown", VoteRequest("card-1", "p-1"))
+        }
+    }
+
+    @Test
+    fun `存在しないカードで NotFoundException`() {
+        val board = TestFixtures.board(phase = Phase.VOTING)
+        every { boardRepository.findBySlug(any()) } returns board
+        every { cardRepository.findById("card-1") } returns null
+
+        assertFailsWith<NotFoundException> {
+            useCase.execute("test1234", VoteRequest("card-1", "p-1"))
+        }
+    }
+
+    @Test
+    fun `カードがボードに属していない場合 BadRequestException`() {
+        val board = TestFixtures.board(id = "board-1", phase = Phase.VOTING)
+        val otherBoard = TestFixtures.board(id = "board-2")
+        val participant = TestFixtures.participant(id = "p-1", board = board)
+        board.participants.add(participant)
+        val card = TestFixtures.card(id = "card-1", board = otherBoard)
+
+        every { boardRepository.findBySlug(any()) } returns board
+        every { cardRepository.findById("card-1") } returns card
 
         assertFailsWith<BadRequestException> {
             useCase.execute("test1234", VoteRequest("card-1", "p-1"))

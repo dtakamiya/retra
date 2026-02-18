@@ -1,6 +1,7 @@
 package com.retra.card.usecase
 
 import com.retra.TestFixtures
+import com.retra.shared.domain.BadRequestException
 import com.retra.shared.domain.ForbiddenException
 import com.retra.shared.domain.NotFoundException
 import com.retra.board.domain.BoardRepository
@@ -87,6 +88,34 @@ class DeleteCardUseCaseTest {
 
         assertFailsWith<NotFoundException> {
             useCase.execute("unknown", "card-1", DeleteCardRequest("p-1"))
+        }
+    }
+
+    @Test
+    fun `存在しないカードで NotFoundException`() {
+        val board = TestFixtures.board()
+        every { boardRepository.findBySlug(any()) } returns board
+        every { cardRepository.findById("card-1") } returns null
+
+        assertFailsWith<NotFoundException> {
+            useCase.execute("test1234", "card-1", DeleteCardRequest("p-1"))
+        }
+    }
+
+    @Test
+    fun `カードがボードに属していない場合 BadRequestException`() {
+        val board = TestFixtures.board(id = "board-1")
+        val otherBoard = TestFixtures.board(id = "board-2")
+        val column = TestFixtures.boardColumn(id = "col-1", board = otherBoard)
+        val participant = TestFixtures.participant(id = "p-1", board = board)
+        board.participants.add(participant)
+        val card = TestFixtures.card(id = "card-1", board = otherBoard, column = column, participant = participant)
+
+        every { boardRepository.findBySlug(any()) } returns board
+        every { cardRepository.findById("card-1") } returns card
+
+        assertFailsWith<BadRequestException> {
+            useCase.execute("test1234", "card-1", DeleteCardRequest("p-1"))
         }
     }
 }

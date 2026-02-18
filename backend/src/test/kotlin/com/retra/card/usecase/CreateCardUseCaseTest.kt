@@ -63,4 +63,13 @@ class CreateCardUseCaseTest {
             useCase.execute("test1234", CreateCardRequest("bad-col", "Card", "p-1"))
         }
     }
+
+    @Test
+    fun `存在しないボードで NotFoundException`() {
+        every { boardRepository.findBySlug(any()) } returns null
+
+        assertFailsWith<NotFoundException> {
+            useCase.execute("unknown", CreateCardRequest("col-1", "Card", "p-1"))
+        }
+    }
 }
