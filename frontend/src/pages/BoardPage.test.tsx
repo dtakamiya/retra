@@ -227,8 +227,11 @@ describe('BoardPage', () => {
       expect(screen.getByTestId('board-header')).toBeInTheDocument()
     })
     expect(screen.getByTestId('board-view')).toBeInTheDocument()
-    expect(screen.getByTestId('timer-display')).toBeInTheDocument()
-    expect(screen.getByTestId('participant-list')).toBeInTheDocument()
+    // Desktop sidebar is now collapsed by default; compact versions are always in the DOM
+    expect(screen.getByTestId('timer-display-compact')).toBeInTheDocument()
+    expect(screen.getByTestId('participant-list-compact')).toBeInTheDocument()
+    // Sidebar toggle button should be present
+    expect(screen.getByLabelText('サイドパネルを開く')).toBeInTheDocument()
   })
 
   it('calls getBoard, getTimerState, and getKudos concurrently', async () => {

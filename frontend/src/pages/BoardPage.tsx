@@ -7,7 +7,6 @@ import { useWebSocket } from '../websocket/useWebSocket';
 import { NicknameModal } from '../components/NicknameModal';
 import { BoardHeader } from '../components/BoardHeader';
 import { BoardView } from '../components/BoardView';
-import { PhaseGuidance } from '../components/PhaseGuidance';
 import { ParticipantList } from '../components/ParticipantList';
 import { TimerDisplay } from '../components/TimerDisplay';
 import { ConnectionBanner } from '../components/ConnectionBanner';
@@ -15,6 +14,7 @@ import { CarryOverPanel } from '../components/CarryOverPanel';
 import { BoardSkeleton } from '../components/BoardSkeleton';
 import { KudosPanel } from '../components/KudosPanel';
 import { useTimerAlert } from '../hooks/useTimerAlert';
+import { Users, X } from 'lucide-react';
 import type { KudosCategory } from '../types';
 
 export function BoardPage() {
@@ -26,6 +26,7 @@ export function BoardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isKudosOpen, setIsKudosOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useWebSocket(slug, participant?.id);
   useTimerAlert();
@@ -169,22 +170,56 @@ export function BoardPage() {
         kudosCount={kudos.length}
         onKudosToggle={() => setIsKudosOpen(!isKudosOpen)}
       />
-      <PhaseGuidance phase={board.phase} />
 
-      <div className="flex-1 flex">
-        <div className="flex-1 overflow-x-auto">
+      <div className="flex-1 flex relative overflow-hidden">
+        <div className="flex-1 overflow-hidden">
           <BoardView />
         </div>
-        <div className="hidden lg:block w-64 border-l border-gray-200/60 dark:border-slate-700/50 glass">
-          <div className="p-4 space-y-0">
-            <TimerDisplay />
-            <ParticipantList />
-            <CarryOverPanel />
-          </div>
+
+        {/* Desktop: Icon bar (always visible on lg+) */}
+        <div className="hidden lg:flex flex-col items-center gap-1 py-3 px-1.5 border-l border-gray-200/60 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className={`p-2 rounded-lg transition-colors cursor-pointer ${
+              sidebarOpen ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:text-slate-500 dark:hover:text-slate-300 dark:hover:bg-slate-800'
+            }`}
+            title="参加者・タイマー"
+            aria-label="サイドパネルを開く"
+          >
+            <Users size={18} />
+          </button>
         </div>
+
+        {/* Desktop: Overlay panel */}
+        {sidebarOpen && (
+          <>
+            <div
+              className="hidden lg:block fixed inset-0 z-30"
+              onClick={() => setSidebarOpen(false)}
+              aria-hidden="true"
+            />
+            <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-72 bg-white dark:bg-slate-800 border-l border-gray-200 dark:border-slate-700 shadow-xl z-40 overflow-y-auto animate-[scaleFadeIn_0.15s_ease-out]">
+              <div className="flex items-center justify-between p-3 border-b border-gray-100 dark:border-slate-700">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-200">ボード情報</h3>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded transition-colors cursor-pointer"
+                  aria-label="サイドパネルを閉じる"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="p-4 space-y-0">
+                <TimerDisplay />
+                <ParticipantList />
+                <CarryOverPanel />
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Mobile sidebar content */}
+      {/* Mobile bottom bar (unchanged) */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 glass-strong border-t border-gray-100 dark:border-slate-700 p-3 flex items-center justify-between z-10">
         <TimerDisplay compact />
         <ParticipantList compact />

@@ -29,9 +29,10 @@ export function BoardHeader({ isKudosOpen, kudosCount, onKudosToggle }: Props) {
   };
 
   return (
-    <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-100 dark:border-slate-700/80 px-4 py-3 sticky top-0 z-20">
+    <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-100 dark:border-slate-700/80 px-4 py-2 sticky top-0 z-20">
       <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
+        {/* Left zone: Title + badges */}
+        <div className="flex items-center gap-3 min-w-0 flex-shrink-0">
           <Link
             to="/"
             className="flex-shrink-0 text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
@@ -61,15 +62,20 @@ export function BoardHeader({ isKudosOpen, kudosCount, onKudosToggle }: Props) {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Center zone: PhaseControl + discussion progress */}
+        <div className="flex-1 flex justify-center items-center gap-3">
+          <PhaseControl />
           {showDiscussionProgress && (
             <OverallDiscussionProgress columns={board.columns} />
           )}
         </div>
 
+        {/* Right zone: Actions */}
         <div className="flex items-center gap-2.5 flex-shrink-0">
-          <PhaseControl />
-          <ExportMenu />
           <ThemeToggle />
+          <ExportMenu />
           <button
             type="button"
             onClick={onKudosToggle}

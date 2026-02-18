@@ -214,7 +214,7 @@ export function BoardView() {
     board.phase === 'ACTION_ITEMS');
 
   const columnsContent = (
-    <div className="flex gap-4 p-4 min-h-0 pb-20 lg:pb-4">
+    <div className="flex gap-3 p-3 pb-20 lg:pb-3 flex-1 overflow-hidden">
       {filteredColumns.map((column) => (
         <ColumnView key={column.id} column={column} />
       ))}
@@ -222,7 +222,7 @@ export function BoardView() {
   );
 
   return (
-    <>
+    <div className="flex flex-col h-full">
       <BoardFilterBar
         filter={filter}
         onFilterChange={setFilter}
@@ -261,6 +261,6 @@ export function BoardView() {
           participants={board.participants}
         />
       )}
-    </>
+    </div>
   );
 }
