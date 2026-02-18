@@ -5,10 +5,41 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 必須ルール
 - **全ての回答は日本語で行うこと**
 - **何か修正を行う時には、以下のフローで修正を行うこと**
-  1. git worktreeで隔離ブランチを作成
-  2. 修正を行う
-  3. コミット & originにプッシュ
-  4. worktreeクリーンアップ
+  1. **git worktreeで隔離ブランチを作成**
+     ```bash
+     git worktree add ../retra-<branch-name> -b <branch-name>
+     cd ../retra-<branch-name>
+     ```
+     - ブランチ名は `feat/○○` `fix/○○` `refactor/○○` 等、Conventional Commits に準拠
+  2. **TDDで修正を行う**
+     - まずテストを書く（Red）→ 実装する（Green）→ リファクタリング（Refactor）
+     - バックエンド: `backend/src/test/` にテスト追加
+     - フロントエンド: 対象ファイルと同階層に `.test.ts(x)` を追加
+  3. **テストを行う**
+     ```bash
+     # バックエンドテスト
+     cd backend && ./gradlew test
+     # フロントエンドテスト
+     cd frontend && npm run test
+     # フロントエンドLint + 型チェック
+     cd frontend && npm run lint && npx tsc --noEmit
+     # E2Eテスト（必要に応じて）
+     cd frontend && npm run test:e2e
+     ```
+     - カバレッジ80%閾値を維持すること
+  4. **コミット、プッシュ、PRを作成する**
+     ```bash
+     git add .
+     git commit -m "<type>: <description>"
+     git push -u origin <branch-name>
+     ```
+     - コミットメッセージは Conventional Commits 形式（`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`）
+     - `gh pr create --title "<type>: <description>" --body "<PR説明>"` または GitHub Web UI で PR 作成
+  5. **worktreeクリーンアップ**
+     ```bash
+     cd ../retra   # メインのワークツリーに戻る
+     git worktree remove ../retra-<branch-name>
+     ```
 
 ## Project Overview
 
@@ -17,7 +48,7 @@ Retra is a real-time retrospective board for Scrum teams. It supports multiple f
 - **Backend:** Spring Boot 3.4.1 + Kotlin 2.0.21 (`backend/`)
 - **Frontend:** React 19.2 + TypeScript 5.9 + Vite 7 + Zustand 5 + TailwindCSS v4 (`frontend/`)
 - **Database:** SQLite with Flyway migrations (V1-V15)
-- **CI/CD:** なし（GitHub Actions、Docker等の設定は未導入）
+- **CI/CD:** GitHub Actions（CI: テスト・Lint・ビルド、Dependabot: 依存関係自動更新、Auto-Merge）
 - **Realtime:** WebSocket via STOMP protocol (`@stomp/stompjs`)
 - **Drag & Drop:** @dnd-kit (core, sortable, utilities)
 - **Icons:** Lucide React
