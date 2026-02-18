@@ -68,10 +68,10 @@ export function ColumnView({ column }: Props) {
   const cardIds = useMemo(() => sortedCards.map((c) => c.id), [sortedCards]);
 
   return (
-    <div className="flex-1 min-w-[280px] max-w-[400px] flex flex-col">
+    <div className="flex-1 min-w-[280px] flex flex-col overflow-hidden">
       <div
-        className="rounded-t-xl px-4 py-3.5 flex items-center justify-between"
-        style={{ backgroundColor: column.color + '12', borderTop: `4px solid ${column.color}` }}
+        className="px-4 py-3 flex items-center justify-between border-l-[3px]"
+        style={{ borderLeftColor: column.color, backgroundColor: column.color + '08' }}
       >
         <div>
           <div className="flex items-center gap-2">
@@ -99,18 +99,9 @@ export function ColumnView({ column }: Props) {
             <DiscussionProgress cards={column.cards} color={column.color} />
           )}
         </div>
-        {isWriting && (
-          <button
-            onClick={() => setShowForm(true)}
-            className="p-1.5 rounded-lg hover:bg-white/60 transition-all active:scale-90"
-            title="カードを追加"
-          >
-            <Plus size={16} style={{ color: column.color }} />
-          </button>
-        )}
       </div>
 
-      <div ref={setNodeRef} className="flex-1 bg-gray-50/80 dark:bg-slate-800/30 rounded-b-xl p-2.5 space-y-2 overflow-y-auto shadow-sm">
+      <div ref={setNodeRef} className="flex-1 p-2 space-y-2.5 overflow-y-auto">
         {showForm && isWriting && (
           <CardForm columnId={column.id} onClose={() => setShowForm(false)} />
         )}
@@ -135,6 +126,16 @@ export function ColumnView({ column }: Props) {
               <span className="text-gray-300 dark:text-slate-600">カードはありません</span>
             )}
           </div>
+        )}
+        {isWriting && !showForm && column.cards.length > 0 && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 hover:bg-gray-100/50 dark:hover:bg-slate-700/30 rounded-lg transition-colors cursor-pointer mt-1"
+            title="カードを追加"
+          >
+            <Plus size={16} />
+            <span>カードを追加</span>
+          </button>
         )}
       </div>
     </div>

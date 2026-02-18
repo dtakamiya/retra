@@ -67,8 +67,11 @@ describe('ColumnView', () => {
     expect(screen.getByText('続けたいこと・うまくいっていること')).toBeInTheDocument()
   })
 
-  it('shows add button in WRITING phase', () => {
-    const column = createColumn({ name: 'Keep' })
+  it('shows add button at bottom of column in WRITING phase when cards exist', () => {
+    const column = createColumn({
+      name: 'Keep',
+      cards: [createCard({ id: 'c-1' })],
+    })
 
     vi.mocked(useBoardStore).mockReturnValue({
       board: createBoard({ phase: 'WRITING' }),
@@ -81,8 +84,27 @@ describe('ColumnView', () => {
     expect(screen.getByTitle('カードを追加')).toBeInTheDocument()
   })
 
-  it('does NOT show add button in non-WRITING phase', () => {
+  it('shows add button in empty state in WRITING phase when no cards', () => {
     const column = createColumn({ name: 'Keep' })
+
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({ phase: 'WRITING' }),
+      participant: createParticipant(),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<ColumnView column={column} />)
+
+    // Empty state shows "カードを追加" text inside the button
+    const addButtons = screen.getAllByText('カードを追加')
+    expect(addButtons.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('does NOT show add button in non-WRITING phase', () => {
+    const column = createColumn({
+      name: 'Keep',
+      cards: [createCard({ id: 'c-1' })],
+    })
 
     vi.mocked(useBoardStore).mockReturnValue({
       board: createBoard({ phase: 'VOTING' }),
