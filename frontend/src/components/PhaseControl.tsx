@@ -66,6 +66,17 @@ export function PhaseControl() {
               >
                 {i < currentIndex ? `✓ ${phase.label}` : phase.label}
               </div>
+              {/* Inline advance button after active phase */}
+              {i === currentIndex && isFacilitator && nextPhase && (
+                <button
+                  onClick={() => setShowDialog(true)}
+                  disabled={loading}
+                  aria-label={`次へ: ${PHASES.find((p) => p.key === nextPhase)?.label}`}
+                  className="ml-1 p-0.5 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 disabled:opacity-50 transition-all active:scale-90"
+                >
+                  <ChevronRight size={14} />
+                </button>
+              )}
               {i < PHASES.length - 1 && (
                 <ChevronRight size={12} className={`mx-0.5 ${i < currentIndex ? 'text-emerald-300 dark:text-emerald-400' : 'text-gray-300 dark:text-slate-600'}`} />
               )}
@@ -73,21 +84,22 @@ export function PhaseControl() {
           ))}
         </div>
 
-        {/* Mobile phase indicator */}
-        <span className="sm:hidden px-2.5 py-1 bg-indigo-600 text-white text-[11px] font-medium rounded-md shadow-sm shadow-indigo-200">
-          {PHASES[currentIndex]?.label}
-        </span>
-
-        {/* Advance button (facilitator only) */}
-        {isFacilitator && nextPhase && (
-          <button
-            onClick={() => setShowDialog(true)}
-            disabled={loading}
-            className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-xs font-medium rounded-lg hover:from-emerald-700 hover:to-emerald-600 disabled:opacity-50 transition-all shadow-sm shadow-emerald-200 dark:shadow-emerald-900/30 hover:shadow-md active:scale-[0.97]"
-          >
-            次へ: {PHASES.find((p) => p.key === nextPhase)?.label}
-          </button>
-        )}
+        {/* Mobile phase indicator + advance button */}
+        <div className="sm:hidden flex items-center gap-1">
+          <span className="px-2.5 py-1 bg-indigo-600 text-white text-[11px] font-medium rounded-md shadow-sm shadow-indigo-200">
+            {PHASES[currentIndex]?.label}
+          </span>
+          {isFacilitator && nextPhase && (
+            <button
+              onClick={() => setShowDialog(true)}
+              disabled={loading}
+              aria-label={`次のフェーズ: ${PHASES.find((p) => p.key === nextPhase)?.label}`}
+              className="p-1 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 disabled:opacity-50 transition-all active:scale-90"
+            >
+              <ChevronRight size={14} />
+            </button>
+          )}
+        </div>
       </div>
 
       {showDialog && nextPhase && (
