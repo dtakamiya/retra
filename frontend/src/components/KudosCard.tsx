@@ -41,7 +41,7 @@ export function KudosCard({ kudos, currentParticipantId, isAnonymous, onDelete }
             type="button"
             aria-label="Kudosを削除"
             onClick={() => onDelete(kudos.id)}
-            className="p-0.5 text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 transition-colors flex-shrink-0"
+            className="p-1.5 text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 rounded transition-colors flex-shrink-0"
           >
             <X size={14} />
           </button>

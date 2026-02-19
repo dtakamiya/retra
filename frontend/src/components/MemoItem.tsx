@@ -67,6 +67,7 @@ export function MemoItem({ memo, cardId }: Props) {
           onChange={(e) => setEditContent(e.target.value)}
           onKeyDown={handleKeyDown}
           maxLength={2000}
+          aria-label="メモを編集"
           className="w-full resize-none border border-gray-200 dark:border-slate-600 rounded px-2 py-1 text-xs text-gray-700 dark:text-slate-200 dark:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-300 min-h-[32px]"
           autoFocus
           rows={2}
@@ -102,24 +103,24 @@ export function MemoItem({ memo, cardId }: Props) {
         <span className="text-[10px] text-gray-400 dark:text-slate-500 mt-0.5 block">{memo.authorNickname}</span>
       </div>
       {(canEdit || canDelete) && (
-        <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity flex-shrink-0">
+        <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity flex-shrink-0">
           {canEdit && (
             <button
               onClick={() => { setEditContent(memo.content); setEditing(true); }}
-              className="p-0.5 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200"
+              className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 rounded transition-colors"
               aria-label="メモを編集"
             >
-              <Pencil size={10} />
+              <Pencil size={12} />
             </button>
           )}
           {canDelete && (
             <button
               onClick={handleDelete}
               disabled={loading}
-              className="p-0.5 text-gray-400 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400"
+              className="p-1.5 text-gray-400 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400 rounded transition-colors"
               aria-label="メモを削除"
             >
-              <Trash2 size={10} />
+              <Trash2 size={12} />
             </button>
           )}
         </div>

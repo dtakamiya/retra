@@ -58,7 +58,7 @@ export function MemoForm({ cardId }: Props) {
       <button
         onClick={handleSubmit}
         disabled={loading || !content.trim()}
-        className="p-1.5 text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 disabled:opacity-30 disabled:cursor-not-allowed"
+        className="p-2 text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 disabled:opacity-30 disabled:cursor-not-allowed"
         aria-label="メモを送信"
       >
         <Send size={14} />

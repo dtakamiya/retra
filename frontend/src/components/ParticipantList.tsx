@@ -100,9 +100,11 @@ export function ParticipantList({ compact = false }: Props) {
                 {p.nickname.charAt(0).toUpperCase()}
               </div>
               <div
-                className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white ${
-                  p.isOnline ? 'bg-green-400' : 'bg-gray-300'
+                className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 border-2 border-white ${
+                  p.isOnline ? 'bg-green-400 rounded-full' : 'bg-gray-300 rounded-sm'
                 }`}
+                role="img"
+                aria-label={p.isOnline ? 'オンライン' : 'オフライン'}
               />
             </div>
             <div className="flex-1 min-w-0">

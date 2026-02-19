@@ -179,6 +179,7 @@ export function TimerDisplay({ compact = false }: Props) {
               {timer.totalSeconds > 0 && (
                 <button
                   onClick={handleReset}
+                  aria-label="タイマーをリセット"
                   className="flex items-center justify-center gap-1 px-3 py-1.5 border border-gray-200 text-gray-500 text-xs rounded-lg hover:bg-gray-50 transition-all active:scale-95"
                 >
                   <RotateCcw size={13} />

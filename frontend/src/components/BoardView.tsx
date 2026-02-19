@@ -214,7 +214,7 @@ export function BoardView() {
     board.phase === 'ACTION_ITEMS');
 
   const columnsContent = (
-    <div className="flex gap-3 p-3 pb-20 lg:pb-3 flex-1 overflow-hidden">
+    <div className="flex gap-3 p-3 pb-20 lg:pb-3 flex-1 overflow-x-auto">
       {filteredColumns.map((column) => (
         <ColumnView key={column.id} column={column} />
       ))}

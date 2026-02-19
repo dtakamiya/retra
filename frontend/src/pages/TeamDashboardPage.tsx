@@ -100,6 +100,7 @@ export function TeamDashboardPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="チーム名で検索..."
+            aria-label="チーム名で検索"
             className="flex-1 px-4 py-3 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all"
           />
           <button

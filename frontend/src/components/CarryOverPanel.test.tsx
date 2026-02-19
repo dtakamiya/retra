@@ -82,14 +82,15 @@ describe('CarryOverPanel', () => {
     expect(screen.getByText('未完了のアクションアイテムはありません')).toBeInTheDocument()
 
     // 折りたたみ
-    const toggleButton = screen.getByLabelText('折りたたみ')
+    const toggleButton = screen.getByRole('button', { name: /前回のアクションアイテム/ })
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'true')
     await user.click(toggleButton)
 
     expect(screen.queryByText('未完了のアクションアイテムはありません')).not.toBeInTheDocument()
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
 
     // 再展開
-    const expandButton = screen.getByLabelText('展開')
-    await user.click(expandButton)
+    await user.click(toggleButton)
 
     expect(screen.getByText('未完了のアクションアイテムはありません')).toBeInTheDocument()
   })

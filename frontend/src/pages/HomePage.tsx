@@ -55,9 +55,9 @@ export function HomePage() {
     <div className="min-h-screen bg-[var(--color-bg-base)] relative overflow-hidden">
       {/* Subtle decorative background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-indigo-200/40 dark:bg-indigo-950/30 rounded-full blur-[100px] animate-[float_8s_ease-in-out_infinite]" />
-        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-purple-200/30 dark:bg-purple-950/20 rounded-full blur-[80px] animate-[float_12s_ease-in-out_infinite_2s]" />
-        <div className="absolute -bottom-20 right-1/4 w-72 h-72 bg-emerald-200/20 dark:bg-emerald-950/15 rounded-full blur-[90px] animate-[float_10s_ease-in-out_infinite_4s]" />
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-indigo-200/40 dark:bg-indigo-950/30 rounded-full blur-[100px] animate-[float_8s_ease-in-out_infinite] motion-reduce:animate-none" />
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-purple-200/30 dark:bg-purple-950/20 rounded-full blur-[80px] animate-[float_12s_ease-in-out_infinite_2s] motion-reduce:animate-none" />
+        <div className="absolute -bottom-20 right-1/4 w-72 h-72 bg-emerald-200/20 dark:bg-emerald-950/15 rounded-full blur-[90px] animate-[float_10s_ease-in-out_infinite_4s] motion-reduce:animate-none" />
       </div>
 
       {/* Theme toggle */}
