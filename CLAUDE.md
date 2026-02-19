@@ -45,7 +45,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Retra is a real-time retrospective board for Scrum teams. It supports multiple frameworks (KPT, Fun Done Learn, 4Ls, Start Stop Continue) with phase-based workflows (Writing -> Voting -> Discussion -> Action Items -> Closed).
 
-- **Backend:** Spring Boot 3.4.1 + Kotlin 2.0.21 (`backend/`)
+- **Backend:** Spring Boot 3.5.10 + Kotlin 2.3.10 (`backend/`)
 - **Frontend:** React 19.2 + TypeScript 5.9 + Vite 7 + Zustand 5 + TailwindCSS v4 (`frontend/`)
 - **Database:** SQLite with Flyway migrations (V1-V15)
 - **CI/CD:** GitHub Actions（CI: テスト・Lint・ビルド、Dependabot: 依存関係自動更新、Auto-Merge）
@@ -121,7 +121,7 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 #### `shared/` - Shared Infrastructure
 | Package | Purpose |
 |---------|---------|
-| `shared/domain/` | `DomainException` (base + `NotFoundException`, `BadRequestException`, `ForbiddenException`, `ConflictException`, `InvalidPhaseTransitionException`), `DomainEvent` (base class for all domain events) |
+| `shared/domain/` | `DomainException` (base + `NotFoundException`, `BadRequestException`, `ForbiddenException`, `ConflictException`, `InvalidPhaseTransitionException`), `DomainEvent` (base class for all domain events), `AggregateRoot`, `EnumParser` |
 | `shared/gateway/event/` | `SpringDomainEventPublisher` (Spring ApplicationEvent bridge) |
 | `shared/gateway/exception/` | `GlobalExceptionHandler` (`@RestControllerAdvice`) |
 | `shared/gateway/websocket/` | `DomainEventBroadcaster` (STOMP broadcast for all domain events) |
@@ -153,9 +153,9 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 #### `actionitem/` - Action Item Module
 | Package | Purpose |
 |---------|---------|
-| `actionitem/domain/` | `ActionItem`, `ActionItemStatus`, `ActionItemEvent`, `ActionItemRepository` |
-| `actionitem/usecase/` | `CreateActionItemUseCase`, `UpdateActionItemUseCase`, `UpdateActionItemStatusUseCase`, `DeleteActionItemUseCase`, `GetActionItemsUseCase`, DTOs (`ActionItemDtos`), Mapper (`ActionItemMapper`) |
-| `actionitem/gateway/controller/` | `ActionItemController` (REST) |
+| `actionitem/domain/` | `ActionItem`, `ActionItemStatus`, `ActionItemPriority`, `ActionItemEvent`, `ActionItemRepository` |
+| `actionitem/usecase/` | `CreateActionItemUseCase`, `UpdateActionItemUseCase`, `UpdateActionItemStatusUseCase`, `DeleteActionItemUseCase`, `GetActionItemsUseCase`, `GetCarryOverItemsUseCase`, `UpdateCarryOverItemStatusUseCase`, DTOs (`ActionItemDtos`, `CarryOverDtos`), Mapper (`ActionItemMapper`) |
+| `actionitem/gateway/controller/` | `ActionItemController`, `CarryOverController` (REST) |
 | `actionitem/gateway/db/` | JPA repository implementations (`JpaActionItemRepository`) + Spring Data interfaces (`SpringDataActionItemRepository`) |
 
 #### `kudos/` - Kudos Module
@@ -196,6 +196,7 @@ Entry point: `RetraApplication.kt`
 | `websocket/useWebSocket.ts` | STOMP client hook with auto-reconnect |
 | `hooks/useTimerAlert.ts` | Timer alert sound hook |
 | `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `Reaction`, `Kudos`, `ExportFormat`, `CardMovedPayload`, `ReactionRemovedPayload`, `KudosDeletedPayload`, `PrivateCardCreatedPayload`, `PrivateCardDeletedPayload`, etc.) |
+| `types/filter.ts` | Filter state types (`FilterState`, `DEFAULT_FILTER_STATE`) |
 | `utils/` | Utility functions (`exportMarkdown.ts` - Markdown export conversion) |
 | `test/` | Test utilities: `setup.ts`, `fixtures.ts`, `test-utils.tsx`, `dnd-mocks.ts` |
 
@@ -241,11 +242,12 @@ All REST endpoints are under `/api/v1`:
 ### WebSocket Events
 
 STOMP topics under `/topic/board/{slug}/`:
-- `cards` - `CARD_CREATED`, `CARD_UPDATED`, `CARD_MOVED`, `CARD_DELETED`, `CARD_DISCUSSION_MARKED`
+- `cards` - `CARD_CREATED`, `CARD_UPDATED`, `CARD_MOVED`, `CARD_DELETED`, `CARD_DISCUSSION_MARKED`, `CARD_CREATED_PRIVATE`, `CARD_UPDATED_PRIVATE`, `CARD_DELETED_PRIVATE`
 - `votes` - `VOTE_ADDED`, `VOTE_REMOVED`
 - `reactions` - `REACTION_ADDED`, `REACTION_REMOVED`
 - `memos` - `MEMO_CREATED`, `MEMO_UPDATED`, `MEMO_DELETED`
 - `phase` - `PHASE_CHANGED`
+- `timer` - `TIMER_UPDATE`
 - `participants` - `PARTICIPANT_JOINED`, `PARTICIPANT_ONLINE_CHANGED`
 - `action-items` - `ACTION_ITEM_CREATED`, `ACTION_ITEM_UPDATED`, `ACTION_ITEM_STATUS_CHANGED`, `ACTION_ITEM_DELETED`
 - `kudos` - `KUDOS_SENT`, `KUDOS_DELETED`
@@ -276,22 +278,22 @@ Business rules are enforced in the usecase layer:
   - `board/domain/` - Board, BoardSlug, BoardColumn, BoardAuthorizationService, Framework, Phase, VoteLimit tests
   - `board/usecase/` - CreateBoard, GetBoard, TransitionPhase, JoinBoard, UpdateOnlineStatus, ExportBoard usecase tests
   - `board/usecase/export/` - CsvExportService, MarkdownExportService tests
-  - `board/gateway/controller/` - BoardController test
+  - `board/gateway/controller/` - BoardController, WebSocketController tests
   - `board/gateway/websocket/` - WebSocketEventListener test
-  - `card/domain/` - Card, Memo, Reaction tests
-  - `card/usecase/` - CreateCard, UpdateCard, DeleteCard, MoveCard, AddVote, RemoveVote, GetRemainingVotes, CreateMemo, UpdateMemo, DeleteMemo, AddReaction, RemoveReaction usecase tests
+  - `card/domain/` - Card, CardDiscussion, Memo, Reaction, Vote tests
+  - `card/usecase/` - CreateCard, UpdateCard, DeleteCard, MoveCard, MarkCardDiscussed, AddVote, RemoveVote, GetRemainingVotes, CreateMemo, UpdateMemo, DeleteMemo, AddReaction, RemoveReaction usecase tests, CardMapper, MemoMapper, ReactionMapper tests
   - `card/gateway/controller/` - CardController, VoteController, MemoController, ReactionController tests
   - `timer/` - TimerController, TimerService tests
-  - `actionitem/domain/` - ActionItem, ActionItemStatus tests
-  - `actionitem/usecase/` - CreateActionItem, UpdateActionItem, UpdateActionItemStatus, DeleteActionItem, GetActionItems usecase tests
-  - `actionitem/gateway/controller/` - ActionItemController tests
+  - `actionitem/domain/` - ActionItem tests
+  - `actionitem/usecase/` - CreateActionItem, UpdateActionItem, UpdateActionItemStatus, DeleteActionItem, GetActionItems, GetCarryOverItems, UpdateCarryOverItemStatus usecase tests
+  - `actionitem/gateway/controller/` - ActionItemController, CarryOverController tests
   - `history/domain/` - BoardSnapshot tests
-  - `history/usecase/` - CreateSnapshot, GetSnapshot, GetTeamHistory usecase tests
+  - `history/usecase/` - CreateSnapshot, GetSnapshot, GetTeamHistory usecase tests, SnapshotMapper test
   - `history/gateway/controller/` - HistoryController tests
   - `kudos/domain/` - Kudos, KudosCategory tests
   - `kudos/usecase/` - SendKudos, GetKudos, DeleteKudos usecase tests
   - `kudos/gateway/controller/` - KudosController tests
-  - `shared/gateway/` - GlobalExceptionHandler, DomainEventBroadcaster, SpringDomainEventPublisher tests
+  - `shared/` - EnumParser, GlobalExceptionHandler, DomainEventBroadcaster, SpringDomainEventPublisher tests
 
 ### Frontend Tests (`frontend/src/`)
 - **Framework:** Vitest + React Testing Library + jsdom
@@ -305,7 +307,7 @@ Business rules are enforced in the usecase layer:
 ### E2E Tests (`frontend/e2e/`)
 - **Framework:** Playwright
 - **Config:** `playwright.config.ts`
-- **Test suites:** `home`, `board-creation`, `board-join`, `card-operations`, `card-edit-delete`, `card-drag-drop`, `card-discussion`, `voting`, `voting-limit`, `phase-control`, `timer`, `realtime-sync`, `authorization`, `anonymous-mode`, `private-writing`, `memo-operations`, `reaction-operations`, `export`, `action-item-operations`, `carry-over`, `dashboard`, `kudos-operations`, `uat-full-retro-session`
+- **Test suites (10 files):** `home`, `board-creation`, `board-join`, `card-operations`, `voting`, `phase-control`, `realtime-sync`, `export`, `uat-full-retro-session` + `helpers.ts`
 
 ## Technical Constraints
 
@@ -335,15 +337,15 @@ Business rules are enforced in the usecase layer:
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Spring Boot | 3.4.1 | Web framework |
-| Kotlin | 2.0.21 | Language |
-| sqlite-jdbc | 3.45.1.0 | SQLite driver |
-| hibernate-community-dialects | 6.4.2.Final | SQLite dialect for Hibernate |
-| commons-csv | 1.12.0 | CSV export |
+| Spring Boot | 3.5.10 | Web framework |
+| Kotlin | 2.3.10 | Language |
+| sqlite-jdbc | 3.51.2.0 | SQLite driver |
+| hibernate-community-dialects | (managed) | SQLite dialect for Hibernate |
+| commons-csv | 1.14.1 | CSV export |
 | flyway-core | (managed) | DB migration |
-| mockk | 1.13.10 | Kotlin mocking |
-| mockito-kotlin | 5.2.1 | Mockito for Kotlin |
-| JaCoCo | 0.8.11 | Code coverage (excludes: `RetraApplicationKt*`, `config/**`, `**/gateway/db/**`) |
+| mockk | 1.14.9 | Kotlin mocking |
+| mockito-kotlin | 6.2.3 | Mockito for Kotlin |
+| JaCoCo | 0.8.14 | Code coverage (excludes: `RetraApplicationKt*`, `config/**`, `**/gateway/db/**`) |
 
 ## Key Dependencies (Frontend)
 
@@ -356,7 +358,7 @@ Business rules are enforced in the usecase layer:
 | @stomp/stompjs | ^7.3.0 | WebSocket STOMP client |
 | @dnd-kit/core | ^6.3.1 | Drag & drop |
 | @dnd-kit/sortable | ^10.0.0 | Sortable lists |
-| lucide-react | ^0.563.0 | Icons |
+| lucide-react | ^0.574.0 | Icons |
 | react-router-dom | ^7.13.0 | Routing |
 | tailwindcss | ^4.1.18 | CSS framework |
 | recharts | ^3.7.0 | Charts for dashboard |

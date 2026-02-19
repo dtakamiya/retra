@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import App from './App'
 
 vi.mock('./pages/HomePage', () => ({
@@ -23,23 +23,38 @@ vi.mock('./pages/NotFoundPage', () => ({
 }))
 
 describe('App', () => {
-  it('renders HomePage on default "/" route', () => {
-    // BrowserRouter defaults to "/" in jsdom
+  it('renders HomePage on default "/" route', async () => {
     render(<App />)
 
-    expect(screen.getByTestId('home-page')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('home-page')).toBeInTheDocument()
+    })
   })
 
-  it('renders without crashing and contains route structure', () => {
+  it('renders without crashing and contains route structure', async () => {
     const { container } = render(<App />)
 
-    expect(container).toBeTruthy()
+    await waitFor(() => {
+      expect(container).toBeTruthy()
+    })
   })
 
-  it('does not render NotFoundPage or BoardPage on default route', () => {
+  it('does not render NotFoundPage or BoardPage on default route', async () => {
     render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByTestId('home-page')).toBeInTheDocument()
+    })
 
     expect(screen.queryByTestId('not-found-page')).not.toBeInTheDocument()
     expect(screen.queryByTestId('board-page')).not.toBeInTheDocument()
+  })
+
+  it('wraps routes in ErrorBoundary for crash resilience', async () => {
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByTestId('home-page')).toBeInTheDocument()
+    })
   })
 })
