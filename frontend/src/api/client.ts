@@ -292,7 +292,7 @@ export const api = {
   setIcebreakerQuestion(slug: string, participantId: string, mode: 'RANDOM' | 'CUSTOM', customQuestion?: string): Promise<IcebreakerResponse> {
     return request(`/boards/${slug}/icebreaker/question`, {
       method: 'POST',
-      body: JSON.stringify({ participantId, mode, customQuestion }),
+      body: JSON.stringify({ participantId, type: mode, questionText: customQuestion }),
     });
   },
 
