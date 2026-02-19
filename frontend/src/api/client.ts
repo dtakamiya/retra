@@ -7,12 +7,12 @@ import type {
   Framework,
   Kudos,
   Memo,
+  PagedHistory,
   Participant,
   Phase,
   Reaction,
   RemainingVotes,
   SnapshotDetail,
-  SnapshotSummary,
   TimerAction,
   TimerState,
   TrendData,
@@ -226,9 +226,19 @@ export const api = {
   },
 
   // History / Dashboard
-  getHistory(teamName?: string): Promise<SnapshotSummary[]> {
-    const params = teamName ? `?teamName=${encodeURIComponent(teamName)}` : '';
-    return request<SnapshotSummary[]>(`/history${params}`);
+  getHistory(teamName?: string, page?: number, size?: number): Promise<PagedHistory> {
+    const params = new URLSearchParams();
+    if (teamName) params.set('teamName', teamName);
+    if (page !== undefined) params.set('page', String(page));
+    if (size !== undefined) params.set('size', String(size));
+    const query = params.toString();
+    return request<PagedHistory>(`/history${query ? `?${query}` : ''}`);
+  },
+
+  deleteSnapshot(snapshotId: string): Promise<void> {
+    return request<void>(`/history/${snapshotId}`, {
+      method: 'DELETE',
+    });
   },
 
   getSnapshot(snapshotId: string): Promise<SnapshotDetail> {

@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '../test/test-utils'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, userEvent } from '../test/test-utils'
 import { RetroSummaryCard } from './RetroSummaryCard'
 import { createSnapshotSummary } from '../test/fixtures'
 
@@ -75,5 +75,30 @@ describe('RetroSummaryCard', () => {
 
     const bar = screen.getByTestId('completion-bar')
     expect(bar).toHaveStyle({ width: '75%' })
+  })
+
+  it('onDeleteが未指定の場合は削除ボタンを表示しない', () => {
+    const snapshot = createSnapshotSummary()
+    render(<RetroSummaryCard snapshot={snapshot} />)
+
+    expect(screen.queryByLabelText('スナップショットを削除')).not.toBeInTheDocument()
+  })
+
+  it('onDeleteが指定された場合は削除ボタンを表示する', () => {
+    const snapshot = createSnapshotSummary()
+    render(<RetroSummaryCard snapshot={snapshot} onDelete={vi.fn()} />)
+
+    expect(screen.getByLabelText('スナップショットを削除')).toBeInTheDocument()
+  })
+
+  it('削除ボタンクリックでonDeleteが呼ばれる', async () => {
+    const user = userEvent.setup()
+    const onDelete = vi.fn()
+    const snapshot = createSnapshotSummary({ id: 'snap-abc' })
+    render(<RetroSummaryCard snapshot={snapshot} onDelete={onDelete} />)
+
+    await user.click(screen.getByLabelText('スナップショットを削除'))
+
+    expect(onDelete).toHaveBeenCalledWith('snap-abc')
   })
 })

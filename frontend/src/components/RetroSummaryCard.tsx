@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
-import { Calendar, Users, FileText, Vote, ListTodo, ChevronRight } from 'lucide-react';
+import { Calendar, Users, FileText, Vote, ListTodo, ChevronRight, Trash2 } from 'lucide-react';
 import type { SnapshotSummary } from '../types';
 
 interface Props {
   snapshot: SnapshotSummary;
+  onDelete?: (id: string) => void;
 }
 
 const FRAMEWORK_COLORS: Record<string, string> = {
@@ -13,7 +14,7 @@ const FRAMEWORK_COLORS: Record<string, string> = {
   START_STOP_CONTINUE: 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
 };
 
-export function RetroSummaryCard({ snapshot }: Props) {
+export function RetroSummaryCard({ snapshot, onDelete }: Props) {
   const completionRate = snapshot.actionItemsTotal > 0
     ? Math.round((snapshot.actionItemsDone / snapshot.actionItemsTotal) * 100)
     : 0;
@@ -36,6 +37,19 @@ export function RetroSummaryCard({ snapshot }: Props) {
         <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-slate-500 shrink-0 ml-2">
           <Calendar size={13} />
           {dateStr}
+          {onDelete && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete(snapshot.id);
+              }}
+              className="ml-1 p-1 text-gray-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              aria-label="スナップショットを削除"
+            >
+              <Trash2 size={14} />
+            </button>
+          )}
           <ChevronRight size={14} className="text-gray-300 dark:text-slate-600 group-hover:text-indigo-400 dark:group-hover:text-indigo-400 transition-colors ml-1" />
         </div>
       </div>

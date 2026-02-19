@@ -2,12 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor, userEvent } from '../test/test-utils'
 import { TeamDashboardPage } from './TeamDashboardPage'
 import { api } from '../api/client'
-import { createSnapshotSummary, createTrendData } from '../test/fixtures'
+import { createSnapshotSummary, createTrendData, createPagedHistory } from '../test/fixtures'
 
 vi.mock('../api/client', () => ({
   api: {
     getHistory: vi.fn(),
     getTrends: vi.fn(),
+    deleteSnapshot: vi.fn(),
   },
 }))
 
@@ -32,7 +33,7 @@ describe('TeamDashboardPage', () => {
   })
 
   it('displays page title', async () => {
-    vi.mocked(api.getHistory).mockResolvedValue([])
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory())
     vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
 
     render(<TeamDashboardPage />)
@@ -41,7 +42,7 @@ describe('TeamDashboardPage', () => {
   })
 
   it('displays home link', async () => {
-    vi.mocked(api.getHistory).mockResolvedValue([])
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory())
     vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
 
     render(<TeamDashboardPage />)
@@ -55,7 +56,7 @@ describe('TeamDashboardPage', () => {
       createSnapshotSummary({ id: 'snap-1', teamName: 'Team Alpha' }),
       createSnapshotSummary({ id: 'snap-2', teamName: 'Team Beta' }),
     ]
-    vi.mocked(api.getHistory).mockResolvedValue(history)
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory(history, { totalElements: 2 }))
     vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
 
     render(<TeamDashboardPage />)
@@ -68,7 +69,7 @@ describe('TeamDashboardPage', () => {
   })
 
   it('displays empty history message when no data', async () => {
-    vi.mocked(api.getHistory).mockResolvedValue([])
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory())
     vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
 
     render(<TeamDashboardPage />)
@@ -79,7 +80,7 @@ describe('TeamDashboardPage', () => {
   })
 
   it('displays trend chart when more than 1 snapshot', async () => {
-    vi.mocked(api.getHistory).mockResolvedValue([])
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory())
     vi.mocked(api.getTrends).mockResolvedValue(createTrendData())
 
     render(<TeamDashboardPage />)
@@ -91,7 +92,7 @@ describe('TeamDashboardPage', () => {
   })
 
   it('does not display trend chart when only 1 snapshot', async () => {
-    vi.mocked(api.getHistory).mockResolvedValue([])
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory())
     vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [createTrendData().snapshots[0]] })
 
     render(<TeamDashboardPage />)
@@ -104,7 +105,7 @@ describe('TeamDashboardPage', () => {
 
   it('searches by team name on form submit', async () => {
     const user = userEvent.setup()
-    vi.mocked(api.getHistory).mockResolvedValue([])
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory())
     vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
 
     render(<TeamDashboardPage />)
@@ -119,15 +120,15 @@ describe('TeamDashboardPage', () => {
     const searchButton = screen.getByText('検索')
     await user.click(searchButton)
 
-    // Should call API with team name
+    // Should call API with team name and pagination params
     await waitFor(() => {
-      expect(api.getHistory).toHaveBeenCalledWith('Team Alpha')
+      expect(api.getHistory).toHaveBeenCalledWith('Team Alpha', 0, 10)
       expect(api.getTrends).toHaveBeenCalledWith('Team Alpha')
     })
   })
 
   it('renders search input and button', async () => {
-    vi.mocked(api.getHistory).mockResolvedValue([])
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory())
     vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
 
     render(<TeamDashboardPage />)
@@ -160,13 +161,15 @@ describe('TeamDashboardPage', () => {
     useToastStore.setState({ addToast: originalImpl })
   })
 
-  it('displays KPI summary cards when history has data', async () => {
-    const history = [
-      createSnapshotSummary({ totalCards: 10, totalVotes: 20, totalParticipants: 5, actionItemsDone: 2, actionItemsTotal: 4 }),
-      createSnapshotSummary({ id: 'snap-2', totalCards: 14, totalVotes: 30, totalParticipants: 7, actionItemsDone: 3, actionItemsTotal: 5 }),
-    ]
-    vi.mocked(api.getHistory).mockResolvedValue(history)
-    vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
+  it('displays KPI summary cards from trend data', async () => {
+    const trends = createTrendData({
+      snapshots: [
+        { closedAt: '2024-03-01T10:00:00Z', totalCards: 10, totalVotes: 20, totalParticipants: 5, actionItemsDone: 2, actionItemsTotal: 4, actionItemCompletionRate: 50, cardsPerParticipant: 2.0, votesPerParticipant: 4.0, votesPerCard: 2.0, actionItemRate: 40 },
+        { closedAt: '2024-03-15T10:00:00Z', totalCards: 14, totalVotes: 30, totalParticipants: 7, actionItemsDone: 3, actionItemsTotal: 5, actionItemCompletionRate: 60, cardsPerParticipant: 2.0, votesPerParticipant: 4.3, votesPerCard: 2.1, actionItemRate: 36 },
+      ],
+    })
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory([createSnapshotSummary()], { totalElements: 1 }))
+    vi.mocked(api.getTrends).mockResolvedValue(trends)
 
     render(<TeamDashboardPage />)
 
@@ -181,8 +184,8 @@ describe('TeamDashboardPage', () => {
     expect(screen.getByText('総投票数')).toBeInTheDocument()
   })
 
-  it('does not display KPI summary when history is empty', async () => {
-    vi.mocked(api.getHistory).mockResolvedValue([])
+  it('does not display KPI summary when trends is empty', async () => {
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory())
     vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
 
     render(<TeamDashboardPage />)
@@ -191,5 +194,88 @@ describe('TeamDashboardPage', () => {
       expect(screen.queryByText('読み込み中...')).not.toBeInTheDocument()
     })
     expect(screen.queryByTestId('kpi-summary')).not.toBeInTheDocument()
+  })
+
+  it('displays pagination when there are items', async () => {
+    const history = [createSnapshotSummary()]
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory(history, { totalElements: 25, totalPages: 3 }))
+    vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
+
+    render(<TeamDashboardPage />)
+
+    await waitFor(() => {
+      expect(screen.getByTestId('total-elements')).toHaveTextContent('全 25 件')
+    })
+    expect(screen.getByTestId('page-indicator')).toHaveTextContent('1 / 3')
+  })
+
+  it('does not display pagination when no items', async () => {
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory())
+    vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
+
+    render(<TeamDashboardPage />)
+
+    await waitFor(() => {
+      expect(screen.queryByText('読み込み中...')).not.toBeInTheDocument()
+    })
+    expect(screen.queryByTestId('total-elements')).not.toBeInTheDocument()
+  })
+
+  it('shows delete confirmation dialog when delete button clicked', async () => {
+    const user = userEvent.setup()
+    const history = [createSnapshotSummary({ id: 'snap-1' })]
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory(history, { totalElements: 1 }))
+    vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
+
+    render(<TeamDashboardPage />)
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('スナップショットを削除')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByLabelText('スナップショットを削除'))
+
+    expect(screen.getByText('スナップショットの削除')).toBeInTheDocument()
+    expect(screen.getByText('このスナップショットを削除しますか？この操作は取り消せません。')).toBeInTheDocument()
+  })
+
+  it('deletes snapshot and reloads on confirm', async () => {
+    const user = userEvent.setup()
+    const history = [createSnapshotSummary({ id: 'snap-1' })]
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory(history, { totalElements: 1 }))
+    vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
+    vi.mocked(api.deleteSnapshot).mockResolvedValue(undefined)
+
+    render(<TeamDashboardPage />)
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('スナップショットを削除')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByLabelText('スナップショットを削除'))
+    await user.click(screen.getByText('削除'))
+
+    await waitFor(() => {
+      expect(api.deleteSnapshot).toHaveBeenCalledWith('snap-1')
+    })
+  })
+
+  it('cancels delete dialog without calling API', async () => {
+    const user = userEvent.setup()
+    const history = [createSnapshotSummary({ id: 'snap-1' })]
+    vi.mocked(api.getHistory).mockResolvedValue(createPagedHistory(history, { totalElements: 1 }))
+    vi.mocked(api.getTrends).mockResolvedValue({ snapshots: [] })
+
+    render(<TeamDashboardPage />)
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('スナップショットを削除')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByLabelText('スナップショットを削除'))
+    await user.click(screen.getByText('キャンセル'))
+
+    expect(api.deleteSnapshot).not.toHaveBeenCalled()
+    expect(screen.queryByText('スナップショットの削除')).not.toBeInTheDocument()
   })
 })

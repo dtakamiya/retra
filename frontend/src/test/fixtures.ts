@@ -1,4 +1,4 @@
-import type { ActionItem, Board, Card, CarryOverItem, Column, Kudos, Memo, Participant, Reaction, RemainingVotes, SnapshotDetail, SnapshotSummary, TimerState, TrendData, TrendPoint, Vote } from '../types'
+import type { ActionItem, Board, Card, CarryOverItem, Column, Kudos, Memo, PagedHistory, Participant, Reaction, RemainingVotes, SnapshotDetail, SnapshotSummary, TimerState, TrendData, TrendPoint, Vote } from '../types'
 
 export function createParticipant(overrides: Partial<Participant> = {}): Participant {
   return {
@@ -219,6 +219,17 @@ export function createKudos(overrides: Partial<Kudos> = {}): Kudos {
     category: 'GREAT_JOB',
     message: undefined,
     createdAt: '2024-01-01T00:00:00Z',
+    ...overrides,
+  }
+}
+
+export function createPagedHistory(content: SnapshotSummary[] = [], overrides: Partial<PagedHistory> = {}): PagedHistory {
+  return {
+    content,
+    totalElements: content.length,
+    totalPages: content.length > 0 ? 1 : 0,
+    currentPage: 0,
+    pageSize: 10,
     ...overrides,
   }
 }
