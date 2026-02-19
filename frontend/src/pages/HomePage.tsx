@@ -155,7 +155,7 @@ export function HomePage() {
                         <fw.icon size={15} className={framework === fw.value ? 'text-indigo-500 dark:text-indigo-400' : 'text-gray-400 dark:text-slate-500'} />
                         <span className="font-medium text-sm text-gray-900 dark:text-slate-100">{fw.label}</span>
                       </div>
-                      <div className="text-xs text-gray-400 dark:text-slate-500 mt-1 ml-[25px]">{fw.description}</div>
+                      <div className="text-xs text-gray-500 dark:text-slate-400 mt-1 ml-[25px]">{fw.description}</div>
                     </button>
                   ))}
                 </div>
@@ -174,7 +174,7 @@ export function HomePage() {
                     placeholder="チーム Alpha"
                     className="w-full px-4 py-2.5 bg-white dark:bg-slate-900/50 border border-gray-200/60 dark:border-slate-700 shadow-[var(--shadow-soft-ui-input)] rounded-xl focus:ring-2 focus:ring-indigo-500/15 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.1)] focus:border-indigo-400 dark:focus:border-indigo-500 outline-none transition-all text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500"
                   />
-                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">前回のアクションアイテムを引き継ぎます</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">前回のアクションアイテムを引き継ぎます</p>
                 </div>
                 <div className="w-24 flex-shrink-0">
                   <label htmlFor="max-votes" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
@@ -199,7 +199,7 @@ export function HomePage() {
                     <EyeOff size={15} className="text-gray-400 dark:text-slate-500" />
                     <div>
                       <span className="text-sm font-medium text-gray-700 dark:text-slate-300">匿名モード</span>
-                      <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">作成者名を非表示（変更不可）</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">作成者名を非表示（変更不可）</p>
                     </div>
                   </div>
                   <div
@@ -226,7 +226,7 @@ export function HomePage() {
                     <Lock size={15} className="text-gray-400 dark:text-slate-500" />
                     <div>
                       <span className="text-sm font-medium text-gray-700 dark:text-slate-300">プライベート記述モード</span>
-                      <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">記入中は他の参加者のカードが非表示</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">記入中は他の参加者のカードが非表示</p>
                     </div>
                   </div>
                   <div
@@ -286,7 +286,7 @@ export function HomePage() {
         </div>
 
         {/* Feature hints */}
-        <div className="flex justify-center gap-6 mt-8 text-xs text-gray-400 dark:text-slate-500">
+        <div className="flex justify-center gap-6 mt-8 text-xs text-gray-500 dark:text-slate-400">
           <div className="flex items-center gap-1.5 animate-[staggerFadeIn_0.5s_ease-out_0.3s_both]">
             <Sparkles size={12} />
             リアルタイム同期

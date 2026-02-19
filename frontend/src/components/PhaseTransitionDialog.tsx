@@ -110,7 +110,7 @@ export function PhaseTransitionDialog({ board, nextPhase, loading, onConfirm, on
           <h2 className="text-base font-semibold text-gray-900 dark:text-slate-100">フェーズを進めますか？</h2>
           <button
             onClick={onCancel}
-            className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+            className="p-2 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             aria-label="閉じる"
           >
             <X size={18} />

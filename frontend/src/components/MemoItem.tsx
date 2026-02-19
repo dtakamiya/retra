@@ -78,18 +78,18 @@ export function MemoItem({ memo, cardId }: Props) {
               setEditing(false);
               setEditContent(memo.content);
             }}
-            className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200"
+            className="p-2 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             aria-label="キャンセル"
           >
-            <X size={12} />
+            <X size={14} />
           </button>
           <button
             onClick={handleUpdate}
             disabled={loading || !editContent.trim()}
-            className="p-1 text-indigo-500 hover:text-indigo-700 disabled:opacity-30"
+            className="p-2 text-indigo-500 hover:text-indigo-700 disabled:opacity-30 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             aria-label="保存"
           >
-            <Check size={12} />
+            <Check size={14} />
           </button>
         </div>
       </div>
@@ -107,7 +107,7 @@ export function MemoItem({ memo, cardId }: Props) {
           {canEdit && (
             <button
               onClick={() => { setEditContent(memo.content); setEditing(true); }}
-              className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 rounded transition-colors"
+              className="p-2 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               aria-label="メモを編集"
             >
               <Pencil size={12} />
@@ -117,7 +117,7 @@ export function MemoItem({ memo, cardId }: Props) {
             <button
               onClick={handleDelete}
               disabled={loading}
-              className="p-1.5 text-gray-400 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400 rounded transition-colors"
+              className="p-2 text-gray-400 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               aria-label="メモを削除"
             >
               <Trash2 size={12} />

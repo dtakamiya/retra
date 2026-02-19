@@ -93,7 +93,7 @@ export function ColumnView({ column }: Props) {
             )}
           </div>
           {columnDescriptions[column.name] && (
-            <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-0.5 ml-4">{columnDescriptions[column.name]}</p>
+            <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5 ml-4">{columnDescriptions[column.name]}</p>
           )}
           {isDiscussionLike && (
             <DiscussionProgress cards={column.cards} color={column.color} />
@@ -111,19 +111,19 @@ export function ColumnView({ column }: Props) {
           ))}
         </SortableContext>
         {column.cards.length === 0 && !showForm && (
-          <div className="text-center py-12 text-gray-300 dark:text-slate-600 text-xs">
+          <div className="text-center py-12 text-gray-400 dark:text-slate-500 text-xs">
             {isWriting ? (
               <button
                 onClick={() => setShowForm(true)}
-                className="flex flex-col items-center gap-2.5 mx-auto hover:text-gray-400 dark:hover:text-slate-500 transition-all group"
+                className="flex flex-col items-center gap-2.5 mx-auto hover:text-gray-500 dark:hover:text-slate-400 transition-all group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg"
               >
                 <div className="w-11 h-11 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-gray-200 dark:group-hover:bg-slate-700 transition-all group-hover:scale-105 border-2 border-dashed border-gray-200 dark:border-slate-700">
                   <Plus size={20} className="text-gray-400 dark:text-slate-500" />
                 </div>
-                <span className="text-gray-400 dark:text-slate-500">カードを追加</span>
+                <span className="text-gray-500 dark:text-slate-400">カードを追加</span>
               </button>
             ) : (
-              <span className="text-gray-300 dark:text-slate-600">カードはありません</span>
+              <span className="text-gray-400 dark:text-slate-500">カードはありません</span>
             )}
           </div>
         )}

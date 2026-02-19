@@ -300,9 +300,9 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
           ) : null}
 
           {card.authorNickname ? (
-            <span className="text-[11px] text-gray-400 dark:text-slate-500">{card.authorNickname}</span>
+            <span className="text-[11px] text-gray-500 dark:text-slate-400">{card.authorNickname}</span>
           ) : board.isAnonymous ? (
-            <span className="text-[11px] text-gray-400 dark:text-slate-500 italic">匿名</span>
+            <span className="text-[11px] text-gray-500 dark:text-slate-400 italic">匿名</span>
           ) : null}
         </div>
 

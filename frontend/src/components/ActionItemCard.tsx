@@ -90,7 +90,7 @@ export function ActionItemCard({ actionItem }: Props) {
               setEditing(false);
               setEditContent(actionItem.content);
             }}
-            className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+            className="p-2 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             aria-label="キャンセル"
           >
             <X size={14} />
@@ -98,7 +98,7 @@ export function ActionItemCard({ actionItem }: Props) {
           <button
             onClick={handleUpdate}
             disabled={loading || !editContent.trim()}
-            className="p-1 text-indigo-500 hover:text-indigo-700 disabled:opacity-30 transition-colors"
+            className="p-2 text-indigo-500 hover:text-indigo-700 disabled:opacity-30 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             aria-label="保存"
           >
             <Check size={14} />
@@ -117,13 +117,13 @@ export function ActionItemCard({ actionItem }: Props) {
             <ActionItemStatusBadge status={actionItem.status} />
             <ActionItemPriorityBadge priority={actionItem.priority} />
             {actionItem.assigneeNickname && (
-              <span className="flex items-center gap-1 text-[11px] text-gray-400">
+              <span className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-slate-400">
                 <User size={10} />
                 {actionItem.assigneeNickname}
               </span>
             )}
             {actionItem.dueDate && (
-              <span className="flex items-center gap-1 text-[11px] text-gray-400">
+              <span className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-slate-400">
                 <Calendar size={10} />
                 {actionItem.dueDate}
               </span>
@@ -151,7 +151,7 @@ export function ActionItemCard({ actionItem }: Props) {
               {canModify && (
                 <button
                   onClick={() => { setEditContent(actionItem.content); setEditing(true); }}
-                  className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded transition-colors"
+                  className="p-2 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   aria-label="アクションアイテムを編集"
                 >
                   <Pencil size={12} />
@@ -161,7 +161,7 @@ export function ActionItemCard({ actionItem }: Props) {
                 <button
                   onClick={handleDelete}
                   disabled={loading}
-                  className="p-1.5 text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 rounded transition-colors"
+                  className="p-2 text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   aria-label="アクションアイテムを削除"
                 >
                   <Trash2 size={12} />
