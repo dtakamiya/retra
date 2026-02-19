@@ -183,7 +183,7 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
 
   if (editing) {
     return (
-      <div ref={setNodeRef} style={style} className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-indigo-100 dark:border-indigo-800/50 p-3.5 animate-[scaleFadeIn_0.15s_ease-out]">
+      <div ref={setNodeRef} style={style} className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-indigo-100 dark:border-indigo-800/50 p-3.5 animate-[scaleFadeIn_0.15s_ease-out] motion-reduce:animate-none">
         <textarea
           value={editContent}
           onChange={(e) => setEditContent(e.target.value)}
@@ -202,14 +202,14 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
                 setEditing(false);
                 setEditContent(card.content);
               }}
-              className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+              className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             >
               キャンセル
             </button>
             <button
               onClick={handleUpdate}
               disabled={loading || !editContent.trim()}
-              className="px-3 py-1 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+              className="px-3 py-1.5 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1"
             >
               保存
             </button>
@@ -232,7 +232,7 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
         {isDndEnabled && (
           <button
             {...listeners}
-            className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-400 dark:text-slate-600 dark:hover:text-slate-400 mt-0.5 transition-colors"
+            className="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-400 dark:text-slate-600 dark:hover:text-slate-400 mt-0.5 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             aria-label="ドラッグして並べ替え"
           >
             <GripVertical size={14} />
@@ -253,7 +253,7 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
           </button>
         )}
         <p
-          className="text-sm text-gray-700 dark:text-slate-200 whitespace-pre-wrap break-words flex-1 cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          className="text-sm text-gray-700 dark:text-slate-200 whitespace-pre-wrap break-words flex-1 cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           style={{ lineHeight: '1.7' }}
           onClick={() => setShowDetailModal(true)}
           role="button"
@@ -308,22 +308,22 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
 
         {/* Edit/Delete buttons */}
         {(isAuthor || isFacilitator) && isWriting && (
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity">
+          <div className="flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
             {isAuthor && (
               <button
                 onClick={() => setEditing(true)}
-                className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                 aria-label="カードを編集"
               >
-                <Pencil size={13} />
+                <Pencil size={14} />
               </button>
             )}
             <button
               onClick={handleDelete}
-              className="p-1.5 text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 rounded transition-colors"
+              className="p-2 text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               aria-label="カードを削除"
             >
-              <Trash2 size={13} />
+              <Trash2 size={14} />
             </button>
           </div>
         )}
@@ -333,7 +333,7 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
           {(phase === 'DISCUSSION' || phase === 'ACTION_ITEMS') && (
             <button
               onClick={handleConvertToActionItem}
-              className="p-1 text-gray-400 hover:text-purple-600 dark:text-slate-500 dark:hover:text-purple-400 rounded transition-colors"
+              className="p-2 text-gray-400 hover:text-purple-600 dark:text-slate-500 dark:hover:text-purple-400 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               aria-label="アクションアイテムに変換"
               title="アクションアイテムに変換"
             >

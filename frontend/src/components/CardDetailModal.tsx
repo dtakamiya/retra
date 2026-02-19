@@ -86,7 +86,7 @@ export function CardDetailModal({ card, columnName, columnColor, myParticipantId
     >
       <div
         ref={dialogRef}
-        className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col overflow-hidden animate-[scaleFadeIn_0.15s_ease-out]"
+        className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col overflow-hidden animate-[scaleFadeIn_0.15s_ease-out] motion-reduce:animate-none"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-slate-700">
@@ -100,7 +100,7 @@ export function CardDetailModal({ card, columnName, columnColor, myParticipantId
           <button
             ref={closeButtonRef}
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+            className="p-2 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             aria-label="閉じる"
           >
             <X size={18} />
