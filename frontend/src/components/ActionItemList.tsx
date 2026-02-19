@@ -34,7 +34,7 @@ function StatusSection({ title, items, color }: StatusSectionProps) {
 }
 
 export function ActionItemList({ actionItems, slug, participants }: Props) {
-  const { board } = useBoardStore();
+  const board = useBoardStore((s) => s.board);
 
   if (!board) return null;
 

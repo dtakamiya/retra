@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pencil, Trash2, Check, X } from 'lucide-react';
 import { api } from '../api/client';
+import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 import { useToastStore } from '../store/toastStore';
 import type { Memo } from '../types';
@@ -11,7 +12,7 @@ interface Props {
 }
 
 export function MemoItem({ memo, cardId }: Props) {
-  const { board, participant } = useBoardStore();
+  const { board, participant } = useBoardStore(useShallow((s) => ({ board: s.board, participant: s.participant })));
   const addToast = useToastStore((s) => s.addToast);
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(memo.content);

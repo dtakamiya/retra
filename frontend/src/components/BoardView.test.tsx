@@ -43,14 +43,17 @@ describe('BoardView', () => {
   })
 
   it('returns null when board is null', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: null,
       participant: null,
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
       actionItems: [],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { container } = render(<BoardView />)
 
@@ -67,14 +70,17 @@ describe('BoardView', () => {
       ],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
       actionItems: [],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
 
@@ -93,14 +99,17 @@ describe('BoardView', () => {
       ],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
       actionItems: [],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
 
@@ -117,14 +126,17 @@ describe('BoardView', () => {
       ],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
       actionItems: [],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
 
@@ -132,14 +144,17 @@ describe('BoardView', () => {
   })
 
   it('does not display error banner initially', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard(),
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
       actionItems: [],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
 
@@ -155,14 +170,17 @@ describe('BoardView', () => {
       ],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
       actionItems: [],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
 
@@ -186,12 +204,15 @@ describe('BoardView', () => {
     })
     const handleCardMoved = vi.fn()
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant({ id: 'p-1' }),
       handleCardMoved,
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.moveCard).mockResolvedValue(undefined)
 
@@ -218,12 +239,15 @@ describe('BoardView', () => {
     })
     const handleCardMoved = vi.fn()
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant(),
       handleCardMoved,
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
 
@@ -246,14 +270,17 @@ describe('BoardView', () => {
     const refreshedBoard = createBoard({ id: 'refreshed' })
     const setBoard = vi.fn()
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant({ id: 'p-1' }),
       handleCardMoved: vi.fn(),
       setBoard,
       actionItems: [],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.moveCard).mockRejectedValue(new Error('Network error'))
     vi.mocked(api.getBoard).mockResolvedValue(refreshedBoard)
@@ -281,14 +308,17 @@ describe('BoardView', () => {
       ],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant({ id: 'p-1' }),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
       actionItems: [],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.moveCard).mockRejectedValue(new Error('Network error'))
     vi.mocked(api.getBoard).mockRejectedValue(new Error('Also failed'))
@@ -316,12 +346,15 @@ describe('BoardView', () => {
     })
     const handleCardMoved = vi.fn()
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant({ id: 'p-1' }),
       handleCardMoved,
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.moveCard).mockResolvedValue(undefined)
 
@@ -351,12 +384,15 @@ describe('BoardView', () => {
     })
     const handleCardMoved = vi.fn()
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant({ id: 'p-1' }),
       handleCardMoved,
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
 
@@ -373,14 +409,17 @@ describe('BoardView', () => {
       columns: [createColumn({ id: 'col-1', name: 'Keep' })],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
       actionItems: [createActionItem({ content: 'テストアクション' })],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
 
@@ -394,14 +433,17 @@ describe('BoardView', () => {
       columns: [createColumn({ id: 'col-1', name: 'Keep' })],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
       actionItems: [],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
 
@@ -414,14 +456,17 @@ describe('BoardView', () => {
       columns: [createColumn({ id: 'col-1', name: 'Keep' })],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
       actionItems: [],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
 
@@ -431,14 +476,17 @@ describe('BoardView', () => {
   it('calls api.getActionItems when board slug is available', () => {
     const board = createBoard({ slug: 'test-slug', phase: 'ACTION_ITEMS' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
       actionItems: [],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
 
@@ -451,14 +499,17 @@ describe('BoardView', () => {
       columns: [createColumn({ id: 'col-1', name: 'Keep' })],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
       actionItems: [],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
 
@@ -473,14 +524,17 @@ describe('BoardView', () => {
       columns: [createColumn({ id: 'col-1', name: 'Keep' })],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board,
       participant: createParticipant(),
       handleCardMoved: vi.fn(),
       setBoard: vi.fn(),
       actionItems: [],
       setActionItems: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
 

@@ -17,20 +17,26 @@ describe('MemoList', () => {
   })
 
   it('returns null when board is null', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: null,
       participant: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { container } = render(<MemoList cardId="card-1" memos={[]} />)
     expect(container.innerHTML).toBe('')
   })
 
   it('renders memo items', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: { id: 'p-1', nickname: 'TestUser', isFacilitator: false, isOnline: true, createdAt: '' },
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const memos = [
       createMemo({ id: 'memo-1', content: 'メモ1' }),
@@ -43,10 +49,13 @@ describe('MemoList', () => {
   })
 
   it('shows MemoForm in DISCUSSION phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: { id: 'p-1', nickname: 'TestUser', isFacilitator: false, isOnline: true, createdAt: '' },
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<MemoList cardId="card-1" memos={[]} />)
 
@@ -54,10 +63,13 @@ describe('MemoList', () => {
   })
 
   it('shows MemoForm in ACTION_ITEMS phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: { id: 'p-1', nickname: 'TestUser', isFacilitator: false, isOnline: true, createdAt: '' },
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<MemoList cardId="card-1" memos={[]} />)
 
@@ -65,10 +77,13 @@ describe('MemoList', () => {
   })
 
   it('does NOT show MemoForm in CLOSED phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'CLOSED' }),
       participant: { id: 'p-1', nickname: 'TestUser', isFacilitator: false, isOnline: true, createdAt: '' },
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<MemoList cardId="card-1" memos={[]} />)
 

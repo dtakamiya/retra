@@ -1,5 +1,6 @@
 import { Client } from '@stomp/stompjs';
 import { useCallback, useEffect, useRef } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 import type {
   ActionItem,
@@ -61,7 +62,39 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleIcebreakerAnswerSubmitted,
     handleIcebreakerAnswerUpdated,
     handleIcebreakerAnswerDeleted,
-  } = useBoardStore();
+  } = useBoardStore(useShallow((s) => ({
+    setConnected: s.setConnected,
+    setTimer: s.setTimer,
+    handleCardCreated: s.handleCardCreated,
+    handleCardUpdated: s.handleCardUpdated,
+    handleCardDeleted: s.handleCardDeleted,
+    handleCardMoved: s.handleCardMoved,
+    handleCardDiscussionMarked: s.handleCardDiscussionMarked,
+    handlePrivateCardCreated: s.handlePrivateCardCreated,
+    handlePrivateCardUpdated: s.handlePrivateCardUpdated,
+    handlePrivateCardDeleted: s.handlePrivateCardDeleted,
+    handleVoteAdded: s.handleVoteAdded,
+    handleVoteRemoved: s.handleVoteRemoved,
+    handlePhaseChanged: s.handlePhaseChanged,
+    handleParticipantJoined: s.handleParticipantJoined,
+    handleParticipantOnline: s.handleParticipantOnline,
+    handleParticipantOffline: s.handleParticipantOffline,
+    handleMemoCreated: s.handleMemoCreated,
+    handleMemoUpdated: s.handleMemoUpdated,
+    handleMemoDeleted: s.handleMemoDeleted,
+    handleReactionAdded: s.handleReactionAdded,
+    handleReactionRemoved: s.handleReactionRemoved,
+    handleActionItemCreated: s.handleActionItemCreated,
+    handleActionItemUpdated: s.handleActionItemUpdated,
+    handleActionItemStatusChanged: s.handleActionItemStatusChanged,
+    handleActionItemDeleted: s.handleActionItemDeleted,
+    handleKudosSent: s.handleKudosSent,
+    handleKudosDeleted: s.handleKudosDeleted,
+    handleIcebreakerQuestionSet: s.handleIcebreakerQuestionSet,
+    handleIcebreakerAnswerSubmitted: s.handleIcebreakerAnswerSubmitted,
+    handleIcebreakerAnswerUpdated: s.handleIcebreakerAnswerUpdated,
+    handleIcebreakerAnswerDeleted: s.handleIcebreakerAnswerDeleted,
+  })));
 
   const connect = useCallback(() => {
     if (!slug || !participantId) return;

@@ -63,7 +63,10 @@ function mockStoreHandlers() {
     handleKudosSent: vi.fn(),
     handleKudosDeleted: vi.fn(),
   }
-  vi.mocked(useBoardStore).mockReturnValue(handlers as unknown as ReturnType<typeof useBoardStore>)
+  vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = handlers;
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
   return handlers
 }
 

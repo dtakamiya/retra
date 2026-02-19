@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function MemoList({ cardId, memos }: Props) {
-  const { board } = useBoardStore();
+  const board = useBoardStore((s) => s.board);
 
   if (!board) return null;
 

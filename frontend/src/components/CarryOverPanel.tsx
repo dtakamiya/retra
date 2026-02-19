@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, History } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 import { useToastStore } from '../store/toastStore';
 import { api } from '../api/client';
@@ -25,7 +26,7 @@ const PRIORITY_LABELS: Record<string, string> = {
 };
 
 export function CarryOverPanel() {
-  const { board, participant, carryOverItems, carryOverTeamName, updateCarryOverItemStatus } = useBoardStore();
+  const { board, participant, carryOverItems, carryOverTeamName, updateCarryOverItemStatus } = useBoardStore(useShallow((s) => ({ board: s.board, participant: s.participant, carryOverItems: s.carryOverItems, carryOverTeamName: s.carryOverTeamName, updateCarryOverItemStatus: s.updateCarryOverItemStatus })));
   const addToast = useToastStore((s) => s.addToast);
   const [isExpanded, setIsExpanded] = useState(true);
 

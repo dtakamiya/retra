@@ -1,12 +1,13 @@
 import { Check, ClipboardCopy, Download, FileSpreadsheet, FileText } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api/client';
+import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 import type { ExportFormat } from '../types';
 import { copyMarkdownToClipboard } from '../utils/exportMarkdown';
 
 export function ExportMenu() {
-  const { board, participant } = useBoardStore();
+  const { board, participant } = useBoardStore(useShallow((s) => ({ board: s.board, participant: s.participant })));
   const [isOpen, setIsOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [copied, setCopied] = useState(false);

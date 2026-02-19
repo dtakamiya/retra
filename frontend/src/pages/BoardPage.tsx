@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
+import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 import { useToastStore } from '../store/toastStore';
 import { useWebSocket } from '../websocket/useWebSocket';
@@ -21,7 +22,7 @@ import type { KudosCategory } from '../types';
 export function BoardPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { board, participant, setBoard, setParticipant, setRemainingVotes, setTimer, isConnected, kudos, setKudos, needsRefresh, clearNeedsRefresh } = useBoardStore();
+  const { board, participant, setBoard, setParticipant, setRemainingVotes, setTimer, isConnected, kudos, setKudos, needsRefresh, clearNeedsRefresh } = useBoardStore(useShallow((s) => ({ board: s.board, participant: s.participant, setBoard: s.setBoard, setParticipant: s.setParticipant, setRemainingVotes: s.setRemainingVotes, setTimer: s.setTimer, isConnected: s.isConnected, kudos: s.kudos, setKudos: s.setKudos, needsRefresh: s.needsRefresh, clearNeedsRefresh: s.clearNeedsRefresh })));
   const addToast = useToastStore((s) => s.addToast);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [loading, setLoading] = useState(true);

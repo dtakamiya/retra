@@ -12,10 +12,13 @@ describe('ParticipantList', () => {
   })
 
   it('returns null when board is null', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: null,
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { container } = render(<ParticipantList />)
 
@@ -23,7 +26,8 @@ describe('ParticipantList', () => {
   })
 
   it('renders participants with nicknames', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({
         participants: [
           createParticipant({ id: 'p-1', nickname: '太郎', isFacilitator: true }),
@@ -31,7 +35,9 @@ describe('ParticipantList', () => {
         ],
       }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ParticipantList />)
 
@@ -40,14 +46,17 @@ describe('ParticipantList', () => {
   })
 
   it('shows facilitator badge', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({
         participants: [
           createParticipant({ id: 'p-1', nickname: '太郎', isFacilitator: true }),
         ],
       }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ParticipantList />)
 
@@ -55,7 +64,8 @@ describe('ParticipantList', () => {
   })
 
   it('shows remaining votes in VOTING phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({
         phase: 'VOTING',
         participants: [
@@ -63,7 +73,9 @@ describe('ParticipantList', () => {
         ],
       }),
       remainingVotes: createRemainingVotes({ remaining: 3, max: 5, used: 2 }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ParticipantList />)
 
@@ -71,7 +83,8 @@ describe('ParticipantList', () => {
   })
 
   it('compact mode shows participant avatars', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({
         participants: [
           createParticipant({ id: 'p-1', nickname: 'Alice' }),
@@ -79,7 +92,9 @@ describe('ParticipantList', () => {
         ],
       }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ParticipantList compact />)
 

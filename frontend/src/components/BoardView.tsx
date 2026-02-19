@@ -10,6 +10,7 @@ import {
 } from '@dnd-kit/core';
 import type { DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import { api } from '../api/client';
+import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 import { ColumnView } from './ColumnView';
 import { CardItem } from './CardItem';
@@ -60,7 +61,7 @@ function calculateSortOrder(
 }
 
 export function BoardView() {
-  const { board, participant, handleCardMoved, setBoard, actionItems, setActionItems, setCarryOverItems } = useBoardStore();
+  const { board, participant, handleCardMoved, setBoard, actionItems, setActionItems, setCarryOverItems } = useBoardStore(useShallow((s) => ({ board: s.board, participant: s.participant, handleCardMoved: s.handleCardMoved, setBoard: s.setBoard, actionItems: s.actionItems, setActionItems: s.setActionItems, setCarryOverItems: s.setCarryOverItems })));
   const [activeCard, setActiveCard] = useState<Card | null>(null);
   const [activeColumnColor, setActiveColumnColor] = useState('#000');
   const [activeColumnName, setActiveColumnName] = useState('');
