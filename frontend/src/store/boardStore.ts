@@ -11,6 +11,9 @@ import type {
   CardMovedPayload,
   CarryOverItem,
   CarryOverItemsResponse,
+  IcebreakerAnswer,
+  IcebreakerAnswerDeletedPayload,
+  IcebreakerResponse,
   Kudos,
   KudosDeletedPayload,
   Memo,
@@ -39,6 +42,8 @@ interface BoardState {
   carryOverTeamName: string;
   kudos: Kudos[];
   needsRefresh: boolean;
+  icebreakerQuestion: string | null;
+  icebreakerAnswers: IcebreakerAnswer[];
 
   setBoard: (board: Board) => void;
   setParticipant: (participant: Participant) => void;
@@ -50,6 +55,7 @@ interface BoardState {
   updateCarryOverItemStatus: (actionItemId: string, newStatus: ActionItemStatus) => void;
   setKudos: (kudos: Kudos[]) => void;
   clearNeedsRefresh: () => void;
+  setIcebreaker: (response: IcebreakerResponse) => void;
 
   // WebSocket event handlers
   handleCardCreated: (card: Card) => void;
@@ -77,6 +83,10 @@ interface BoardState {
   handleActionItemDeleted: (payload: ActionItemDeletedPayload) => void;
   handleKudosSent: (kudos: Kudos) => void;
   handleKudosDeleted: (payload: KudosDeletedPayload) => void;
+  handleIcebreakerQuestionSet: (payload: { question: string }) => void;
+  handleIcebreakerAnswerSubmitted: (answer: IcebreakerAnswer) => void;
+  handleIcebreakerAnswerUpdated: (answer: IcebreakerAnswer) => void;
+  handleIcebreakerAnswerDeleted: (payload: IcebreakerAnswerDeletedPayload) => void;
 }
 
 export const useBoardStore = create<BoardState>((set) => ({
@@ -90,6 +100,8 @@ export const useBoardStore = create<BoardState>((set) => ({
   carryOverTeamName: '',
   kudos: [],
   needsRefresh: false,
+  icebreakerQuestion: null,
+  icebreakerAnswers: [],
 
   setBoard: (board) => set({ board }),
   setParticipant: (participant) => set({ participant }),
@@ -105,6 +117,7 @@ export const useBoardStore = create<BoardState>((set) => ({
   })),
   setKudos: (kudos) => set({ kudos }),
   clearNeedsRefresh: () => set({ needsRefresh: false }),
+  setIcebreaker: (response) => set({ icebreakerQuestion: response.question, icebreakerAnswers: response.answers }),
 
   handleCardCreated: (card) =>
     set((state) => {
@@ -445,5 +458,26 @@ export const useBoardStore = create<BoardState>((set) => ({
   handleKudosDeleted: (payload) =>
     set((state) => ({
       kudos: state.kudos.filter((k) => k.id !== payload.id),
+    })),
+
+  handleIcebreakerQuestionSet: (payload) =>
+    set({ icebreakerQuestion: payload.question }),
+
+  handleIcebreakerAnswerSubmitted: (answer) =>
+    set((state) => {
+      if (state.icebreakerAnswers.some((a) => a.id === answer.id)) return state;
+      return { icebreakerAnswers: [...state.icebreakerAnswers, answer] };
+    }),
+
+  handleIcebreakerAnswerUpdated: (answer) =>
+    set((state) => ({
+      icebreakerAnswers: state.icebreakerAnswers.map((a) =>
+        a.id === answer.id ? { ...a, answerText: answer.answerText } : a
+      ),
+    })),
+
+  handleIcebreakerAnswerDeleted: (payload) =>
+    set((state) => ({
+      icebreakerAnswers: state.icebreakerAnswers.filter((a) => a.id !== payload.answerId),
     })),
 }));

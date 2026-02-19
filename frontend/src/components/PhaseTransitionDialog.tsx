@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import type { Board, Phase } from '../types';
 
 const PHASE_LABELS: Record<Phase, string> = {
+  ICEBREAK: 'アイスブレイク',
   WRITING: '記入',
   VOTING: '投票',
   DISCUSSION: '議論',
@@ -11,6 +12,7 @@ const PHASE_LABELS: Record<Phase, string> = {
 };
 
 const PHASE_DESCRIPTIONS: Record<Phase, string> = {
+  ICEBREAK: 'アイスブレイクで場をほぐします',
   WRITING: '参加者がカードを記入できます',
   VOTING: '参加者がカードに投票できます',
   DISCUSSION: 'カードについて議論します',
@@ -19,6 +21,7 @@ const PHASE_DESCRIPTIONS: Record<Phase, string> = {
 };
 
 const PHASE_WARNINGS: Partial<Record<Phase, string>> = {
+  WRITING: 'アイスブレイクが終了します',
   VOTING: '記入フェーズが終了し、新しいカードを追加できなくなります',
   DISCUSSION: '投票フェーズが終了し、投票の変更ができなくなります',
   ACTION_ITEMS: '議論フェーズが終了します',

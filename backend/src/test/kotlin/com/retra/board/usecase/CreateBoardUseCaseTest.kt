@@ -69,4 +69,28 @@ class CreateBoardUseCaseTest {
 
         assertEquals(false, response.privateWriting)
     }
+
+    @Test
+    fun `アイスブレイカー有効でボード作成するとICEBREAKフェーズから開始`() {
+        every { boardRepository.save(any()) } answers { firstArg() }
+
+        val response = useCase.execute(
+            CreateBoardRequest("Icebreaker Retro", Framework.KPT, enableIcebreaker = true)
+        )
+
+        assertEquals(Phase.ICEBREAK, response.phase)
+        assertEquals(true, response.enableIcebreaker)
+    }
+
+    @Test
+    fun `アイスブレイカー無効でボード作成するとWRITINGフェーズから開始`() {
+        every { boardRepository.save(any()) } answers { firstArg() }
+
+        val response = useCase.execute(
+            CreateBoardRequest("Normal Retro", Framework.KPT, enableIcebreaker = false)
+        )
+
+        assertEquals(Phase.WRITING, response.phase)
+        assertEquals(false, response.enableIcebreaker)
+    }
 }

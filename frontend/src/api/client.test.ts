@@ -64,7 +64,7 @@ describe('api client', () => {
     expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: 'My Retro', framework: 'KPT', maxVotesPerPerson: 5, isAnonymous: false, privateWriting: false }),
+      body: JSON.stringify({ title: 'My Retro', framework: 'KPT', maxVotesPerPerson: 5, isAnonymous: false, privateWriting: false, enableIcebreaker: false }),
     });
   });
 
@@ -78,7 +78,7 @@ describe('api client', () => {
     expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: 'My Retro', framework: 'KPT', maxVotesPerPerson: 5, isAnonymous: false, teamName: 'Team Alpha', privateWriting: false }),
+      body: JSON.stringify({ title: 'My Retro', framework: 'KPT', maxVotesPerPerson: 5, isAnonymous: false, teamName: 'Team Alpha', privateWriting: false, enableIcebreaker: false }),
     });
   });
 

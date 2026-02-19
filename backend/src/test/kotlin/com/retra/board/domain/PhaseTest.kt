@@ -78,4 +78,37 @@ class PhaseTest {
         assertTrue(Phase.ACTION_ITEMS.canCreateMemo())
         assertFalse(Phase.CLOSED.canCreateMemo())
     }
+
+    @Test
+    fun `ICEBREAK から WRITING への遷移が可能`() {
+        val result = Phase.ICEBREAK.transitionTo(Phase.WRITING)
+        assertEquals(Phase.WRITING, result)
+    }
+
+    @Test
+    fun `ICEBREAK から VOTING への遷移は不可`() {
+        assertFailsWith<InvalidPhaseTransitionException> {
+            Phase.ICEBREAK.transitionTo(Phase.VOTING)
+        }
+    }
+
+    @Test
+    fun `ICEBREAK ではカード作成不可`() {
+        assertFalse(Phase.ICEBREAK.canCreateCard())
+    }
+
+    @Test
+    fun `ICEBREAK では投票不可`() {
+        assertFalse(Phase.ICEBREAK.canVote())
+    }
+
+    @Test
+    fun `ICEBREAK ではアイスブレイカー回答可能`() {
+        assertTrue(Phase.ICEBREAK.canAnswerIcebreaker())
+    }
+
+    @Test
+    fun `WRITING ではアイスブレイカー回答不可`() {
+        assertFalse(Phase.WRITING.canAnswerIcebreaker())
+    }
 }

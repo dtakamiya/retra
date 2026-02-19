@@ -98,7 +98,7 @@ describe('HomePage', () => {
     const submitButton = submitButtons[submitButtons.length - 1]
     await user.click(submitButton)
 
-    expect(api.createBoard).toHaveBeenCalledWith('テストボード', 'KPT', 5, false, undefined, false)
+    expect(api.createBoard).toHaveBeenCalledWith('テストボード', 'KPT', 5, false, undefined, false, false)
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/board/new-slug')
     })
@@ -146,7 +146,7 @@ describe('HomePage', () => {
     const submitButtons = screen.getAllByText('ボードを作成')
     await user.click(submitButtons[submitButtons.length - 1])
 
-    expect(api.createBoard).toHaveBeenCalledWith('テスト', 'FUN_DONE_LEARN', 3, false, undefined, false)
+    expect(api.createBoard).toHaveBeenCalledWith('テスト', 'FUN_DONE_LEARN', 3, false, undefined, false, false)
   })
 
   it('チーム名入力欄を表示する', () => {
@@ -173,7 +173,7 @@ describe('HomePage', () => {
     const submitButton = submitButtons[submitButtons.length - 1]
     await user.click(submitButton)
 
-    expect(api.createBoard).toHaveBeenCalledWith('テストボード', 'KPT', 5, false, 'Team Alpha', false)
+    expect(api.createBoard).toHaveBeenCalledWith('テストボード', 'KPT', 5, false, 'Team Alpha', false, false)
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/board/team-slug')
     })
@@ -202,7 +202,33 @@ describe('HomePage', () => {
     const submitButtons = screen.getAllByText('ボードを作成')
     await user.click(submitButtons[submitButtons.length - 1])
 
-    expect(api.createBoard).toHaveBeenCalledWith('テストボード', 'KPT', 5, false, undefined, true)
+    expect(api.createBoard).toHaveBeenCalledWith('テストボード', 'KPT', 5, false, undefined, true, false)
+  })
+
+  it('アイスブレイクトグルが表示される', () => {
+    render(<HomePage />)
+    expect(screen.getByText('アイスブレイク')).toBeInTheDocument()
+  })
+
+  it('アイスブレイクトグルをONにするとAPIにenableIcebreaker: trueが送信される', async () => {
+    const user = userEvent.setup()
+    vi.mocked(api.createBoard).mockResolvedValue(createBoard({ slug: 'ice-slug' }))
+
+    render(<HomePage />)
+
+    // 3つのスイッチ（匿名モード、プライベート記述モード、アイスブレイク）のうち3番目をクリック
+    const switches = screen.getAllByRole('switch')
+    const icebreakerSwitch = switches[2]
+    await user.click(icebreakerSwitch)
+
+    // タイトルを入力して送信
+    const titleInput = screen.getByPlaceholderText('スプリント42 ふりかえり')
+    await user.type(titleInput, 'テストボード')
+
+    const submitButtons = screen.getAllByText('ボードを作成')
+    await user.click(submitButtons[submitButtons.length - 1])
+
+    expect(api.createBoard).toHaveBeenCalledWith('テストボード', 'KPT', 5, false, undefined, false, true)
   })
 
   it('create form: shows error when api.createBoard rejects', async () => {

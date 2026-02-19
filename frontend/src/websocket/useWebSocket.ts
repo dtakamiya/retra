@@ -9,6 +9,8 @@ import type {
   CardDeletedPayload,
   CardDiscussionMarkedPayload,
   CardMovedPayload,
+  IcebreakerAnswer,
+  IcebreakerAnswerDeletedPayload,
   Kudos,
   KudosDeletedPayload,
   Memo,
@@ -55,6 +57,10 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleActionItemDeleted,
     handleKudosSent,
     handleKudosDeleted,
+    handleIcebreakerQuestionSet,
+    handleIcebreakerAnswerSubmitted,
+    handleIcebreakerAnswerUpdated,
+    handleIcebreakerAnswerDeleted,
   } = useBoardStore();
 
   const connect = useCallback(() => {
@@ -212,6 +218,25 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
               break;
           }
         });
+
+        // Subscribe to icebreaker events
+        client.subscribe(`/topic/board/${slug}/icebreaker`, (message) => {
+          const data: WebSocketMessage = JSON.parse(message.body);
+          switch (data.type) {
+            case 'ICEBREAKER_QUESTION_SET':
+              handleIcebreakerQuestionSet(data.payload as { question: string });
+              break;
+            case 'ICEBREAKER_ANSWER_SUBMITTED':
+              handleIcebreakerAnswerSubmitted(data.payload as IcebreakerAnswer);
+              break;
+            case 'ICEBREAKER_ANSWER_UPDATED':
+              handleIcebreakerAnswerUpdated(data.payload as IcebreakerAnswer);
+              break;
+            case 'ICEBREAKER_ANSWER_DELETED':
+              handleIcebreakerAnswerDeleted(data.payload as IcebreakerAnswerDeletedPayload);
+              break;
+          }
+        });
       },
       onDisconnect: () => {
         setConnected(false);
@@ -254,6 +279,10 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
     handleActionItemDeleted,
     handleKudosSent,
     handleKudosDeleted,
+    handleIcebreakerQuestionSet,
+    handleIcebreakerAnswerSubmitted,
+    handleIcebreakerAnswerUpdated,
+    handleIcebreakerAnswerDeleted,
   ]);
 
   useEffect(() => {

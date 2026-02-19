@@ -5,6 +5,8 @@ import type {
   CarryOverItemsResponse,
   ExportFormat,
   Framework,
+  IcebreakerAnswer,
+  IcebreakerResponse,
   Kudos,
   Memo,
   Participant,
@@ -48,10 +50,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export const api = {
   // Board
-  createBoard(title: string, framework: Framework, maxVotesPerPerson: number = 5, isAnonymous: boolean = false, teamName?: string, privateWriting: boolean = false): Promise<Board> {
+  createBoard(title: string, framework: Framework, maxVotesPerPerson: number = 5, isAnonymous: boolean = false, teamName?: string, privateWriting: boolean = false, enableIcebreaker: boolean = false): Promise<Board> {
     return request('/boards', {
       method: 'POST',
-      body: JSON.stringify({ title, framework, maxVotesPerPerson, isAnonymous, teamName, privateWriting }),
+      body: JSON.stringify({ title, framework, maxVotesPerPerson, isAnonymous, teamName, privateWriting, enableIcebreaker }),
     });
   },
 
@@ -268,6 +270,39 @@ export const api = {
   deleteKudos(slug: string, kudosId: string, participantId: string): Promise<void> {
     const params = new URLSearchParams({ participantId });
     return request(`/boards/${slug}/kudos/${kudosId}?${params}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Icebreaker
+  getIcebreaker(slug: string): Promise<IcebreakerResponse> {
+    return request(`/boards/${slug}/icebreaker`);
+  },
+
+  setIcebreakerQuestion(slug: string, participantId: string, mode: 'RANDOM' | 'CUSTOM', customQuestion?: string): Promise<IcebreakerResponse> {
+    return request(`/boards/${slug}/icebreaker/question`, {
+      method: 'POST',
+      body: JSON.stringify({ participantId, mode, customQuestion }),
+    });
+  },
+
+  submitIcebreakerAnswer(slug: string, participantId: string, answerText: string): Promise<IcebreakerAnswer> {
+    return request(`/boards/${slug}/icebreaker/answers`, {
+      method: 'POST',
+      body: JSON.stringify({ participantId, answerText }),
+    });
+  },
+
+  updateIcebreakerAnswer(slug: string, answerId: string, participantId: string, answerText: string): Promise<IcebreakerAnswer> {
+    return request(`/boards/${slug}/icebreaker/answers/${answerId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ participantId, answerText }),
+    });
+  },
+
+  deleteIcebreakerAnswer(slug: string, answerId: string, participantId: string): Promise<void> {
+    const params = new URLSearchParams({ participantId });
+    return request(`/boards/${slug}/icebreaker/answers/${answerId}?${params}`, {
       method: 'DELETE',
     });
   },

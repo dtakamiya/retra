@@ -20,6 +20,8 @@ object BoardMapper {
             maxVotesPerPerson = board.maxVotesPerPerson,
             isAnonymous = board.isAnonymous,
             privateWriting = board.privateWriting,
+            enableIcebreaker = board.enableIcebreaker,
+            icebreakerQuestion = board.icebreakerQuestion,
             columns = board.columns.map { col ->
                 val sortedCards = col.cards.sortedBy { it.sortOrder }
                 if (isPrivateWritingActive) {

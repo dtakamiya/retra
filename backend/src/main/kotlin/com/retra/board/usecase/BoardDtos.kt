@@ -18,7 +18,8 @@ data class CreateBoardRequest(
     val isAnonymous: Boolean = false,
     val privateWriting: Boolean = false,
     @field:Size(max = 100)
-    val teamName: String? = null
+    val teamName: String? = null,
+    val enableIcebreaker: Boolean = false
 )
 
 data class ChangePhaseRequest(
@@ -42,6 +43,8 @@ data class BoardResponse(
     val maxVotesPerPerson: Int,
     val isAnonymous: Boolean,
     val privateWriting: Boolean,
+    val enableIcebreaker: Boolean,
+    val icebreakerQuestion: String?,
     val columns: List<ColumnResponse>,
     val participants: List<ParticipantResponse>,
     val createdAt: String,

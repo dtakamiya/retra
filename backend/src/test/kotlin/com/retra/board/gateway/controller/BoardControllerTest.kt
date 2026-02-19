@@ -50,6 +50,8 @@ class BoardControllerTest {
         maxVotesPerPerson = 5,
         isAnonymous = false,
         privateWriting = false,
+        enableIcebreaker = false,
+        icebreakerQuestion = null,
         columns = listOf(
             ColumnResponse("col-1", "Keep", 0, "#22c55e", emptyList()),
             ColumnResponse("col-2", "Problem", 1, "#ef4444", emptyList()),
