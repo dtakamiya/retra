@@ -143,8 +143,8 @@ curl http://localhost:8080/api/v1/boards
 **原因:** 既存のマイグレーションファイルが変更された
 
 **解決方法:**
-- マイグレーションファイルは一度適用したら変更しない (V1〜V15)
-- 開発中にスキーマを変更する場合は新しい `V{N}__description.sql` を追加 (次は V16)
+- マイグレーションファイルは一度適用したら変更しない (V1〜V16)
+- 開発中にスキーマを変更する場合は新しい `V{N}__description.sql` を追加 (次は V17)
 - 開発環境でリセットする場合: `retra.db` を削除して再起動
 
 **現在のマイグレーション一覧:**
@@ -161,6 +161,7 @@ curl http://localhost:8080/api/v1/boards
 | V13 | Kudos（称賛）テーブル作成 |
 | V14 | パフォーマンス向上のためのインデックス追加 |
 | V15 | ボードにプライベート記入モードフラグ追加 |
+| V16 | アイスブレイカー機能（`enable_icebreaker`/`icebreaker_question` カラム追加、`icebreaker_answers` テーブル作成） |
 
 ```bash
 # 開発環境のみ: DB リセット
@@ -191,6 +192,23 @@ cd ../backend && ./gradlew copyFrontend && ./gradlew build
 - ブラウザの DevTools > Network > WS タブで接続状態を確認
 - CORS 設定を確認 (`WebSocketConfig.kt`)
 - プロキシ/リバースプロキシの WebSocket 設定を確認
+
+## Release
+
+### GitHub Release によるデプロイ
+
+`v*` タグをプッシュすると、GitHub Actions の `release.yml` ワークフローが自動的に JAR をビルドし、GitHub Release として公開します。
+
+```bash
+# バージョンタグを作成してプッシュ
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+リリースワークフローの流れ:
+1. `v*` タグのプッシュをトリガー
+2. フロントエンドビルド → バックエンドにコピー → JAR ビルド
+3. `softprops/action-gh-release` で GitHub Release を作成し、JAR を添付
 
 ## Rollback Procedures
 
