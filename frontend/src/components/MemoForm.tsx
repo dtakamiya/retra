@@ -50,6 +50,7 @@ export function MemoForm({ cardId }: Props) {
         onChange={(e) => setContent(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="メモを追加...（Escでクリア）"
+        aria-label="メモを追加"
         maxLength={2000}
         className="flex-1 resize-none border border-gray-200 dark:border-slate-600 rounded px-2 py-1 text-xs text-gray-700 dark:text-slate-200 dark:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-300 min-h-[32px]"
         rows={1}

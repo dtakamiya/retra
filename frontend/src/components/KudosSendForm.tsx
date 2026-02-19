@@ -52,8 +52,8 @@ export function KudosSendForm({ participants, currentParticipantId, onSend, onCa
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">カテゴリ</label>
-        <div className="grid grid-cols-3 gap-1.5">
+        <label id="kudos-category-label" className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">カテゴリ</label>
+        <div className="grid grid-cols-3 gap-1.5" role="group" aria-labelledby="kudos-category-label">
           {KUDOS_CATEGORIES.map((cat) => (
             <button
               key={cat.value}
@@ -65,7 +65,7 @@ export function KudosSendForm({ participants, currentParticipantId, onSend, onCa
                   : 'border-gray-200 text-gray-600 hover:bg-gray-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700'
               }`}
             >
-              <span className="text-lg">{cat.icon}</span>
+              <span className="text-lg" aria-hidden="true">{cat.icon}</span>
               <span className="leading-tight">{cat.label}</span>
             </button>
           ))}
@@ -74,6 +74,7 @@ export function KudosSendForm({ participants, currentParticipantId, onSend, onCa
 
       <div>
         <textarea
+          aria-label="メッセージ（任意）"
           placeholder="メッセージ(任意)"
           maxLength={140}
           value={message}

@@ -101,6 +101,33 @@ describe('KudosSendForm', () => {
     expect(screen.getByRole('button', { name: '送信' })).toBeDisabled();
   });
 
+  it('カテゴリグループにrole="group"とaria-labelledbyがある', () => {
+    render(
+      <KudosSendForm
+        participants={participants}
+        currentParticipantId={currentParticipantId}
+        onSend={onSend}
+        onCancel={onCancel}
+      />
+    );
+
+    const group = screen.getByRole('group', { name: 'カテゴリ' });
+    expect(group).toBeInTheDocument();
+  });
+
+  it('メッセージtextareaにaria-labelがある', () => {
+    render(
+      <KudosSendForm
+        participants={participants}
+        currentParticipantId={currentParticipantId}
+        onSend={onSend}
+        onCancel={onCancel}
+      />
+    );
+
+    expect(screen.getByLabelText('メッセージ（任意）')).toBeInTheDocument();
+  });
+
   it('キャンセルボタンでonCancelが呼ばれる', async () => {
     const user = userEvent.setup();
     render(

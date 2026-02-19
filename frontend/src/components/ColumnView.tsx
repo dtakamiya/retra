@@ -79,7 +79,7 @@ export function ColumnView({ column }: Props) {
               className="w-2 h-2 rounded-full flex-shrink-0"
               style={{ backgroundColor: column.color }}
             />
-            <h2 className="font-semibold text-gray-800 text-sm">{column.name}</h2>
+            <h2 className="font-semibold text-gray-800 dark:text-slate-100 text-sm">{column.name}</h2>
             <span
               className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
               style={{ backgroundColor: column.color + '20', color: column.color }}
@@ -93,7 +93,7 @@ export function ColumnView({ column }: Props) {
             )}
           </div>
           {columnDescriptions[column.name] && (
-            <p className="text-[11px] text-gray-400 mt-0.5 ml-4">{columnDescriptions[column.name]}</p>
+            <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-0.5 ml-4">{columnDescriptions[column.name]}</p>
           )}
           {isDiscussionLike && (
             <DiscussionProgress cards={column.cards} color={column.color} />
