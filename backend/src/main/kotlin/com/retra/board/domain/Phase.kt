@@ -3,6 +3,7 @@ package com.retra.board.domain
 import com.retra.shared.domain.InvalidPhaseTransitionException
 
 enum class Phase {
+    ICEBREAK,
     WRITING,
     VOTING,
     DISCUSSION,
@@ -40,8 +41,11 @@ enum class Phase {
 
     fun canMarkDiscussed(): Boolean = this in MEMO_PHASES
 
+    fun canAnswerIcebreaker(): Boolean = this == ICEBREAK
+
     companion object {
         private val validTransitions = mapOf(
+            ICEBREAK to WRITING,
             WRITING to VOTING,
             VOTING to DISCUSSION,
             DISCUSSION to ACTION_ITEMS,
