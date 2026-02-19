@@ -70,8 +70,8 @@ export function BoardView() {
   // Load action items when board loads or phase changes
   useEffect(() => {
     if (board?.slug) {
-      api.getActionItems(board.slug).then(setActionItems).catch((err) => {
-        console.error('Failed to load action items:', err);
+      api.getActionItems(board.slug).then(setActionItems).catch(() => {
+        // アクションアイテム取得失敗は致命的ではないため無視
       });
     }
   }, [board?.slug, board?.phase, setActionItems]);

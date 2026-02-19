@@ -84,7 +84,9 @@ export function BoardPage() {
   // Load remaining votes when participant is set and phase is VOTING
   useEffect(() => {
     if (slug && participant && board?.phase === 'VOTING') {
-      api.getRemainingVotes(slug, participant.id).then(setRemainingVotes);
+      api.getRemainingVotes(slug, participant.id).then(setRemainingVotes).catch(() => {
+        // 投票残数の取得失敗は致命的ではないため無視
+      });
     }
   }, [slug, participant, board?.phase, setRemainingVotes]);
 
@@ -184,7 +186,8 @@ export function BoardPage() {
               sidebarOpen ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:text-slate-500 dark:hover:text-slate-300 dark:hover:bg-slate-800'
             }`}
             title="参加者・タイマー"
-            aria-label="サイドパネルを開く"
+            aria-label={sidebarOpen ? 'サイドパネルを閉じる' : 'サイドパネルを開く'}
+            aria-expanded={sidebarOpen}
           >
             <Users size={18} />
           </button>
@@ -204,7 +207,7 @@ export function BoardPage() {
                 <button
                   onClick={() => setSidebarOpen(false)}
                   className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded transition-colors cursor-pointer"
-                  aria-label="サイドパネルを閉じる"
+                  aria-label="閉じる"
                 >
                   <X size={16} />
                 </button>
