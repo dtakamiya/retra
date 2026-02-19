@@ -56,7 +56,7 @@ export function ReactionPicker({ onSelect, disabled }: Props) {
                 onSelect(emoji);
                 setOpen(false);
               }}
-              className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded text-sm leading-none"
+              className="p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center hover:bg-gray-100 dark:hover:bg-slate-700 rounded text-base leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               aria-label={`リアクション ${emoji}`}
             >
               {emoji}

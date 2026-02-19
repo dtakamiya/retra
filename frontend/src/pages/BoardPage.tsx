@@ -206,7 +206,7 @@ export function BoardPage() {
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-200">ボード情報</h3>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded transition-colors cursor-pointer"
+                  className="p-2 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   aria-label="閉じる"
                 >
                   <X size={16} />

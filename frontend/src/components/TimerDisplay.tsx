@@ -133,7 +133,7 @@ export function TimerDisplay({ compact = false }: Props) {
                 aria-label="タイマー時間（分）"
                 className="w-16 px-2 py-1.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm text-center dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none"
               />
-              <span className="text-xs text-gray-400 dark:text-slate-500">分</span>
+              <span className="text-xs text-gray-500 dark:text-slate-400">分</span>
               <button
                 onClick={handleStart}
                 className="flex-1 px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 transition-all active:scale-95"
@@ -142,7 +142,7 @@ export function TimerDisplay({ compact = false }: Props) {
               </button>
               <button
                 onClick={() => setShowDuration(false)}
-                className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               >
                 キャンセル
               </button>
