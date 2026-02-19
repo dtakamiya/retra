@@ -39,17 +39,18 @@ export function NicknameModal({ onJoin, boardTitle }: Props) {
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 text-red-600 dark:text-red-400 rounded-xl text-sm flex items-center gap-2 animate-[scaleFadeIn_0.2s_ease-out]">
+          <div role="alert" className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 text-red-600 dark:text-red-400 rounded-xl text-sm flex items-center gap-2 animate-[scaleFadeIn_0.2s_ease-out]">
             <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
+          <label htmlFor="nickname" className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">
             ニックネーム
           </label>
           <input
+            id="nickname"
             type="text"
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}

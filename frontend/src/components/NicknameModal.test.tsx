@@ -15,9 +15,29 @@ describe('NicknameModal', () => {
 
     expect(screen.getByText('ボードに参加')).toBeInTheDocument()
     expect(screen.getByText('テストレトロ')).toBeInTheDocument()
-    expect(screen.getByText('ニックネーム')).toBeInTheDocument()
+    expect(screen.getByLabelText('ニックネーム')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('ニックネームを入力')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '参加' })).toBeInTheDocument()
+  })
+
+  it('has label properly associated with input via htmlFor/id', () => {
+    render(<NicknameModal onJoin={mockOnJoin} boardTitle="テストレトロ" />)
+
+    const input = screen.getByLabelText('ニックネーム')
+    expect(input).toHaveAttribute('id', 'nickname')
+    expect(input.tagName).toBe('INPUT')
+  })
+
+  it('error message has role="alert"', async () => {
+    mockOnJoin.mockRejectedValue(new Error('既に参加済みです'))
+    const user = userEvent.setup()
+    render(<NicknameModal onJoin={mockOnJoin} boardTitle="テストレトロ" />)
+
+    await user.type(screen.getByPlaceholderText('ニックネームを入力'), '太郎')
+    await user.click(screen.getByRole('button', { name: '参加' }))
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent('既に参加済みです')
   })
 
   it('submit button is disabled with empty input', () => {

@@ -28,6 +28,7 @@ describe('CardForm', () => {
   it('renders textarea and buttons', () => {
     render(<CardForm columnId="col-1" onClose={mockOnClose} />)
 
+    expect(screen.getByLabelText('意見を入力')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('意見を入力...（Enterで送信、Shift+Enterで改行）')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'キャンセル' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '追加' })).toBeInTheDocument()

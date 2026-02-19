@@ -19,6 +19,15 @@ describe('VoteProgressBar', () => {
     expect(screen.getByTestId('vote-progress-fill')).toBeInTheDocument()
   })
 
+  it('has correct ARIA progressbar attributes', () => {
+    render(<VoteProgressBar voteCount={3} maxVoteCount={5} />)
+    const bar = screen.getByRole('progressbar')
+    expect(bar).toHaveAttribute('aria-valuenow', '3')
+    expect(bar).toHaveAttribute('aria-valuemin', '0')
+    expect(bar).toHaveAttribute('aria-valuemax', '5')
+    expect(bar).toHaveAttribute('aria-label', '投票数')
+  })
+
   it('calculates percentage correctly', () => {
     render(<VoteProgressBar voteCount={3} maxVoteCount={10} />)
     const fill = screen.getByTestId('vote-progress-fill')

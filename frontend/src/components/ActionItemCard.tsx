@@ -146,7 +146,7 @@ export function ActionItemCard({ actionItem }: Props) {
           )}
 
           {(canModify || canDelete) && (
-            <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
               {canModify && (
                 <button
                   onClick={() => { setEditContent(actionItem.content); setEditing(true); }}

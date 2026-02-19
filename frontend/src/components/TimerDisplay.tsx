@@ -60,10 +60,10 @@ export function TimerDisplay({ compact = false }: Props) {
   if (compact) {
     return (
       <div className="flex items-center gap-1.5">
-        <Timer size={14} className={isLow ? 'text-red-500' : 'text-gray-400'} />
+        <Timer size={14} className={isLow ? 'text-red-500' : 'text-gray-400 dark:text-slate-500'} aria-hidden="true" />
         <span
           className={`text-xs font-mono font-semibold ${
-            isLow ? 'text-red-500' : isExpired ? 'text-red-400' : 'text-gray-600'
+            isLow ? 'text-red-500' : isExpired ? 'text-red-400' : 'text-gray-600 dark:text-slate-300'
           }`}
         >
           {timer.totalSeconds > 0 ? timeStr : '--:--'}
@@ -130,6 +130,7 @@ export function TimerDisplay({ compact = false }: Props) {
                 onChange={(e) => setDuration(Math.max(1, Number(e.target.value)))}
                 min={1}
                 max={60}
+                aria-label="タイマー時間（分）"
                 className="w-16 px-2 py-1.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm text-center dark:bg-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none"
               />
               <span className="text-xs text-gray-400 dark:text-slate-500">分</span>

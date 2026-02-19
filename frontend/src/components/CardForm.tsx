@@ -49,6 +49,7 @@ export function CardForm({ columnId, onClose }: Props) {
         onChange={(e) => setContent(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="意見を入力...（Enterで送信、Shift+Enterで改行）"
+        aria-label="意見を入力"
         className="w-full resize-none border-0 focus:ring-0 outline-none text-sm text-gray-700 dark:text-slate-200 placeholder:text-gray-300 dark:placeholder:text-slate-600 dark:bg-slate-800 min-h-[60px] leading-relaxed"
         maxLength={MAX_CONTENT_LENGTH}
         autoFocus

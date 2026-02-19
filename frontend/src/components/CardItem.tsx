@@ -257,7 +257,7 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
           onClick={() => setShowDetailModal(true)}
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => { if (e.key === 'Enter') setShowDetailModal(true); }}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowDetailModal(true); } }}
           title="クリックで詳細を表示"
           aria-label="カード詳細を表示"
         >
@@ -307,7 +307,7 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
 
         {/* Edit/Delete buttons */}
         {(isAuthor || isFacilitator) && isWriting && (
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
             {isAuthor && (
               <button
                 onClick={() => setEditing(true)}

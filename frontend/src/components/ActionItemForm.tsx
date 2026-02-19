@@ -70,6 +70,7 @@ export function ActionItemForm({ slug, participants, cardId, initialContent = ''
         onChange={(e) => setContent(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="アクションアイテムを追加...（Escでクリア）"
+        aria-label="アクションアイテムを入力"
         maxLength={2000}
         className="w-full resize-none border border-gray-200 dark:border-slate-700 rounded px-2 py-1.5 text-sm text-gray-700 dark:text-slate-200 dark:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-300 min-h-[40px]"
         rows={2}

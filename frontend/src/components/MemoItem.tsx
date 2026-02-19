@@ -102,7 +102,7 @@ export function MemoItem({ memo, cardId }: Props) {
         <span className="text-[10px] text-gray-400 dark:text-slate-500 mt-0.5 block">{memo.authorNickname}</span>
       </div>
       {(canEdit || canDelete) && (
-        <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+        <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity flex-shrink-0">
           {canEdit && (
             <button
               onClick={() => { setEditContent(memo.content); setEditing(true); }}
