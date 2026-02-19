@@ -32,7 +32,7 @@
 
 | レイヤー | 技術 |
 |---------|------|
-| バックエンド | Spring Boot 3.4 + Kotlin 2.0 |
+| バックエンド | Spring Boot 3.5 + Kotlin 2.3 |
 | フロントエンド | React 19 + TypeScript + Vite 7 + Zustand + TailwindCSS v4 |
 | データベース | SQLite（Flyway マイグレーション） |
 | リアルタイム通信 | WebSocket（STOMP プロトコル） |
