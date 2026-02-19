@@ -6,7 +6,9 @@ import { useToastStore } from '../store/toastStore';
 import { RetroHistoryList } from '../components/RetroHistoryList';
 import { TrendChart } from '../components/TrendChart';
 import { ThemeToggle } from '../components/ThemeToggle';
-import type { SnapshotSummary, TrendData } from '../types';
+import { Pagination } from '../components/Pagination';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import type { PagedHistory, TrendData } from '../types';
 
 function KpiCard({ icon, label, value, sub, color }: { icon: React.ReactNode; label: string; value: string | number; sub?: string; color: string }) {
   return (
@@ -26,26 +28,30 @@ function KpiCard({ icon, label, value, sub, color }: { icon: React.ReactNode; la
 export function TeamDashboardPage() {
   const [teamName, setTeamName] = useState('');
   const [searchInput, setSearchInput] = useState('');
-  const [history, setHistory] = useState<SnapshotSummary[]>([]);
+  const [pagedHistory, setPagedHistory] = useState<PagedHistory | null>(null);
   const [trends, setTrends] = useState<TrendData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const addToast = useToastStore((s) => s.addToast);
 
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const [historyData, trendsData] = await Promise.all([
-        api.getHistory(teamName || undefined),
+        api.getHistory(teamName || undefined, page, pageSize),
         api.getTrends(teamName || undefined),
       ]);
-      setHistory(historyData);
+      setPagedHistory(historyData);
       setTrends(trendsData);
     } catch {
       addToast('error', 'データの読み込みに失敗しました');
     } finally {
       setLoading(false);
     }
-  }, [teamName, addToast]);
+  }, [teamName, page, pageSize, addToast]);
 
   useEffect(() => {
     loadData();
@@ -54,19 +60,47 @@ export function TeamDashboardPage() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setTeamName(searchInput.trim());
+    setPage(0);
   };
 
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    setPage(0);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await api.deleteSnapshot(deleteTarget);
+      addToast('success', 'スナップショットを削除しました');
+      setDeleteTarget(null);
+      loadData();
+    } catch {
+      addToast('error', '削除に失敗しました');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const history = pagedHistory?.content ?? [];
+
   const kpiData = useMemo(() => {
-    if (history.length === 0) return null;
-    const totalRetros = history.length;
-    const totalCards = history.reduce((sum, s) => sum + s.totalCards, 0);
-    const totalVotes = history.reduce((sum, s) => sum + s.totalVotes, 0);
-    const totalParticipants = history.reduce((sum, s) => sum + s.totalParticipants, 0);
-    const totalAiDone = history.reduce((sum, s) => sum + s.actionItemsDone, 0);
-    const totalAiTotal = history.reduce((sum, s) => sum + s.actionItemsTotal, 0);
+    if (!trends || trends.snapshots.length === 0) return null;
+    const allSnapshots = trends.snapshots;
+    const totalRetros = allSnapshots.length;
+    const totalCards = allSnapshots.reduce((sum, s) => sum + s.totalCards, 0);
+    const totalVotes = allSnapshots.reduce((sum, s) => sum + s.totalVotes, 0);
+    const totalParticipants = allSnapshots.reduce((sum, s) => sum + s.totalParticipants, 0);
+    const totalAiDone = allSnapshots.reduce((sum, s) => sum + s.actionItemsDone, 0);
+    const totalAiTotal = allSnapshots.reduce((sum, s) => sum + s.actionItemsTotal, 0);
     const aiRate = totalAiTotal > 0 ? Math.round((totalAiDone / totalAiTotal) * 100) : 0;
     return { totalRetros, totalCards, totalVotes, totalParticipants, totalAiDone, totalAiTotal, aiRate };
-  }, [history]);
+  }, [trends]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-gray-100/50 dark:from-slate-900 dark:to-slate-900/95">
@@ -177,9 +211,35 @@ export function TeamDashboardPage() {
                 <div className="w-1 h-5 rounded-full bg-purple-500" />
                 レトロスペクティブ履歴
               </h2>
-              <RetroHistoryList history={history} />
+              <RetroHistoryList
+                history={history}
+                onDelete={(id) => setDeleteTarget(id)}
+              />
+              {pagedHistory && pagedHistory.totalElements > 0 && (
+                <Pagination
+                  currentPage={pagedHistory.currentPage}
+                  totalPages={pagedHistory.totalPages}
+                  totalElements={pagedHistory.totalElements}
+                  pageSize={pagedHistory.pageSize}
+                  onPageChange={handlePageChange}
+                  onPageSizeChange={handlePageSizeChange}
+                />
+              )}
             </div>
           </div>
+        )}
+
+        {/* Delete Confirm Dialog */}
+        {deleteTarget && (
+          <ConfirmDialog
+            title="スナップショットの削除"
+            message="このスナップショットを削除しますか？この操作は取り消せません。"
+            confirmLabel="削除"
+            variant="danger"
+            loading={deleting}
+            onConfirm={handleDelete}
+            onCancel={() => setDeleteTarget(null)}
+          />
         )}
       </div>
     </div>

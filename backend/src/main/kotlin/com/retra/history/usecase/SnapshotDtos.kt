@@ -29,6 +29,14 @@ data class TrendDataResponse(
     val snapshots: List<TrendPoint>
 )
 
+data class PagedSnapshotResponse(
+    val content: List<SnapshotSummaryResponse>,
+    val totalElements: Long,
+    val totalPages: Int,
+    val currentPage: Int,
+    val pageSize: Int
+)
+
 data class TrendPoint(
     val closedAt: String,
     val totalCards: Int,

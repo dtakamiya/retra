@@ -4,9 +4,10 @@ import { RetroSummaryCard } from './RetroSummaryCard';
 
 interface Props {
   history: SnapshotSummary[];
+  onDelete?: (id: string) => void;
 }
 
-export function RetroHistoryList({ history }: Props) {
+export function RetroHistoryList({ history, onDelete }: Props) {
   if (history.length === 0) {
     return (
       <div className="text-center py-8">
@@ -20,7 +21,7 @@ export function RetroHistoryList({ history }: Props) {
   return (
     <div className="space-y-3">
       {history.map((snapshot) => (
-        <RetroSummaryCard key={snapshot.id} snapshot={snapshot} />
+        <RetroSummaryCard key={snapshot.id} snapshot={snapshot} onDelete={onDelete} />
       ))}
     </div>
   );

@@ -153,6 +153,14 @@ export interface SnapshotSummary {
   actionItemsDone: number;
 }
 
+export interface PagedHistory {
+  content: SnapshotSummary[];
+  totalElements: number;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
+}
+
 export interface SnapshotDetail extends SnapshotSummary {
   snapshotData: string;
 }

@@ -19,40 +19,84 @@ class GetTeamHistoryUseCaseTest {
     }
 
     @Test
-    fun `チーム名でフィルタして履歴を取得できる`() {
+    fun `チーム名でフィルタしてページング付き履歴を取得できる`() {
         val snapshots = listOf(
             TestFixtures.boardSnapshot(id = "s-1", teamName = "Team Alpha", closedAt = "2025-01-02T00:00:00Z"),
             TestFixtures.boardSnapshot(id = "s-2", teamName = "Team Alpha", closedAt = "2025-01-01T00:00:00Z")
         )
-        every { snapshotRepository.findByTeamNameOrderByClosedAtDesc("Team Alpha") } returns snapshots
+        every { snapshotRepository.findByTeamNameOrderByClosedAtDesc("Team Alpha", 0, 10) } returns snapshots
+        every { snapshotRepository.countByTeamName("Team Alpha") } returns 2L
 
-        val result = useCase.getHistory("Team Alpha")
+        val result = useCase.getHistory("Team Alpha", 0, 10)
 
-        assertEquals(2, result.size)
-        assertEquals("s-1", result[0].id)
-        assertEquals("s-2", result[1].id)
-        assertEquals("Team Alpha", result[0].teamName)
-        verify(exactly = 1) { snapshotRepository.findByTeamNameOrderByClosedAtDesc("Team Alpha") }
-        verify(exactly = 0) { snapshotRepository.findAllOrderByClosedAtDesc() }
+        assertEquals(2, result.content.size)
+        assertEquals("s-1", result.content[0].id)
+        assertEquals("s-2", result.content[1].id)
+        assertEquals("Team Alpha", result.content[0].teamName)
+        assertEquals(2L, result.totalElements)
+        assertEquals(1, result.totalPages)
+        assertEquals(0, result.currentPage)
+        assertEquals(10, result.pageSize)
+        verify(exactly = 1) { snapshotRepository.findByTeamNameOrderByClosedAtDesc("Team Alpha", 0, 10) }
+        verify(exactly = 0) { snapshotRepository.findAllOrderByClosedAtDesc(any(), any()) }
     }
 
     @Test
-    fun `全ての履歴を取得できる`() {
+    fun `全てのページング付き履歴を取得できる`() {
         val snapshots = listOf(
             TestFixtures.boardSnapshot(id = "s-1", teamName = "Team Alpha", closedAt = "2025-01-03T00:00:00Z"),
-            TestFixtures.boardSnapshot(id = "s-2", teamName = "Team Beta", closedAt = "2025-01-02T00:00:00Z"),
-            TestFixtures.boardSnapshot(id = "s-3", teamName = "Team Alpha", closedAt = "2025-01-01T00:00:00Z")
+            TestFixtures.boardSnapshot(id = "s-2", teamName = "Team Beta", closedAt = "2025-01-02T00:00:00Z")
         )
-        every { snapshotRepository.findAllOrderByClosedAtDesc() } returns snapshots
+        every { snapshotRepository.findAllOrderByClosedAtDesc(0, 10) } returns snapshots
+        every { snapshotRepository.countAll() } returns 5L
+
+        val result = useCase.getHistory(null, 0, 10)
+
+        assertEquals(2, result.content.size)
+        assertEquals("s-1", result.content[0].id)
+        assertEquals("s-2", result.content[1].id)
+        assertEquals(5L, result.totalElements)
+        assertEquals(1, result.totalPages)
+        verify(exactly = 0) { snapshotRepository.findByTeamNameOrderByClosedAtDesc(any(), any(), any()) }
+        verify(exactly = 1) { snapshotRepository.findAllOrderByClosedAtDesc(0, 10) }
+    }
+
+    @Test
+    fun `totalPagesが正しく計算される`() {
+        every { snapshotRepository.findAllOrderByClosedAtDesc(0, 10) } returns emptyList()
+        every { snapshotRepository.countAll() } returns 25L
+
+        val result = useCase.getHistory(null, 0, 10)
+
+        assertEquals(3, result.totalPages)
+        assertEquals(25L, result.totalElements)
+    }
+
+    @Test
+    fun `デフォルトパラメータでページング取得できる`() {
+        every { snapshotRepository.findAllOrderByClosedAtDesc(0, 10) } returns emptyList()
+        every { snapshotRepository.countAll() } returns 0L
 
         val result = useCase.getHistory(null)
 
-        assertEquals(3, result.size)
-        assertEquals("s-1", result[0].id)
-        assertEquals("s-2", result[1].id)
-        assertEquals("s-3", result[2].id)
-        verify(exactly = 0) { snapshotRepository.findByTeamNameOrderByClosedAtDesc(any()) }
-        verify(exactly = 1) { snapshotRepository.findAllOrderByClosedAtDesc() }
+        assertEquals(0, result.content.size)
+        assertEquals(0L, result.totalElements)
+        assertEquals(0, result.totalPages)
+        assertEquals(0, result.currentPage)
+        assertEquals(10, result.pageSize)
+    }
+
+    @Test
+    fun `空ページの場合は空リストを返す`() {
+        every { snapshotRepository.findAllOrderByClosedAtDesc(2, 10) } returns emptyList()
+        every { snapshotRepository.countAll() } returns 15L
+
+        val result = useCase.getHistory(null, 2, 10)
+
+        assertEquals(0, result.content.size)
+        assertEquals(15L, result.totalElements)
+        assertEquals(2, result.totalPages)
+        assertEquals(2, result.currentPage)
     }
 
     @Test
@@ -112,14 +156,5 @@ class GetTeamHistoryUseCaseTest {
 
         assertEquals(1, result.snapshots.size)
         verify(exactly = 1) { snapshotRepository.findByTeamNameOrderByClosedAtDesc("Team Alpha") }
-    }
-
-    @Test
-    fun `履歴が空の場合は空リストを返す`() {
-        every { snapshotRepository.findAllOrderByClosedAtDesc() } returns emptyList()
-
-        val result = useCase.getHistory(null)
-
-        assertEquals(0, result.size)
     }
 }

@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '../test/test-utils'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, userEvent } from '../test/test-utils'
 import { RetroHistoryList } from './RetroHistoryList'
 import { createSnapshotSummary } from '../test/fixtures'
 
@@ -31,5 +31,39 @@ describe('RetroHistoryList', () => {
 
     const links = screen.getAllByRole('link')
     expect(links).toHaveLength(3)
+  })
+
+  it('onDeleteが各カードに伝播される', () => {
+    const onDelete = vi.fn()
+    const history = [
+      createSnapshotSummary({ id: 'snap-1' }),
+      createSnapshotSummary({ id: 'snap-2' }),
+    ]
+    render(<RetroHistoryList history={history} onDelete={onDelete} />)
+
+    const deleteButtons = screen.getAllByLabelText('スナップショットを削除')
+    expect(deleteButtons).toHaveLength(2)
+  })
+
+  it('onDeleteが未指定の場合は削除ボタンが表示されない', () => {
+    const history = [createSnapshotSummary({ id: 'snap-1' })]
+    render(<RetroHistoryList history={history} />)
+
+    expect(screen.queryByLabelText('スナップショットを削除')).not.toBeInTheDocument()
+  })
+
+  it('削除ボタンクリックで正しいIDが渡される', async () => {
+    const user = userEvent.setup()
+    const onDelete = vi.fn()
+    const history = [
+      createSnapshotSummary({ id: 'snap-1' }),
+      createSnapshotSummary({ id: 'snap-2' }),
+    ]
+    render(<RetroHistoryList history={history} onDelete={onDelete} />)
+
+    const deleteButtons = screen.getAllByLabelText('スナップショットを削除')
+    await user.click(deleteButtons[1])
+
+    expect(onDelete).toHaveBeenCalledWith('snap-2')
   })
 })
