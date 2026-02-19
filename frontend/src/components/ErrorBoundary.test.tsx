@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterAll } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ReactNode } from 'react'
 import { ErrorBoundary } from './ErrorBoundary'
 
 // コンソールエラーを抑制（ErrorBoundaryがconsole.errorを呼ぶため）
@@ -12,15 +13,13 @@ afterAll(() => {
   console.error = originalConsoleError
 })
 
-function ProblemChild(): JSX.Element {
+function ProblemChild(): ReactNode {
   throw new Error('テストエラー')
 }
 
 function GoodChild() {
   return <div>正常なコンポーネント</div>
 }
-
-import { afterAll } from 'vitest'
 
 describe('ErrorBoundary', () => {
   it('renders children when no error occurs', () => {
