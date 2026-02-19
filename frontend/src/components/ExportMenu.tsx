@@ -108,6 +108,7 @@ export function ExportMenu() {
         <div
           className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-xl shadow-xl shadow-gray-200/50 z-50 animate-[scaleFadeIn_0.15s_ease-out] overflow-hidden"
           role="menu"
+          aria-label="エクスポートオプション"
         >
           {participant && (
             <>

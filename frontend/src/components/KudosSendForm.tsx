@@ -21,11 +21,13 @@ export function KudosSendForm({ participants, currentParticipantId, onSend, onCa
   const [receiverId, setReceiverId] = useState('');
   const [category, setCategory] = useState<KudosCategory>('GREAT_JOB');
   const [message, setMessage] = useState('');
+  const [sending, setSending] = useState(false);
 
   const otherParticipants = participants.filter((p) => p.id !== currentParticipantId);
 
   const handleSubmit = () => {
-    if (!receiverId) return;
+    if (!receiverId || sending) return;
+    setSending(true);
     onSend(receiverId, category, message.trim() || undefined);
   };
 
@@ -98,10 +100,15 @@ export function KudosSendForm({ participants, currentParticipantId, onSend, onCa
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={!receiverId}
+          disabled={!receiverId || sending}
           className="flex-1 px-3 py-1.5 text-xs font-medium bg-amber-500 text-white rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          送信
+          {sending ? (
+            <span className="inline-flex items-center justify-center gap-1">
+              <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              送信中
+            </span>
+          ) : '送信'}
         </button>
       </div>
     </div>

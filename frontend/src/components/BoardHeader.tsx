@@ -36,7 +36,7 @@ export function BoardHeader({ isKudosOpen, kudosCount, onKudosToggle }: Props) {
           <Link
             to="/"
             className="flex-shrink-0 text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
-            title="ホームに戻る"
+            aria-label="ホームに戻る"
           >
             <Home size={18} />
           </Link>

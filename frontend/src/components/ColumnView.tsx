@@ -81,8 +81,8 @@ export function ColumnView({ column }: Props) {
             />
             <h2 className="font-semibold text-gray-800 dark:text-slate-100 text-sm">{column.name}</h2>
             <span
-              className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
-              style={{ backgroundColor: column.color + '20', color: column.color }}
+              className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 dark:bg-slate-700"
+              style={{ color: column.color }}
             >
               {column.cards.length}
             </span>

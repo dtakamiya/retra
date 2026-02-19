@@ -69,7 +69,12 @@ export function CardForm({ columnId, onClose }: Props) {
             disabled={loading || !content.trim()}
             className="px-3 py-1 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-all active:scale-95"
           >
-            {loading ? '...' : '追加'}
+            {loading ? (
+              <span className="inline-flex items-center gap-1">
+                <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                追加中
+              </span>
+            ) : '追加'}
           </button>
         </div>
       </div>

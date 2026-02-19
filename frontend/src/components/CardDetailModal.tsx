@@ -100,7 +100,7 @@ export function CardDetailModal({ card, columnName, columnColor, myParticipantId
           <button
             ref={closeButtonRef}
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+            className="p-2 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
             aria-label="閉じる"
           >
             <X size={18} />

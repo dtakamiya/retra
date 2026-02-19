@@ -79,6 +79,7 @@ export function ActionItemCard({ actionItem }: Props) {
           onChange={(e) => setEditContent(e.target.value)}
           onKeyDown={handleKeyDown}
           maxLength={2000}
+          aria-label="アクションアイテムを編集"
           className="w-full resize-none border border-gray-100 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-sm text-gray-700 dark:text-slate-200 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 min-h-[48px]"
           autoFocus
           rows={2}
@@ -136,7 +137,7 @@ export function ActionItemCard({ actionItem }: Props) {
               value={actionItem.status}
               onChange={(e) => handleStatusChange(e.target.value as ActionItemStatus)}
               disabled={loading}
-              className="text-[11px] border border-gray-150 dark:border-slate-700 rounded-lg px-1.5 py-0.5 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-gray-600 dark:text-slate-300"
+              className="text-[11px] border border-gray-150 dark:border-slate-700 rounded-lg px-1.5 py-0.5 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-gray-600 dark:text-slate-300 cursor-pointer"
               aria-label="ステータスを変更"
             >
               <option value="OPEN">未着手</option>
@@ -146,11 +147,11 @@ export function ActionItemCard({ actionItem }: Props) {
           )}
 
           {(canModify || canDelete) && (
-            <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+            <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity">
               {canModify && (
                 <button
                   onClick={() => { setEditContent(actionItem.content); setEditing(true); }}
-                  className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded transition-colors"
                   aria-label="アクションアイテムを編集"
                 >
                   <Pencil size={12} />
@@ -160,7 +161,7 @@ export function ActionItemCard({ actionItem }: Props) {
                 <button
                   onClick={handleDelete}
                   disabled={loading}
-                  className="p-1 text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 transition-colors"
+                  className="p-1.5 text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 rounded transition-colors"
                   aria-label="アクションアイテムを削除"
                 >
                   <Trash2 size={12} />

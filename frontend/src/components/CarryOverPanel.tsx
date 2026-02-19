@@ -48,7 +48,8 @@ export function CarryOverPanel() {
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="flex items-center justify-between w-full text-left"
-        aria-label={isExpanded ? '折りたたみ' : '展開'}
+        aria-expanded={isExpanded}
+        aria-controls="carry-over-content"
       >
         <div className="flex items-center gap-2">
           <History size={16} className="text-gray-500 dark:text-slate-500" />
@@ -63,7 +64,7 @@ export function CarryOverPanel() {
       </button>
 
       {isExpanded && (
-        <div className="mt-3 space-y-2">
+        <div id="carry-over-content" className="mt-3 space-y-2">
           {carryOverItems.length === 0 ? (
             <p className="text-xs text-gray-400 dark:text-slate-500">未完了のアクションアイテムはありません</p>
           ) : (
@@ -92,7 +93,7 @@ export function CarryOverPanel() {
                         <select
                           value={item.status}
                           onChange={(e) => handleStatusChange(item, e.target.value as ActionItemStatus)}
-                          className="text-xs border border-gray-200 dark:border-slate-600 rounded px-1 py-0.5"
+                          className="text-xs border border-gray-200 dark:border-slate-600 rounded px-1 py-0.5 cursor-pointer"
                           aria-label="ステータスを変更"
                         >
                           {STATUS_OPTIONS.map((opt) => (

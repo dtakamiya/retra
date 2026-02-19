@@ -188,6 +188,7 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
           value={editContent}
           onChange={(e) => setEditContent(e.target.value)}
           onKeyDown={handleEditKeyDown}
+          aria-label="カードの内容を編集"
           className="w-full resize-none border-0 focus:ring-0 outline-none text-sm text-gray-800 dark:text-slate-200 dark:bg-slate-800 min-h-[60px]"
           maxLength={MAX_CONTENT_LENGTH}
           autoFocus
@@ -307,11 +308,11 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
 
         {/* Edit/Delete buttons */}
         {(isAuthor || isFacilitator) && isWriting && (
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+          <div className="flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity">
             {isAuthor && (
               <button
                 onClick={() => setEditing(true)}
-                className="p-1 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded transition-colors"
+                className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded transition-colors"
                 aria-label="カードを編集"
               >
                 <Pencil size={13} />
@@ -319,7 +320,7 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
             )}
             <button
               onClick={handleDelete}
-              className="p-1 text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 rounded transition-colors"
+              className="p-1.5 text-gray-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 rounded transition-colors"
               aria-label="カードを削除"
             >
               <Trash2 size={13} />

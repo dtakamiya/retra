@@ -23,7 +23,12 @@ export function KudosPanel({ kudos, participants, currentParticipantId, isAnonym
   };
 
   return (
-    <div className="fixed top-0 right-0 h-full w-80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-l border-gray-200 dark:border-slate-700 shadow-xl z-40 flex flex-col">
+    <div
+      className="fixed top-0 right-0 h-full w-80 max-w-[calc(100vw-1rem)] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-l border-gray-200 dark:border-slate-700 shadow-xl z-40 flex flex-col"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Kudosパネル"
+    >
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700">
         <div className="flex items-center gap-2">
           <Heart size={18} className="text-amber-500" />
