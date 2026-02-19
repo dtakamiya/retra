@@ -7,12 +7,13 @@
 ## 主要機能
 
 - **4種類のフレームワーク** - KPT / Fun Done Learn / 4Ls / Start Stop Continue
-- **5段階のフェーズワークフロー** - 記入 → 投票 → 議論 → アクション → 完了
+- **6段階のフェーズワークフロー** - アイスブレイク → 記入 → 投票 → 議論 → アクション → 完了
+- **アイスブレイカー機能** - レトロ開始前にチームの緊張をほぐす質問（25種類のプリセット質問またはカスタム質問）
 - **フェーズ遷移確認ダイアログ** - フェーズ移行時の確認ダイアログで誤操作を防止
 - **リアクション機能** - カードへの絵文字リアクション（👍❤️😂🎉🤔👀）
 - **メモ機能** - 議論・アクションフェーズでカードにメモを追加
 - **アクションアイテム追跡** - アクションフェーズでアクションアイテムを作成・管理（担当者・期限・優先度・ステータス）
-- **レトロ履歴ダッシュボード** - 過去のレトロスペクティブの履歴閲覧・エンゲージメント指標のトレンド分析
+- **レトロ履歴ダッシュボード** - 過去のレトロスペクティブの履歴閲覧・エンゲージメント指標のトレンド分析（ページネーション対応）
 - **ドラッグ&ドロップ** - カードの並べ替え・カラム間移動
 - **リアルタイム同期** - WebSocket（STOMP）による即時反映
 - **タイマー機能** - フェーズごとの時間管理（開始・一時停止・リセット）
@@ -93,7 +94,7 @@ cd frontend && npx tsc --noEmit
 <summary>全スクリーンショットを表示</summary>
 
 ### ホームページ - ボード作成
-フレームワーク（KPT / Fun Done Learn / 4Ls / Start Stop Continue）の選択、チーム名、最大投票数、匿名モードを設定してボードを作成。
+フレームワーク（KPT / Fun Done Learn / 4Ls / Start Stop Continue）の選択、チーム名、最大投票数、匿名モード、アイスブレイカーを設定してボードを作成。
 
 ![ホームページ - ボード作成](docs/images/home/screenshot-01-home-create-board.png)
 
@@ -197,15 +198,19 @@ backend/src/main/kotlin/com/retra/
 │   ├── domain/          # Kudos, KudosCategory
 │   ├── usecase/         # Kudos送信・取得・削除
 │   └── gateway/         # REST コントローラ, JPA リポジトリ
+├── icebreaker/
+│   ├── domain/          # IcebreakerAnswer, IcebreakerQuestions
+│   ├── usecase/         # アイスブレイカー質問設定・回答CRUD
+│   └── gateway/         # REST コントローラ, JPA リポジトリ
 └── history/
     ├── domain/          # BoardSnapshot
-    ├── usecase/         # スナップショット作成・取得・トレンド分析
+    ├── usecase/         # スナップショット作成・取得・削除・トレンド分析
     └── gateway/         # REST コントローラ, JPA リポジトリ
 
 frontend/src/
 ├── api/                 # REST API クライアント
 ├── pages/               # ページコンポーネント（5ページ）
-├── components/          # UI コンポーネント（40）
+├── components/          # UI コンポーネント（43）
 ├── store/               # Zustand ストア
 ├── websocket/           # STOMP クライアント
 ├── hooks/               # カスタムフック
@@ -222,7 +227,7 @@ frontend/src/
 
 | メソッド | パス | 説明 |
 |---------|------|------|
-| `POST` | `/boards` | ボード作成 |
+| `POST` | `/boards` | ボード作成（アイスブレイカー有効化オプション含む） |
 | `GET` | `/boards/{slug}` | ボード取得 |
 | `PATCH` | `/boards/{slug}/phase` | フェーズ遷移（ファシリテーターのみ） |
 | `POST` | `/boards/{slug}/participants` | ボード参加 |
@@ -298,10 +303,21 @@ frontend/src/
 | `GET` | `/boards/{slug}/kudos` | Kudos一覧取得 |
 | `DELETE` | `/boards/{slug}/kudos/{id}` | Kudos削除（送信者のみ） |
 
+### アイスブレイカー
+
+| メソッド | パス | 説明 |
+|---------|------|------|
+| `GET` | `/boards/{slug}/icebreaker` | アイスブレイカー状態取得（質問+回答一覧） |
+| `POST` | `/boards/{slug}/icebreaker/question` | 質問設定（ファシリテーターのみ、RANDOM/CUSTOM） |
+| `POST` | `/boards/{slug}/icebreaker/answers` | 回答送信 |
+| `PUT` | `/boards/{slug}/icebreaker/answers/{answerId}` | 回答更新（本人のみ） |
+| `DELETE` | `/boards/{slug}/icebreaker/answers/{answerId}` | 回答削除（本人のみ） |
+
 ### 履歴・ダッシュボード
 
 | メソッド | パス | 説明 |
 |---------|------|------|
-| `GET` | `/history` | レトロ履歴一覧（`teamName` でフィルタ可能） |
+| `GET` | `/history` | レトロ履歴一覧（`teamName`, `page`, `size` でフィルタ・ページネーション可能） |
 | `GET` | `/history/{snapshotId}` | スナップショット詳細取得 |
+| `DELETE` | `/history/{snapshotId}` | スナップショット削除 |
 | `GET` | `/history/trends` | トレンドデータ取得（`teamName` でフィルタ可能） |
