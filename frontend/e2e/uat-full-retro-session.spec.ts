@@ -85,7 +85,7 @@ test.describe('UAT: チームでのレトロスペクティブ（複数参加者
         await expect(facilitatorPage.getByText('田中')).toBeVisible({ timeout: 10000 });
         await expect(facilitatorPage.getByText('佐藤')).toBeVisible({ timeout: 10000 });
         // サイドパネルを閉じる（パネル内の閉じるボタンを使用）
-        await facilitatorPage.getByRole('button', { name: '閉じる' }).click();
+        await facilitatorPage.getByRole('button', { name: '閉じる', exact: true }).click();
 
         // === 記入フェーズ ===
         await addCard(member1.page, '朝会が有意義だった', 0);
