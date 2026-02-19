@@ -7,6 +7,5 @@ import java.util.Optional
 
 interface SpringDataBoardRepository : JpaRepository<Board, String> {
     fun findBySlug(slug: String): Optional<Board>
-    fun findByTeamNameAndPhaseOrderByUpdatedAtDesc(teamName: String, phase: Phase): List<Board>
     fun findFirstByTeamNameAndPhaseAndIdNotOrderByUpdatedAtDesc(teamName: String, phase: Phase, id: String): Board?
 }

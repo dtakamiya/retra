@@ -58,8 +58,10 @@ export const api = {
   },
 
   getBoard(slug: string, participantId?: string): Promise<Board> {
-    const params = participantId ? `?participantId=${encodeURIComponent(participantId)}` : '';
-    return request(`/boards/${slug}${params}`);
+    const params = new URLSearchParams();
+    if (participantId) params.set('participantId', participantId);
+    const query = params.toString();
+    return request(`/boards/${slug}${query ? `?${query}` : ''}`);
   },
 
   changePhase(slug: string, phase: Phase, participantId: string): Promise<Board> {
@@ -122,7 +124,8 @@ export const api = {
   },
 
   getRemainingVotes(slug: string, participantId: string): Promise<RemainingVotes> {
-    return request(`/boards/${slug}/votes/remaining?participantId=${participantId}`);
+    const params = new URLSearchParams({ participantId });
+    return request(`/boards/${slug}/votes/remaining?${params}`);
   },
 
   // Timer
@@ -248,8 +251,10 @@ export const api = {
   },
 
   getTrends(teamName?: string): Promise<TrendData> {
-    const params = teamName ? `?teamName=${encodeURIComponent(teamName)}` : '';
-    return request<TrendData>(`/history/trends${params}`);
+    const params = new URLSearchParams();
+    if (teamName) params.set('teamName', teamName);
+    const query = params.toString();
+    return request<TrendData>(`/history/trends${query ? `?${query}` : ''}`);
   },
 
   // Export

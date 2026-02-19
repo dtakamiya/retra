@@ -18,6 +18,7 @@ import { ActionItemList } from './ActionItemList';
 import { BoardFilterBar } from './BoardFilterBar';
 import { DEFAULT_FILTER_STATE } from '../types/filter';
 import type { FilterState } from '../types/filter';
+import { isDiscussionLikePhase } from '../types';
 import type { Board, Card, Column } from '../types';
 
 const DRAG_ACTIVATION_DISTANCE = 8;
@@ -176,7 +177,7 @@ export function BoardView() {
     [board, participant, findColumnByCardId, handleCardMoved, setBoard]
   );
 
-  const isDiscussionLike = board?.phase === 'DISCUSSION' || board?.phase === 'ACTION_ITEMS';
+  const isDiscussionLike = isDiscussionLikePhase(board?.phase);
 
   const filteredColumns = useMemo(() => {
     if (!board) return [];
@@ -217,7 +218,7 @@ export function BoardView() {
   const columnsContent = (
     <div className="flex gap-3 p-3 pb-20 lg:pb-3 flex-1 overflow-x-auto">
       {filteredColumns.map((column) => (
-        <ColumnView key={column.id} column={column} />
+        <ColumnView key={column.id} column={column} maxVoteCount={maxVoteCount} />
       ))}
     </div>
   );

@@ -7,6 +7,7 @@ import { CardItem } from './CardItem';
 import { CardForm } from './CardForm';
 import { DiscussionProgress } from './DiscussionProgress';
 import type { Column } from '../types';
+import { isDiscussionLikePhase, isPostVotingPhase } from '../types';
 
 const columnDescriptions: Record<string, string> = {
   // KPT
@@ -30,23 +31,19 @@ const columnDescriptions: Record<string, string> = {
 
 interface Props {
   column: Column;
+  maxVoteCount: number;
 }
 
-export function ColumnView({ column }: Props) {
+export function ColumnView({ column, maxVoteCount }: Props) {
   const board = useBoardStore((s) => s.board);
   const [showForm, setShowForm] = useState(false);
 
   const isWriting = board?.phase === 'WRITING';
-  const isDiscussionLike = board?.phase === 'DISCUSSION' || board?.phase === 'ACTION_ITEMS';
+  const isDiscussionLike = isDiscussionLikePhase(board?.phase);
 
   const { setNodeRef } = useDroppable({ id: column.id });
 
-  const isPostVoting = board?.phase === 'DISCUSSION' || board?.phase === 'ACTION_ITEMS' || board?.phase === 'CLOSED';
-
-  const maxVoteCount = useMemo(() => {
-    if (!board) return 0;
-    return Math.max(0, ...board.columns.flatMap((col) => col.cards.map((c) => c.voteCount)));
-  }, [board]);
+  const isPostVoting = isPostVotingPhase(board?.phase);
 
   const sortedCards = useMemo(() => {
     const cards = [...column.cards];
