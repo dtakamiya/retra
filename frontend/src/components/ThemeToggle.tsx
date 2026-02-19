@@ -17,7 +17,7 @@ export function ThemeToggle() {
         <button
           key={value}
           onClick={() => setTheme(value)}
-          className={`p-1.5 rounded-md transition-all ${
+          className={`p-2 rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
             theme === value
               ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
               : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'
@@ -25,7 +25,7 @@ export function ThemeToggle() {
           title={label}
           aria-label={`${label}モードに切り替え`}
         >
-          <Icon size={14} />
+          <Icon size={16} />
         </button>
       ))}
     </div>

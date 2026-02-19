@@ -43,7 +43,7 @@ export function CardForm({ columnId, onClose }: Props) {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-indigo-100 dark:border-indigo-800/50 p-3 animate-[scaleFadeIn_0.15s_ease-out]">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-indigo-100 dark:border-indigo-800/50 p-3 animate-[scaleFadeIn_0.15s_ease-out] motion-reduce:animate-none">
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
@@ -60,18 +60,18 @@ export function CardForm({ columnId, onClose }: Props) {
         <div className="flex gap-2">
           <button
             onClick={onClose}
-            className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+            className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             キャンセル
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading || !content.trim()}
-            className="px-3 py-1 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-all active:scale-95"
+            className="px-3 py-1.5 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1"
           >
             {loading ? (
               <span className="inline-flex items-center gap-1">
-                <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin motion-reduce:animate-none" />
                 追加中
               </span>
             ) : '追加'}

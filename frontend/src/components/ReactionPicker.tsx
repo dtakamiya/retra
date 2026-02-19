@@ -42,10 +42,10 @@ export function ReactionPicker({ onSelect, disabled }: Props) {
       <button
         onClick={() => setOpen(!open)}
         disabled={disabled}
-        className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded transition-colors disabled:opacity-50"
+        className="p-2 text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300 rounded-md transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
         aria-label="リアクションを追加"
       >
-        <SmilePlus size={14} />
+        <SmilePlus size={16} />
       </button>
       {open && (
         <div className="absolute bottom-full left-0 mb-1 flex gap-0.5 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700 p-1 z-10" role="menu" aria-label="リアクション一覧">
