@@ -40,6 +40,12 @@ open class Board(
     @Column(name = "team_name")
     open var teamName: String? = null,
 
+    @Column(name = "enable_icebreaker", nullable = false, updatable = false)
+    open var enableIcebreaker: Boolean = false,
+
+    @Column(name = "icebreaker_question")
+    open var icebreakerQuestion: String? = null,
+
     @Column(name = "created_at", nullable = false)
     open var createdAt: String = Instant.now().toString(),
 
@@ -112,7 +118,8 @@ open class Board(
             maxVotesPerPerson: Int = 5,
             isAnonymous: Boolean = false,
             privateWriting: Boolean = false,
-            teamName: String? = null
+            teamName: String? = null,
+            enableIcebreaker: Boolean = false
         ): Board {
             val slug = BoardSlug.generate()
             val now = Instant.now().toString()
@@ -121,10 +128,12 @@ open class Board(
                 slug = slug.value,
                 title = title,
                 framework = framework,
+                phase = if (enableIcebreaker) Phase.ICEBREAK else Phase.WRITING,
                 maxVotesPerPerson = maxVotesPerPerson,
                 isAnonymous = isAnonymous,
                 privateWriting = privateWriting,
                 teamName = teamName,
+                enableIcebreaker = enableIcebreaker,
                 createdAt = now,
                 updatedAt = now
             )

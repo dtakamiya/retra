@@ -30,6 +30,8 @@ class MarkdownExportServiceTest {
         maxVotesPerPerson = 5,
         isAnonymous = false,
         privateWriting = false,
+        enableIcebreaker = false,
+        icebreakerQuestion = null,
         columns = columns,
         participants = participants,
         createdAt = "2024-01-01T00:00:00Z",

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { LayoutGrid, Users, BarChart3, EyeOff, Sparkles, Lock, RefreshCw, Target, Lightbulb, Play } from 'lucide-react';
+import { LayoutGrid, Users, BarChart3, EyeOff, Sparkles, Lock, RefreshCw, Target, Lightbulb, Play, MessageCircle } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { api } from '../api/client';
 import { useToastStore } from '../store/toastStore';
@@ -25,6 +25,7 @@ export function HomePage() {
   const [teamName, setTeamName] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isPrivateWriting, setIsPrivateWriting] = useState(false);
+  const [enableIcebreaker, setEnableIcebreaker] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -34,7 +35,7 @@ export function HomePage() {
     setLoading(true);
     setError('');
     try {
-      const board = await api.createBoard(title.trim(), framework, maxVotes, isAnonymous, teamName.trim() || undefined, isPrivateWriting);
+      const board = await api.createBoard(title.trim(), framework, maxVotes, isAnonymous, teamName.trim() || undefined, isPrivateWriting, enableIcebreaker);
       addToast('success', 'ボードを作成しました');
       navigate(`/board/${board.slug}`);
     } catch (err) {
@@ -243,6 +244,33 @@ export function HomePage() {
                     <div
                       className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${
                         isPrivateWriting ? 'translate-x-5' : ''
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-2.5">
+                    <MessageCircle size={15} className="text-gray-400 dark:text-slate-500" />
+                    <div>
+                      <span className="text-sm font-medium text-gray-700 dark:text-slate-300">アイスブレイク</span>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">レトロ開始前にチームの場を和ませる</p>
+                    </div>
+                  </div>
+                  <div
+                    role="switch"
+                    aria-checked={enableIcebreaker}
+                    aria-label="アイスブレイク"
+                    tabIndex={0}
+                    onClick={() => setEnableIcebreaker(!enableIcebreaker)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEnableIcebreaker(!enableIcebreaker); } }}
+                    className={`relative w-11 h-6 rounded-full transition-all cursor-pointer flex-shrink-0 ${
+                      enableIcebreaker ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-slate-600 hover:bg-gray-400 dark:hover:bg-slate-500'
+                    }`}
+                  >
+                    <div
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${
+                        enableIcebreaker ? 'translate-x-5' : ''
                       }`}
                     />
                   </div>

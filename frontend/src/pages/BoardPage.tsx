@@ -13,6 +13,7 @@ import { ConnectionBanner } from '../components/ConnectionBanner';
 import { CarryOverPanel } from '../components/CarryOverPanel';
 import { BoardSkeleton } from '../components/BoardSkeleton';
 import { KudosPanel } from '../components/KudosPanel';
+import { IcebreakerPanel } from '../components/IcebreakerPanel';
 import { useTimerAlert } from '../hooks/useTimerAlert';
 import { Users, X } from 'lucide-react';
 import type { KudosCategory } from '../types';
@@ -175,7 +176,7 @@ export function BoardPage() {
 
       <div className="flex-1 flex relative overflow-hidden">
         <div className="flex-1 overflow-hidden">
-          <BoardView />
+          {board.phase === 'ICEBREAK' ? <IcebreakerPanel /> : <BoardView />}
         </div>
 
         {/* Desktop: Icon bar (always visible on lg+) */}

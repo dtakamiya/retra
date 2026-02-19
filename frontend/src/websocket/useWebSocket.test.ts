@@ -112,7 +112,7 @@ describe('useWebSocket', () => {
       destination: '/app/board/test1234/register',
       body: JSON.stringify({ participantId: 'p-1' }),
     })
-    expect(mockSubscribe).toHaveBeenCalledTimes(9)
+    expect(mockSubscribe).toHaveBeenCalledTimes(10)
     // Verify subscription destinations
     const destinations = mockSubscribe.mock.calls.map((call) => call[0])
     expect(destinations).toContain('/topic/board/test1234/cards')
@@ -124,6 +124,7 @@ describe('useWebSocket', () => {
     expect(destinations).toContain('/topic/board/test1234/participants')
     expect(destinations).toContain('/topic/board/test1234/action-items')
     expect(destinations).toContain('/topic/board/test1234/kudos')
+    expect(destinations).toContain('/topic/board/test1234/icebreaker')
   })
 
   it('calls correct handlers for each WebSocket message type', () => {

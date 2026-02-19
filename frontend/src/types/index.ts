@@ -1,6 +1,6 @@
 export type Framework = 'KPT' | 'FUN_DONE_LEARN' | 'FOUR_LS' | 'START_STOP_CONTINUE';
 
-export type Phase = 'WRITING' | 'VOTING' | 'DISCUSSION' | 'ACTION_ITEMS' | 'CLOSED';
+export type Phase = 'ICEBREAK' | 'WRITING' | 'VOTING' | 'DISCUSSION' | 'ACTION_ITEMS' | 'CLOSED';
 
 export interface Board {
   id: string;
@@ -12,6 +12,8 @@ export interface Board {
   maxVotesPerPerson: number;
   isAnonymous: boolean;
   privateWriting: boolean;
+  enableIcebreaker: boolean;
+  icebreakerQuestion: string | null;
   columns: Column[];
   participants: Participant[];
   createdAt: string;
@@ -243,6 +245,24 @@ export interface Kudos {
 
 export interface KudosDeletedPayload {
   id: string;
+}
+
+// Icebreaker types
+export interface IcebreakerAnswer {
+  id: string;
+  participantId: string;
+  participantNickname: string;
+  answerText: string;
+  createdAt: string;
+}
+
+export interface IcebreakerResponse {
+  question: string | null;
+  answers: IcebreakerAnswer[];
+}
+
+export interface IcebreakerAnswerDeletedPayload {
+  answerId: string;
 }
 
 export interface PrivateCardCreatedPayload {

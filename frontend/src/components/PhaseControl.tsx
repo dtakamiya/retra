@@ -7,6 +7,7 @@ import type { Phase } from '../types';
 import { PhaseTransitionDialog } from './PhaseTransitionDialog';
 
 const PHASE_TOOLTIPS: Record<Phase, string> = {
+  ICEBREAK: 'アイスブレイクで場をほぐしましょう',
   WRITING: 'カードを追加して意見を書きましょう',
   VOTING: 'カードに投票しましょう',
   DISCUSSION: '投票の多いカードから議論しましょう',
@@ -14,7 +15,8 @@ const PHASE_TOOLTIPS: Record<Phase, string> = {
   CLOSED: 'レトロスペクティブ完了',
 };
 
-const PHASES: { key: Phase; label: string }[] = [
+const ALL_PHASES: { key: Phase; label: string }[] = [
+  { key: 'ICEBREAK', label: 'アイス' },
   { key: 'WRITING', label: '記入' },
   { key: 'VOTING', label: '投票' },
   { key: 'DISCUSSION', label: '議論' },
@@ -23,6 +25,7 @@ const PHASES: { key: Phase; label: string }[] = [
 ];
 
 const NEXT_PHASE: Record<Phase, Phase | null> = {
+  ICEBREAK: 'WRITING',
   WRITING: 'VOTING',
   VOTING: 'DISCUSSION',
   DISCUSSION: 'ACTION_ITEMS',
@@ -39,6 +42,7 @@ export function PhaseControl() {
   if (!board || !participant) return null;
 
   const isFacilitator = participant.isFacilitator;
+  const PHASES = board.enableIcebreaker ? ALL_PHASES : ALL_PHASES.filter((p) => p.key !== 'ICEBREAK');
   const currentIndex = PHASES.findIndex((p) => p.key === board.phase);
   const nextPhase = NEXT_PHASE[board.phase];
 
