@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { ThumbsUp, Pencil, Trash2, GripVertical, MessageSquare, ListTodo, CheckCircle } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -23,7 +23,7 @@ interface Props {
   maxVoteCount?: number;
 }
 
-export function CardItem({ card, columnColor, columnName, isOverlay, maxVoteCount }: Props) {
+export const CardItem = memo(function CardItem({ card, columnColor, columnName, isOverlay, maxVoteCount }: Props) {
   const { board, participant, remainingVotes, handleCardUpdated } = useBoardStore();
   const addToast = useToastStore((s) => s.addToast);
   const [editing, setEditing] = useState(false);
@@ -394,4 +394,4 @@ export function CardItem({ card, columnColor, columnName, isOverlay, maxVoteCoun
       )}
     </div>
   );
-}
+});

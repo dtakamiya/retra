@@ -21,6 +21,7 @@ export const useToastStore = create<ToastState>((set) => ({
 
   addToast: (type, message) => {
     const id = String(++nextId);
+    const duration = type === 'error' ? 8000 : 4000;
     set((state) => ({
       toasts: [...state.toasts, { id, type, message }],
     }));
@@ -28,7 +29,7 @@ export const useToastStore = create<ToastState>((set) => ({
       set((state) => ({
         toasts: state.toasts.filter((t) => t.id !== id),
       }));
-    }, 4000);
+    }, duration);
   },
 
   removeToast: (id) =>
