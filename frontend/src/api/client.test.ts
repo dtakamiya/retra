@@ -505,12 +505,270 @@ describe('api client', () => {
     });
   });
 
+  // --- markCardDiscussed ---
+
+  it('markCardDiscussed sends PATCH with participantId and isDiscussed', async () => {
+    const card = { id: 'card-1', isDiscussed: true };
+    mockResponse(card);
+
+    const result = await api.markCardDiscussed('slug1', 'card-1', 'p-1', true);
+
+    expect(result).toEqual(card);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/cards/card-1/discussed', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participantId: 'p-1', isDiscussed: true }),
+    });
+  });
+
+  // --- getBoard with participantId ---
+
+  it('getBoard sends GET with participantId query param', async () => {
+    const board = { id: 'b-1', slug: 'test-slug' };
+    mockResponse(board);
+
+    const result = await api.getBoard('test-slug', 'p-1');
+
+    expect(result).toEqual(board);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/test-slug?participantId=p-1', {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+
+  // --- History / Dashboard ---
+
+  describe('getHistory', () => {
+    it('sends GET without params when none provided', async () => {
+      const history = { content: [], totalPages: 0 };
+      mockResponse(history);
+
+      const result = await api.getHistory();
+
+      expect(result).toEqual(history);
+      expect(mockFetch).toHaveBeenCalledWith('/api/v1/history', {
+        headers: { 'Content-Type': 'application/json' },
+      });
+    });
+
+    it('sends GET with teamName, page, and size params', async () => {
+      const history = { content: [], totalPages: 1 };
+      mockResponse(history);
+
+      const result = await api.getHistory('Team Alpha', 2, 10);
+
+      expect(result).toEqual(history);
+      expect(mockFetch).toHaveBeenCalledWith('/api/v1/history?teamName=Team+Alpha&page=2&size=10', {
+        headers: { 'Content-Type': 'application/json' },
+      });
+    });
+  });
+
+  it('deleteSnapshot sends DELETE to correct URL', async () => {
+    mock204();
+
+    const result = await api.deleteSnapshot('snap-1');
+
+    expect(result).toBeUndefined();
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/history/snap-1', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+
+  it('getSnapshot sends GET to correct URL', async () => {
+    const snapshot = { id: 'snap-1', title: 'Retro 1' };
+    mockResponse(snapshot);
+
+    const result = await api.getSnapshot('snap-1');
+
+    expect(result).toEqual(snapshot);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/history/snap-1', {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+
+  describe('getTrends', () => {
+    it('sends GET without params when teamName not provided', async () => {
+      const trends = { points: [] };
+      mockResponse(trends);
+
+      const result = await api.getTrends();
+
+      expect(result).toEqual(trends);
+      expect(mockFetch).toHaveBeenCalledWith('/api/v1/history/trends', {
+        headers: { 'Content-Type': 'application/json' },
+      });
+    });
+
+    it('sends GET with teamName param', async () => {
+      const trends = { points: [] };
+      mockResponse(trends);
+
+      const result = await api.getTrends('Team Alpha');
+
+      expect(result).toEqual(trends);
+      expect(mockFetch).toHaveBeenCalledWith('/api/v1/history/trends?teamName=Team%20Alpha', {
+        headers: { 'Content-Type': 'application/json' },
+      });
+    });
+  });
+
+  // --- Kudos ---
+
+  it('getKudos sends GET to correct URL', async () => {
+    const kudos = [{ id: 'k-1', message: 'Great job' }];
+    mockResponse(kudos);
+
+    const result = await api.getKudos('slug1');
+
+    expect(result).toEqual(kudos);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/kudos', {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+
+  it('sendKudos sends POST with correct body', async () => {
+    const kudos = { id: 'k-1', senderId: 'p-1', receiverId: 'p-2', category: 'GREAT_JOB' };
+    mockResponse(kudos, 201);
+
+    const result = await api.sendKudos('slug1', 'p-1', 'p-2', 'GREAT_JOB', 'Nice work!');
+
+    expect(result).toEqual(kudos);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/kudos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ senderId: 'p-1', receiverId: 'p-2', category: 'GREAT_JOB', message: 'Nice work!' }),
+    });
+  });
+
+  it('deleteKudos sends DELETE with participantId as query param', async () => {
+    mock204();
+
+    const result = await api.deleteKudos('slug1', 'k-1', 'p-1');
+
+    expect(result).toBeUndefined();
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/kudos/k-1?participantId=p-1', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+
+  // --- Icebreaker ---
+
+  it('getIcebreaker sends GET to correct URL', async () => {
+    const icebreaker = { question: 'What is your hobby?', answers: [] };
+    mockResponse(icebreaker);
+
+    const result = await api.getIcebreaker('slug1');
+
+    expect(result).toEqual(icebreaker);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/icebreaker', {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+
+  it('setIcebreakerQuestion sends POST with RANDOM mode', async () => {
+    const icebreaker = { question: 'Random question', answers: [] };
+    mockResponse(icebreaker);
+
+    const result = await api.setIcebreakerQuestion('slug1', 'p-1', 'RANDOM');
+
+    expect(result).toEqual(icebreaker);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/icebreaker/question', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participantId: 'p-1', type: 'RANDOM', questionText: undefined }),
+    });
+  });
+
+  it('setIcebreakerQuestion sends POST with CUSTOM mode and question', async () => {
+    const icebreaker = { question: 'Custom question', answers: [] };
+    mockResponse(icebreaker);
+
+    const result = await api.setIcebreakerQuestion('slug1', 'p-1', 'CUSTOM', 'Custom question');
+
+    expect(result).toEqual(icebreaker);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/icebreaker/question', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participantId: 'p-1', type: 'CUSTOM', questionText: 'Custom question' }),
+    });
+  });
+
+  it('submitIcebreakerAnswer sends POST with correct body', async () => {
+    const answer = { id: 'ans-1', participantId: 'p-1', answerText: 'My answer' };
+    mockResponse(answer, 201);
+
+    const result = await api.submitIcebreakerAnswer('slug1', 'p-1', 'My answer');
+
+    expect(result).toEqual(answer);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/icebreaker/answers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participantId: 'p-1', answerText: 'My answer' }),
+    });
+  });
+
+  it('updateIcebreakerAnswer sends PUT with correct body', async () => {
+    const answer = { id: 'ans-1', participantId: 'p-1', answerText: 'Updated answer' };
+    mockResponse(answer);
+
+    const result = await api.updateIcebreakerAnswer('slug1', 'ans-1', 'p-1', 'Updated answer');
+
+    expect(result).toEqual(answer);
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/icebreaker/answers/ans-1', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participantId: 'p-1', answerText: 'Updated answer' }),
+    });
+  });
+
+  it('deleteIcebreakerAnswer sends DELETE with participantId as query param', async () => {
+    mock204();
+
+    const result = await api.deleteIcebreakerAnswer('slug1', 'ans-1', 'p-1');
+
+    expect(result).toBeUndefined();
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/boards/slug1/icebreaker/answers/ans-1?participantId=p-1', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+
+  // --- exportBoard edge cases ---
+
+  it('exportBoard JSON parse failure in error response falls back to default message', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: () => Promise.reject(new Error('invalid json')),
+    });
+
+    await expect(api.exportBoard('slug1', 'p-1', 'CSV')).rejects.toThrow('不明なエラー');
+  });
+
+  it('exportBoard error response without message field uses HTTP status', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 403,
+      json: () => Promise.resolve({}),
+    });
+
+    await expect(api.exportBoard('slug1', 'p-1', 'CSV')).rejects.toThrow('HTTP 403');
+  });
+
   // --- Error handling ---
 
   it('HTTP error throws Error with message from response', async () => {
     mockErrorResponse({ message: 'ボードが見つかりません' }, 404);
 
     await expect(api.getBoard('nonexistent')).rejects.toThrow('ボードが見つかりません');
+  });
+
+  it('HTTP error without message field falls back to HTTP status', async () => {
+    mockErrorResponse({}, 500);
+
+    await expect(api.getBoard('broken')).rejects.toThrow('HTTP 500');
   });
 
   it('JSON parse failure falls back to default error message', async () => {

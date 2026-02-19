@@ -194,4 +194,125 @@ describe('IcebreakerPanel', () => {
     const { container } = render(<IcebreakerPanel />)
     expect(container.firstChild).toBeNull()
   })
+
+  it('編集ボタンクリックで編集モードに入り保存できる', async () => {
+    const user = userEvent.setup()
+    vi.mocked(api.updateIcebreakerAnswer).mockResolvedValue(
+      createIcebreakerAnswer({ answerText: '更新済み' })
+    )
+    setupStore({
+      icebreakerQuestion: 'テスト質問',
+      icebreakerAnswers: [createIcebreakerAnswer({ id: 'ans-1', participantId: 'p-1', answerText: '元の回答' })],
+    })
+    render(<IcebreakerPanel />)
+
+    await user.click(screen.getByLabelText('回答を編集'))
+
+    const editInput = screen.getByLabelText('回答を編集')
+    expect(editInput).toHaveValue('元の回答')
+
+    await user.clear(editInput)
+    await user.type(editInput, '更新済み')
+    await user.click(screen.getByText('保存'))
+
+    await waitFor(() => {
+      expect(api.updateIcebreakerAnswer).toHaveBeenCalledWith('test1234', 'ans-1', 'p-1', '更新済み')
+    })
+  })
+
+  it('編集モードで取消ボタンをクリックすると編集が取り消される', async () => {
+    const user = userEvent.setup()
+    setupStore({
+      icebreakerQuestion: 'テスト質問',
+      icebreakerAnswers: [createIcebreakerAnswer({ id: 'ans-1', participantId: 'p-1', answerText: '元の回答' })],
+    })
+    render(<IcebreakerPanel />)
+
+    await user.click(screen.getByLabelText('回答を編集'))
+    expect(screen.getByText('取消')).toBeInTheDocument()
+
+    await user.click(screen.getByText('取消'))
+
+    expect(screen.queryByText('取消')).not.toBeInTheDocument()
+    expect(screen.getByText('元の回答')).toBeInTheDocument()
+  })
+
+  it('ランダム質問設定失敗時にエラートーストが表示される', async () => {
+    const user = userEvent.setup()
+    vi.mocked(api.setIcebreakerQuestion).mockRejectedValue(new Error('API error'))
+    setupStore({ participant: createParticipant({ isFacilitator: true }) })
+    render(<IcebreakerPanel />)
+
+    await user.click(screen.getByLabelText('ランダム質問を設定'))
+
+    await waitFor(() => {
+      expect(mockAddToast).toHaveBeenCalledWith('error', '質問の設定に失敗しました')
+    })
+  })
+
+  it('回答送信失敗時にエラートーストが表示される', async () => {
+    const user = userEvent.setup()
+    vi.mocked(api.submitIcebreakerAnswer).mockRejectedValue(new Error('API error'))
+    setupStore({ icebreakerQuestion: 'テスト質問' })
+    render(<IcebreakerPanel />)
+
+    await user.type(screen.getByLabelText('アイスブレイク回答'), '回答テキスト')
+    await user.click(screen.getByLabelText('回答を送信'))
+
+    await waitFor(() => {
+      expect(mockAddToast).toHaveBeenCalledWith('error', '回答の送信に失敗しました')
+    })
+  })
+
+  it('回答更新失敗時にエラートーストが表示される', async () => {
+    const user = userEvent.setup()
+    vi.mocked(api.updateIcebreakerAnswer).mockRejectedValue(new Error('API error'))
+    setupStore({
+      icebreakerQuestion: 'テスト質問',
+      icebreakerAnswers: [createIcebreakerAnswer({ id: 'ans-1', participantId: 'p-1', answerText: '元の回答' })],
+    })
+    render(<IcebreakerPanel />)
+
+    await user.click(screen.getByLabelText('回答を編集'))
+    await user.click(screen.getByText('保存'))
+
+    await waitFor(() => {
+      expect(mockAddToast).toHaveBeenCalledWith('error', '回答の更新に失敗しました')
+    })
+  })
+
+  it('回答削除失敗時にエラートーストが表示される', async () => {
+    const user = userEvent.setup()
+    vi.mocked(api.deleteIcebreakerAnswer).mockRejectedValue(new Error('API error'))
+    setupStore({
+      icebreakerQuestion: 'テスト質問',
+      icebreakerAnswers: [createIcebreakerAnswer({ id: 'ans-1', participantId: 'p-1' })],
+    })
+    render(<IcebreakerPanel />)
+
+    await user.click(screen.getByLabelText('回答を削除'))
+
+    await waitFor(() => {
+      expect(mockAddToast).toHaveBeenCalledWith('error', '回答の削除に失敗しました')
+    })
+  })
+
+  it('空の回答テキストでは送信されない', async () => {
+    const user = userEvent.setup()
+    setupStore({ icebreakerQuestion: 'テスト質問' })
+    render(<IcebreakerPanel />)
+
+    await user.click(screen.getByLabelText('回答を送信'))
+
+    expect(api.submitIcebreakerAnswer).not.toHaveBeenCalled()
+  })
+
+  it('既に質問が設定されている場合はボタンテキストが「別の質問に変更」になる', () => {
+    setupStore({
+      participant: createParticipant({ isFacilitator: true }),
+      icebreakerQuestion: '既存の質問',
+    })
+    render(<IcebreakerPanel />)
+    expect(screen.getByText('別の質問に変更')).toBeInTheDocument()
+  })
 })
