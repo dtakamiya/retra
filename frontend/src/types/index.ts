@@ -242,11 +242,6 @@ export interface PrivateCardCreatedPayload {
   participantId: string | null;
 }
 
-export interface PrivateCardUpdatedPayload {
-  cardId: string;
-  participantId: string | null;
-}
-
 export interface PrivateCardDeletedPayload {
   cardId: string;
   columnId: string;
