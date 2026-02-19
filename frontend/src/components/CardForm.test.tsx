@@ -80,4 +80,41 @@ describe('CardForm', () => {
 
     expect(screen.getByText('5/2000')).toBeInTheDocument()
   })
+
+  it('Enterキーでフォームを送信する', async () => {
+    vi.mocked(api.createCard).mockResolvedValue(
+      {} as Awaited<ReturnType<typeof api.createCard>>
+    )
+
+    const user = userEvent.setup()
+    render(<CardForm columnId="col-1" onClose={mockOnClose} />)
+
+    const textarea = screen.getByPlaceholderText('意見を入力...（Enterで送信、Shift+Enterで改行）')
+    await user.type(textarea, 'Enterテスト')
+    await user.keyboard('{Enter}')
+
+    expect(api.createCard).toHaveBeenCalledWith('test1234', 'col-1', 'Enterテスト', 'p-1')
+  })
+
+  it('Shift+Enterではフォームを送信しない', async () => {
+    const user = userEvent.setup()
+    render(<CardForm columnId="col-1" onClose={mockOnClose} />)
+
+    const textarea = screen.getByPlaceholderText('意見を入力...（Enterで送信、Shift+Enterで改行）')
+    await user.type(textarea, 'テスト')
+    await user.keyboard('{Shift>}{Enter}{/Shift}')
+
+    expect(api.createCard).not.toHaveBeenCalled()
+  })
+
+  it('Escapeキーでフォームを閉じる', async () => {
+    const user = userEvent.setup()
+    render(<CardForm columnId="col-1" onClose={mockOnClose} />)
+
+    const textarea = screen.getByPlaceholderText('意見を入力...（Enterで送信、Shift+Enterで改行）')
+    await user.click(textarea)
+    await user.keyboard('{Escape}')
+
+    expect(mockOnClose).toHaveBeenCalled()
+  })
 })

@@ -111,6 +111,34 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    fun `MethodArgumentNotValidException でフィールドエラーが空の場合は空メッセージ`() {
+        val bindingResult: BindingResult = MapBindingResult(mutableMapOf<String, Any>(), "request")
+        val method = this::class.java.getDeclaredMethod("dummyMethod", String::class.java)
+        val ex = MethodArgumentNotValidException(
+            MethodParameter(method, 0),
+            bindingResult
+        )
+        val response = handler.handleValidation(ex)
+        assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals("", response.body?.message)
+    }
+
+    @Test
+    fun `MethodArgumentNotValidException で複数フィールドエラーがカンマ区切りで結合される`() {
+        val bindingResult: BindingResult = MapBindingResult(mutableMapOf<String, Any>(), "request")
+        bindingResult.addError(FieldError("request", "title", "must not be blank"))
+        bindingResult.addError(FieldError("request", "content", "size must be between 1 and 2000"))
+        val method = this::class.java.getDeclaredMethod("dummyMethod", String::class.java)
+        val ex = MethodArgumentNotValidException(
+            MethodParameter(method, 0),
+            bindingResult
+        )
+        val response = handler.handleValidation(ex)
+        assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals("title: must not be blank, content: size must be between 1 and 2000", response.body?.message)
+    }
+
+    @Test
     fun `HttpMessageNotReadableException は 400`() {
         val response = handler.handleBadJson(
             HttpMessageNotReadableException("bad json")

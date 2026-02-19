@@ -95,4 +95,13 @@ describe('CardDetailModal', () => {
     const dialog = screen.getByRole('dialog');
     expect(dialog).toHaveAttribute('aria-modal', 'true');
   });
+
+  it('shows updated timestamp when updatedAt differs from createdAt', () => {
+    const card = createCard({
+      createdAt: '2024-01-01T10:00:00Z',
+      updatedAt: '2024-01-02T15:30:00Z',
+    });
+    render(<CardDetailModal {...defaultProps} card={card} />);
+    expect(screen.getByText(/更新/)).toBeInTheDocument();
+  });
 });
