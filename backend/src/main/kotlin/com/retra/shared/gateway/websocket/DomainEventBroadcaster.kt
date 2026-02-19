@@ -6,6 +6,7 @@ import com.retra.card.domain.CardEvent
 import com.retra.card.domain.MemoEvent
 import com.retra.card.domain.ReactionEvent
 import com.retra.card.domain.VoteEvent
+import com.retra.icebreaker.domain.IcebreakerEvent
 import com.retra.kudos.domain.KudosEvent
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Component
@@ -346,6 +347,49 @@ class DomainEventBroadcaster(
                     "id" to event.kudosId
                 )
             )
+        )
+    }
+
+    @TransactionalEventListener(fallbackExecution = true)
+    fun handleIcebreakerQuestionSet(event: IcebreakerEvent.QuestionSet) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.boardSlug}/icebreaker",
+            WebSocketMessage("ICEBREAKER_QUESTION_SET", mapOf("question" to event.question))
+        )
+    }
+
+    @TransactionalEventListener(fallbackExecution = true)
+    fun handleIcebreakerAnswerSubmitted(event: IcebreakerEvent.AnswerSubmitted) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.boardSlug}/icebreaker",
+            WebSocketMessage("ICEBREAKER_ANSWER_SUBMITTED", mapOf(
+                "id" to event.answerId,
+                "participantId" to event.participantId,
+                "participantNickname" to event.participantNickname,
+                "answerText" to event.answerText,
+                "createdAt" to event.createdAt
+            ))
+        )
+    }
+
+    @TransactionalEventListener(fallbackExecution = true)
+    fun handleIcebreakerAnswerUpdated(event: IcebreakerEvent.AnswerUpdated) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.boardSlug}/icebreaker",
+            WebSocketMessage("ICEBREAKER_ANSWER_UPDATED", mapOf(
+                "id" to event.answerId,
+                "participantId" to event.participantId,
+                "participantNickname" to event.participantNickname,
+                "answerText" to event.answerText
+            ))
+        )
+    }
+
+    @TransactionalEventListener(fallbackExecution = true)
+    fun handleIcebreakerAnswerDeleted(event: IcebreakerEvent.AnswerDeleted) {
+        messagingTemplate.convertAndSend(
+            "/topic/board/${event.boardSlug}/icebreaker",
+            WebSocketMessage("ICEBREAKER_ANSWER_DELETED", mapOf("answerId" to event.answerId))
         )
     }
 }
