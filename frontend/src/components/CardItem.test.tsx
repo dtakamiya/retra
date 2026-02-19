@@ -757,7 +757,7 @@ describe('CardItem', () => {
       remainingVotes: null,
     } as unknown as ReturnType<typeof useBoardStore>)
 
-    rerender(<CardItem card={card} columnColor="#22c55e" />)
+    rerender(<CardItem card={{ ...card }} columnColor="#22c55e" />)
 
     // Memo content should be visible (auto-expanded)
     expect(screen.getByText('Test memo content')).toBeInTheDocument()

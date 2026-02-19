@@ -195,7 +195,7 @@ Entry point: `RetraApplication.kt`
 | `store/themeStore.ts` | Theme state management (light/dark mode) |
 | `websocket/useWebSocket.ts` | STOMP client hook with auto-reconnect |
 | `hooks/useTimerAlert.ts` | Timer alert sound hook |
-| `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `Reaction`, `Kudos`, `ExportFormat`, `CardMovedPayload`, `ReactionRemovedPayload`, `KudosDeletedPayload`, `PrivateCardCreatedPayload`, `PrivateCardUpdatedPayload`, `PrivateCardDeletedPayload`, etc.) |
+| `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `Reaction`, `Kudos`, `ExportFormat`, `CardMovedPayload`, `ReactionRemovedPayload`, `KudosDeletedPayload`, `PrivateCardCreatedPayload`, `PrivateCardDeletedPayload`, etc.) |
 | `types/filter.ts` | Filter state types (`FilterState`, `DEFAULT_FILTER_STATE`) |
 | `utils/` | Utility functions (`exportMarkdown.ts` - Markdown export conversion) |
 | `test/` | Test utilities: `setup.ts`, `fixtures.ts`, `test-utils.tsx`, `dnd-mocks.ts` |

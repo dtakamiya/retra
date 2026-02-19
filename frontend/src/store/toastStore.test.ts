@@ -29,13 +29,27 @@ describe('toastStore', () => {
     expect(toasts[0].id).not.toBe(toasts[1].id);
   });
 
-  it('addToast auto-removes toast after 4 seconds', () => {
+  it('addToast auto-removes success/info toast after 4 seconds', () => {
     useToastStore.getState().addToast('info', '一時的なメッセージ');
 
     expect(useToastStore.getState().toasts).toHaveLength(1);
 
     vi.advanceTimersByTime(4000);
 
+    expect(useToastStore.getState().toasts).toHaveLength(0);
+  });
+
+  it('addToast auto-removes error toast after 8 seconds (longer display)', () => {
+    useToastStore.getState().addToast('error', 'エラーメッセージ');
+
+    expect(useToastStore.getState().toasts).toHaveLength(1);
+
+    // 4秒後はまだ表示されている
+    vi.advanceTimersByTime(4000);
+    expect(useToastStore.getState().toasts).toHaveLength(1);
+
+    // 8秒後に消える
+    vi.advanceTimersByTime(4000);
     expect(useToastStore.getState().toasts).toHaveLength(0);
   });
 
