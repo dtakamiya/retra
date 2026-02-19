@@ -25,6 +25,8 @@ class CsvExportServiceTest {
         maxVotesPerPerson = 5,
         isAnonymous = false,
         privateWriting = false,
+        enableIcebreaker = false,
+        icebreakerQuestion = null,
         columns = columns,
         participants = listOf(
             ParticipantResponse("p-1", "Alice", true, true, "2024-01-01T00:00:00Z")

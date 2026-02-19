@@ -20,7 +20,8 @@ class CreateBoardUseCase(
             maxVotesPerPerson = request.maxVotesPerPerson,
             isAnonymous = request.isAnonymous,
             privateWriting = request.privateWriting,
-            teamName = request.teamName
+            teamName = request.teamName,
+            enableIcebreaker = request.enableIcebreaker
         )
 
         boardRepository.save(board)
