@@ -102,4 +102,41 @@ describe('ParticipantList', () => {
     expect(screen.getByText('A')).toBeInTheDocument()
     expect(screen.getByText('B')).toBeInTheDocument()
   })
+
+  it('compact mode shows overflow count when >5 participants', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({
+        participants: [
+          createParticipant({ id: 'p-1', nickname: 'Alice' }),
+          createParticipant({ id: 'p-2', nickname: 'Bob' }),
+          createParticipant({ id: 'p-3', nickname: 'Charlie' }),
+          createParticipant({ id: 'p-4', nickname: 'Diana' }),
+          createParticipant({ id: 'p-5', nickname: 'Eve' }),
+          createParticipant({ id: 'p-6', nickname: 'Frank' }),
+          createParticipant({ id: 'p-7', nickname: 'Grace' }),
+        ],
+      }),
+      remainingVotes: null,
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<ParticipantList compact />)
+
+    expect(screen.getByText('+2')).toBeInTheDocument()
+  })
+
+  it('compact mode shows remaining votes in VOTING phase', () => {
+    vi.mocked(useBoardStore).mockReturnValue({
+      board: createBoard({
+        phase: 'VOTING',
+        participants: [
+          createParticipant({ id: 'p-1', nickname: 'Alice' }),
+        ],
+      }),
+      remainingVotes: createRemainingVotes({ remaining: 3, max: 5, used: 2 }),
+    } as unknown as ReturnType<typeof useBoardStore>)
+
+    render(<ParticipantList compact />)
+
+    expect(screen.getByText('残り3/5票')).toBeInTheDocument()
+  })
 })

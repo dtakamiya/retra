@@ -43,12 +43,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Retra is a real-time retrospective board for Scrum teams. It supports multiple frameworks (KPT, Fun Done Learn, 4Ls, Start Stop Continue) with phase-based workflows (Writing -> Voting -> Discussion -> Action Items -> Closed).
+Retra is a real-time retrospective board for Scrum teams. It supports multiple frameworks (KPT, Fun Done Learn, 4Ls, Start Stop Continue) with phase-based workflows (Icebreak -> Writing -> Voting -> Discussion -> Action Items -> Closed).
 
 - **Backend:** Spring Boot 3.5.10 + Kotlin 2.3.10 (`backend/`)
 - **Frontend:** React 19.2 + TypeScript 5.9 + Vite 7 + Zustand 5 + TailwindCSS v4 (`frontend/`)
-- **Database:** SQLite with Flyway migrations (V1-V15)
-- **CI/CD:** GitHub Actions（CI: テスト・Lint・ビルド、Dependabot: 依存関係自動更新、Auto-Merge）
+- **Database:** SQLite with Flyway migrations (V1-V16)
+- **CI/CD:** GitHub Actions（CI: テスト・Lint・ビルド、E2E: Playwright E2Eテスト、Release: タグベースJARリリース、Labeler: PR自動ラベル付け、Dependabot: 依存関係自動更新、Auto-Merge）
 - **Realtime:** WebSocket via STOMP protocol (`@stomp/stompjs`)
 - **Drag & Drop:** @dnd-kit (core, sortable, utilities)
 - **Icons:** Lucide React
@@ -129,8 +129,8 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 #### `board/` - Board Module
 | Package | Purpose |
 |---------|---------|
-| `board/domain/` | `Board` (includes `teamName`, `privateWriting`), `BoardColumn`, `Participant`, `BoardSlug`, `VoteLimit`, `Framework`, `Phase`, `BoardAuthorizationService`, `BoardEvent`, repositories |
-| `board/usecase/` | `CreateBoardUseCase` (`CreateBoardRequest` includes `teamName`, `privateWriting`), `GetBoardUseCase`, `TransitionPhaseUseCase`, `JoinBoardUseCase`, `UpdateOnlineStatusUseCase`, `ExportBoardUseCase`, `BoardDtos`, `ExportDtos`, `BoardMapper` |
+| `board/domain/` | `Board` (includes `teamName`, `privateWriting`, `enableIcebreaker`, `icebreakerQuestion`), `BoardColumn`, `Participant`, `BoardSlug`, `VoteLimit`, `Framework`, `Phase` (ICEBREAK, WRITING, VOTING, DISCUSSION, ACTION_ITEMS, CLOSED), `BoardAuthorizationService`, `BoardEvent`, repositories |
+| `board/usecase/` | `CreateBoardUseCase` (`CreateBoardRequest` includes `teamName`, `privateWriting`, `enableIcebreaker`), `GetBoardUseCase`, `TransitionPhaseUseCase`, `JoinBoardUseCase`, `UpdateOnlineStatusUseCase`, `ExportBoardUseCase`, `BoardDtos`, `ExportDtos`, `BoardMapper` |
 | `board/usecase/export/` | `CsvExportService`, `MarkdownExportService` (CSV/Markdownエクスポート) |
 | `board/gateway/controller/` | `BoardController` (REST) |
 | `board/gateway/db/` | JPA repository implementations (`JpaBoardRepository`, `JpaParticipantRepository`) + Spring Data interfaces (`SpringDataBoardRepository`, `SpringDataParticipantRepository`) |
@@ -166,11 +166,19 @@ Key files: `shared/gateway/websocket/DomainEventBroadcaster.kt`, `websocket/useW
 | `kudos/gateway/controller/` | `KudosController` (REST) |
 | `kudos/gateway/db/` | JPA repository implementations (`JpaKudosRepository`) + Spring Data interfaces (`SpringDataKudosRepository`) |
 
+#### `icebreaker/` - Icebreaker Module
+| Package | Purpose |
+|---------|---------|
+| `icebreaker/domain/` | `IcebreakerAnswer` (140-char limit), `IcebreakerAnswerRepository`, `IcebreakerEvent` (QuestionSet, AnswerSubmitted, AnswerUpdated, AnswerDeleted), `IcebreakerQuestions` (25 preset Japanese questions, random selection) |
+| `icebreaker/usecase/` | `SetIcebreakerQuestionUseCase`, `SubmitIcebreakerAnswerUseCase`, `UpdateIcebreakerAnswerUseCase`, `DeleteIcebreakerAnswerUseCase`, `GetIcebreakerUseCase`, DTOs (`IcebreakerDtos`), Mapper (`IcebreakerMapper`) |
+| `icebreaker/gateway/controller/` | `IcebreakerController` (REST) |
+| `icebreaker/gateway/db/` | JPA repository implementations (`JpaIcebreakerAnswerRepository`) + Spring Data interfaces (`SpringDataIcebreakerAnswerRepository`) |
+
 #### `history/` - History Module
 | Package | Purpose |
 |---------|---------|
 | `history/domain/` | `BoardSnapshot`, `BoardSnapshotRepository` |
-| `history/usecase/` | `CreateSnapshotUseCase`, `GetSnapshotUseCase`, `GetTeamHistoryUseCase`, DTOs (`SnapshotDtos` incl. `TrendPoint` with engagement metrics: `cardsPerParticipant`, `votesPerParticipant`, `votesPerCard`, `actionItemRate`, `actionItemCompletionRate`), Mapper (`SnapshotMapper` with `safeDiv` helper) |
+| `history/usecase/` | `CreateSnapshotUseCase`, `GetSnapshotUseCase`, `GetTeamHistoryUseCase`, `DeleteSnapshotUseCase`, DTOs (`SnapshotDtos` incl. `TrendPoint` with engagement metrics: `cardsPerParticipant`, `votesPerParticipant`, `votesPerCard`, `actionItemRate`, `actionItemCompletionRate`, `PagedSnapshotResponse`), Mapper (`SnapshotMapper` with `safeDiv` helper) |
 | `history/gateway/controller/` | `HistoryController` (REST) |
 | `history/gateway/db/` | JPA repository implementations (`JpaBoardSnapshotRepository`) + Spring Data interfaces (`SpringDataBoardSnapshotRepository`) |
 
@@ -189,13 +197,13 @@ Entry point: `RetraApplication.kt`
 |-----------|---------|
 | `api/client.ts` | REST API wrapper (`/api/v1` base) |
 | `pages/` | `HomePage` (create/join), `BoardPage` (main board), `TeamDashboardPage` (history + trends), `SnapshotDetailPage` (snapshot detail), `NotFoundPage` |
-| `components/` | `ActionItemCard`, `ActionItemForm`, `ActionItemList`, `ActionItemPriorityBadge`, `ActionItemStatusBadge`, `BoardFilterBar`, `BoardHeader`, `BoardSkeleton`, `BoardView`, `CardDetailModal`, `CardForm`, `CardItem`, `CarryOverPanel`, `CharacterCounter`, `ColumnView`, `ConnectionBanner`, `DiscussionProgress`, `ExportMenu`, `KudosCard`, `KudosPanel`, `KudosSendForm`, `MemoForm`, `MemoItem`, `MemoList`, `NicknameModal`, `OverallDiscussionProgress`, `ParticipantList`, `PhaseControl`, `PhaseGuidance`, `PhaseTransitionDialog`, `ReactionList`, `ReactionPicker`, `RetroHistoryList`, `RetroSummaryCard`, `SnapshotDetailView`, `ThemeToggle`, `TimerDisplay`, `ToastContainer`, `TrendChart`, `VoteProgressBar` |
-| `store/boardStore.ts` | Zustand store with WebSocket event handlers |
+| `components/` | `ActionItemCard`, `ActionItemForm`, `ActionItemList`, `ActionItemPriorityBadge`, `ActionItemStatusBadge`, `BoardFilterBar`, `BoardHeader`, `BoardSkeleton`, `BoardView`, `CardDetailModal`, `CardForm`, `CardItem`, `CarryOverPanel`, `CharacterCounter`, `ColumnView`, `ConfirmDialog`, `ConnectionBanner`, `DiscussionProgress`, `ErrorBoundary`, `ExportMenu`, `IcebreakerPanel`, `KudosCard`, `KudosPanel`, `KudosSendForm`, `MemoForm`, `MemoItem`, `MemoList`, `NicknameModal`, `OverallDiscussionProgress`, `Pagination`, `ParticipantList`, `PhaseControl`, `PhaseTransitionDialog`, `ReactionList`, `ReactionPicker`, `RetroHistoryList`, `RetroSummaryCard`, `SnapshotDetailView`, `ThemeToggle`, `TimerDisplay`, `ToastContainer`, `TrendChart`, `VoteProgressBar` |
+| `store/boardStore.ts` | Zustand store with WebSocket event handlers (includes icebreaker state) |
 | `store/toastStore.ts` | Toast notification store (success/error/info, 4秒自動削除) |
 | `store/themeStore.ts` | Theme state management (light/dark mode) |
 | `websocket/useWebSocket.ts` | STOMP client hook with auto-reconnect |
 | `hooks/useTimerAlert.ts` | Timer alert sound hook |
-| `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `Reaction`, `Kudos`, `ExportFormat`, `CardMovedPayload`, `ReactionRemovedPayload`, `KudosDeletedPayload`, `PrivateCardCreatedPayload`, `PrivateCardDeletedPayload`, etc.) |
+| `types/index.ts` | Shared TypeScript type definitions (`Board`, `Card`, `Memo`, `Reaction`, `Kudos`, `IcebreakerAnswer`, `IcebreakerResponse`, `ExportFormat`, `CardMovedPayload`, `ReactionRemovedPayload`, `KudosDeletedPayload`, `PrivateCardCreatedPayload`, `PrivateCardDeletedPayload`, `IcebreakerAnswerDeletedPayload`, `PagedHistory`, etc.) |
 | `types/filter.ts` | Filter state types (`FilterState`, `DEFAULT_FILTER_STATE`) |
 | `utils/` | Utility functions (`exportMarkdown.ts` - Markdown export conversion) |
 | `test/` | Test utilities: `setup.ts`, `fixtures.ts`, `test-utils.tsx`, `dnd-mocks.ts` |
@@ -205,7 +213,7 @@ App entry: `main.tsx` -> `App.tsx` (React Router with 5 routes)
 ### API Routes
 
 All REST endpoints are under `/api/v1`:
-- `POST /boards` - Create board
+- `POST /boards` - Create board (includes `enableIcebreaker` option)
 - `GET /boards/{slug}` - Get board details
 - `PATCH /boards/{slug}/phase` - Phase transition (facilitator only)
 - `POST /boards/{slug}/participants` - Join board
@@ -225,6 +233,11 @@ All REST endpoints are under `/api/v1`:
 - `POST /boards/{slug}/kudos` - Send kudos (all phases)
 - `GET /boards/{slug}/kudos` - Get all kudos for board
 - `DELETE /boards/{slug}/kudos/{id}` - Delete own kudos
+- `GET /boards/{slug}/icebreaker` - Get icebreaker state (question + answers)
+- `POST /boards/{slug}/icebreaker/question` - Set icebreaker question (facilitator only, RANDOM or CUSTOM type)
+- `POST /boards/{slug}/icebreaker/answers` - Submit icebreaker answer
+- `PUT /boards/{slug}/icebreaker/answers/{answerId}` - Update own icebreaker answer
+- `DELETE /boards/{slug}/icebreaker/answers/{answerId}?participantId=` - Delete own icebreaker answer
 - `POST /boards/{slug}/timer` - Timer control (facilitator only)
 - `GET /boards/{slug}/timer` - Get timer state
 - `GET /boards/{slug}/export` - Export board (CSV/Markdown, query params: `participantId`, `format`)
@@ -235,8 +248,9 @@ All REST endpoints are under `/api/v1`:
 - `DELETE /boards/{slug}/action-items/{id}` - Delete action item
 - `GET /boards/{slug}/carry-over-items` - Get carry-over action items from previous retro
 - `PATCH /boards/{slug}/carry-over-items/{actionItemId}/status` - Update carry-over item status (facilitator only)
-- `GET /history` - Get retro history (optional query param: `teamName`)
+- `GET /history` - Get retro history (query params: `teamName`, `page`, `size`; returns paginated response)
 - `GET /history/{snapshotId}` - Get snapshot detail
+- `DELETE /history/{snapshotId}` - Delete snapshot
 - `GET /history/trends` - Get trend data (optional query param: `teamName`)
 
 ### WebSocket Events
@@ -248,13 +262,15 @@ STOMP topics under `/topic/board/{slug}/`:
 - `memos` - `MEMO_CREATED`, `MEMO_UPDATED`, `MEMO_DELETED`
 - `phase` - `PHASE_CHANGED`
 - `timer` - `TIMER_UPDATE`
-- `participants` - `PARTICIPANT_JOINED`, `PARTICIPANT_ONLINE_CHANGED`
+- `participants` - `JOINED`, `ONLINE`, `OFFLINE`
 - `action-items` - `ACTION_ITEM_CREATED`, `ACTION_ITEM_UPDATED`, `ACTION_ITEM_STATUS_CHANGED`, `ACTION_ITEM_DELETED`
 - `kudos` - `KUDOS_SENT`, `KUDOS_DELETED`
+- `icebreaker` - `ICEBREAKER_QUESTION_SET`, `ICEBREAKER_ANSWER_SUBMITTED`, `ICEBREAKER_ANSWER_UPDATED`, `ICEBREAKER_ANSWER_DELETED`
 
 ### Phase-Based Access Control
 
 Business rules are enforced in the usecase layer:
+- Icebreaker: answer only in ICEBREAK phase; question set by facilitator only; 25 preset Japanese questions with random selection or custom question; 140 char answer limit
 - Cards: create only in WRITING phase; edit by author only; delete by author or facilitator
 - Card move: drag & drop between columns with sort order
 - Votes: add/remove only in VOTING phase; max votes per person enforced
@@ -263,7 +279,8 @@ Business rules are enforced in the usecase layer:
 - Discussion mark: facilitator only, toggle in DISCUSSION/ACTION_ITEMS phases; discussed cards grayed out and sorted to bottom
 - Anonymous mode: set at board creation, cannot be changed; hides author names from other participants (self visible)
 - Private writing mode: set at board creation; hides cards from other participants during WRITING phase; cards become visible after phase transition
-- Phase transitions: facilitator only, must follow sequential order
+- Icebreaker mode: set at board creation (`enableIcebreaker`); when enabled, board starts in ICEBREAK phase instead of WRITING
+- Phase transitions: facilitator only, must follow sequential order (ICEBREAK -> WRITING -> VOTING -> DISCUSSION -> ACTION_ITEMS -> CLOSED)
 - Timer: facilitator only
 - Kudos: send in all phases; delete by sender only; categories (GREAT_JOB, THANK_YOU, INSPIRING, HELPFUL, CREATIVE, TEAM_PLAYER); anonymous mode hides sender name; 140 char message limit
 - Auto-snapshot: created automatically when board transitions to CLOSED phase
@@ -288,11 +305,14 @@ Business rules are enforced in the usecase layer:
   - `actionitem/usecase/` - CreateActionItem, UpdateActionItem, UpdateActionItemStatus, DeleteActionItem, GetActionItems, GetCarryOverItems, UpdateCarryOverItemStatus usecase tests
   - `actionitem/gateway/controller/` - ActionItemController, CarryOverController tests
   - `history/domain/` - BoardSnapshot tests
-  - `history/usecase/` - CreateSnapshot, GetSnapshot, GetTeamHistory usecase tests, SnapshotMapper test
+  - `history/usecase/` - CreateSnapshot, GetSnapshot, GetTeamHistory, DeleteSnapshot usecase tests, SnapshotMapper test
   - `history/gateway/controller/` - HistoryController tests
   - `kudos/domain/` - Kudos, KudosCategory tests
   - `kudos/usecase/` - SendKudos, GetKudos, DeleteKudos usecase tests
   - `kudos/gateway/controller/` - KudosController tests
+  - `icebreaker/domain/` - IcebreakerAnswer, IcebreakerQuestions tests
+  - `icebreaker/usecase/` - SetIcebreakerQuestion, SubmitIcebreakerAnswer, UpdateIcebreakerAnswer, DeleteIcebreakerAnswer, GetIcebreaker usecase tests
+  - `icebreaker/gateway/controller/` - IcebreakerController tests
   - `shared/` - EnumParser, GlobalExceptionHandler, DomainEventBroadcaster, SpringDomainEventPublisher tests
 
 ### Frontend Tests (`frontend/src/`)
@@ -302,7 +322,8 @@ Business rules are enforced in the usecase layer:
 - **Fixtures:** `src/test/fixtures.ts` for mock data
 - **Utilities:** `src/test/test-utils.tsx` for custom render helpers
 - **DnD Mocks:** `src/test/dnd-mocks.ts` for @dnd-kit library mocks
-- **Coverage:** Every component, page, hook, store, and API client has a co-located `.test.ts(x)` file
+- **Coverage:** Components, pages, hooks, stores, and API client have co-located `.test.ts(x)` files
+- **UAT:** `store/boardStore.uat.test.ts` simulates full retrospective session state transitions
 
 ### E2E Tests (`frontend/e2e/`)
 - **Framework:** Playwright
@@ -315,7 +336,7 @@ Business rules are enforced in the usecase layer:
 - **SQLite single-writer:** HikariCP `maximum-pool-size=1`, WAL mode, `busy_timeout=5000ms`, `foreign_keys=ON`
 - **Kotlin JPA entities** use `open class` (not data class) due to `allOpen` plugin with `@Entity`, `@MappedSuperclass`, `@Embeddable` annotations
 - **TailwindCSS v4:** Uses `@tailwindcss/vite` plugin with `@import "tailwindcss"` syntax. No `tailwind.config.js`.
-- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V15, do not modify existing migrations)
+- **Flyway migrations** in `backend/src/main/resources/db/migration/` (V1-V16, do not modify existing migrations)
 - **SPA fallback:** `SpaConfig.kt` serves `index.html` for non-API, non-static routes in production
 - **Vite proxy:** Dev server proxies `/api` to `http://localhost:8080` and `/ws` to `ws://localhost:8080`
 - **TypeScript strict mode:** `noUnusedLocals`, `noUnusedParameters`, `erasableSyntaxOnly`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports` all enabled
@@ -327,7 +348,7 @@ Business rules are enforced in the usecase layer:
 - `README.md` - Project overview, features, setup instructions (日本語)
 - `docs/CONTRIB.md` - Contributor guide with development workflow (日本語)
 - `docs/RUNBOOK.md` - Production deployment and operations runbook (日本語)
-- `docs/images/` - 32枚のスクリーンショット（UIフロー全体をカバー）
+- `docs/images/` - 26枚のスクリーンショット（UIフロー全体をカバー）
 
 ## Git Workflow
 
@@ -345,7 +366,7 @@ Business rules are enforced in the usecase layer:
 | flyway-core | (managed) | DB migration |
 | mockk | 1.14.9 | Kotlin mocking |
 | mockito-kotlin | 6.2.3 | Mockito for Kotlin |
-| JaCoCo | 0.8.14 | Code coverage (excludes: `RetraApplicationKt*`, `config/**`, `**/gateway/db/**`) |
+| JaCoCo | 0.8.14 | Code coverage (excludes: `RetraApplicationKt*`, `config/**`, `board/gateway/db/**`, `card/gateway/db/**`, `actionitem/gateway/db/**`, `history/gateway/db/**`) |
 
 ## Key Dependencies (Frontend)
 

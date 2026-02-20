@@ -161,8 +161,9 @@ Flyway で管理。マイグレーションファイルは `backend/src/main/res
 | `V13__create_kudos.sql` | Kudos（称賛）テーブル作成 |
 | `V14__add_indexes.sql` | パフォーマンス向上のためのインデックス追加 |
 | `V15__add_private_writing_to_boards.sql` | ボードにプライベート記入モードフラグ追加 |
+| `V16__add_icebreaker.sql` | アイスブレイカー機能（`enable_icebreaker`/`icebreaker_question` カラム追加、`icebreaker_answers` テーブル作成） |
 
-新しいマイグレーションを追加する場合は `V16__description.sql` のように命名してください。
+新しいマイグレーションを追加する場合は `V17__description.sql` のように命名してください。
 
 ### SQLite の制約
 
