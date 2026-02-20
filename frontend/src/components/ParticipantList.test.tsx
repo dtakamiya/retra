@@ -17,7 +17,7 @@ describe('ParticipantList', () => {
       board: null,
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(<ParticipantList />)
@@ -36,7 +36,7 @@ describe('ParticipantList', () => {
       }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ParticipantList />)
@@ -55,7 +55,7 @@ describe('ParticipantList', () => {
       }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ParticipantList />)
@@ -74,7 +74,7 @@ describe('ParticipantList', () => {
       }),
       remainingVotes: createRemainingVotes({ remaining: 3, max: 5, used: 2 }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ParticipantList />)
@@ -93,7 +93,7 @@ describe('ParticipantList', () => {
       }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ParticipantList compact />)

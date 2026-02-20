@@ -25,7 +25,7 @@ describe('MemoItem', () => {
       board: null,
       participant: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const memo = createMemo()
@@ -39,7 +39,7 @@ describe('MemoItem', () => {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const memo = createMemo({ content: 'メモの内容', authorNickname: 'Alice' })
@@ -55,7 +55,7 @@ describe('MemoItem', () => {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const memo = createMemo({ participantId: 'p-1' })
@@ -71,7 +71,7 @@ describe('MemoItem', () => {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-2', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const memo = createMemo({ participantId: 'p-1' })
@@ -87,7 +87,7 @@ describe('MemoItem', () => {
       board: createBoard({ phase: 'CLOSED' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const memo = createMemo({ participantId: 'p-1' })
@@ -104,7 +104,7 @@ describe('MemoItem', () => {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const memo = createMemo({ content: '編集テスト', participantId: 'p-1' })
@@ -123,7 +123,7 @@ describe('MemoItem', () => {
       board: createBoard({ slug: 'test-slug', phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     vi.mocked(api.updateMemo).mockResolvedValue(createMemo({ content: '更新内容' }))
 
@@ -146,7 +146,7 @@ describe('MemoItem', () => {
       board: createBoard({ slug: 'test-slug', phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     vi.mocked(api.deleteMemo).mockResolvedValue(undefined)
 
@@ -165,7 +165,7 @@ describe('MemoItem', () => {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const memo = createMemo({ content: 'Escテスト', participantId: 'p-1' })

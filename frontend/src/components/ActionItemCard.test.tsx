@@ -31,7 +31,7 @@ describe('ActionItemCard', () => {
       board: null,
       participant: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const item = createActionItem()
@@ -45,7 +45,7 @@ describe('ActionItemCard', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ content: 'テストアクション', status: 'OPEN' })
@@ -62,7 +62,7 @@ describe('ActionItemCard', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ assigneeNickname: 'Alice' })
@@ -77,7 +77,7 @@ describe('ActionItemCard', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ dueDate: '2024-03-15' })
@@ -92,7 +92,7 @@ describe('ActionItemCard', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const item = createActionItem()
@@ -109,7 +109,7 @@ describe('ActionItemCard', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ assigneeId: 'p-1' })
@@ -126,7 +126,7 @@ describe('ActionItemCard', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-2', isFacilitator: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ assigneeId: 'p-1' })
@@ -143,7 +143,7 @@ describe('ActionItemCard', () => {
       board: createBoard({ phase: 'CLOSED' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const item = createActionItem()
@@ -161,7 +161,7 @@ describe('ActionItemCard', () => {
       board: createBoard({ slug: 'test-slug', phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     vi.mocked(api.updateActionItemStatus).mockResolvedValue(createActionItem({ status: 'IN_PROGRESS' }))
 
@@ -180,7 +180,7 @@ describe('ActionItemCard', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ content: '編集テスト' })
@@ -199,7 +199,7 @@ describe('ActionItemCard', () => {
       board: createBoard({ slug: 'test-slug', phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     vi.mocked(api.updateActionItem).mockResolvedValue(createActionItem({ content: '更新内容' }))
 
@@ -222,7 +222,7 @@ describe('ActionItemCard', () => {
       board: createBoard({ slug: 'test-slug', phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     vi.mocked(api.deleteActionItem).mockResolvedValue(undefined)
 
@@ -241,7 +241,7 @@ describe('ActionItemCard', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ content: 'Escテスト' })
@@ -261,7 +261,7 @@ describe('ActionItemCard', () => {
       board: createBoard({ slug: 'test-slug', phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     vi.mocked(api.updateActionItem).mockResolvedValue(createActionItem({ content: 'Enter保存' }))
 

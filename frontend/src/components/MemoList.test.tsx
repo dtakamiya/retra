@@ -22,7 +22,7 @@ describe('MemoList', () => {
       board: null,
       participant: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(<MemoList cardId="card-1" memos={[]} />)
@@ -35,7 +35,7 @@ describe('MemoList', () => {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: { id: 'p-1', nickname: 'TestUser', isFacilitator: false, isOnline: true, createdAt: '' },
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const memos = [
@@ -54,7 +54,7 @@ describe('MemoList', () => {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: { id: 'p-1', nickname: 'TestUser', isFacilitator: false, isOnline: true, createdAt: '' },
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<MemoList cardId="card-1" memos={[]} />)
@@ -68,7 +68,7 @@ describe('MemoList', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: { id: 'p-1', nickname: 'TestUser', isFacilitator: false, isOnline: true, createdAt: '' },
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<MemoList cardId="card-1" memos={[]} />)
@@ -82,7 +82,7 @@ describe('MemoList', () => {
       board: createBoard({ phase: 'CLOSED' }),
       participant: { id: 'p-1', nickname: 'TestUser', isFacilitator: false, isOnline: true, createdAt: '' },
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<MemoList cardId="card-1" memos={[]} />)

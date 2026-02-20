@@ -35,7 +35,7 @@ describe('ActionItemList', () => {
       board: null,
       participant: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(
@@ -50,7 +50,7 @@ describe('ActionItemList', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ActionItemList actionItems={[]} slug="test-slug" participants={participants} />)
@@ -64,7 +64,7 @@ describe('ActionItemList', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const items = [
@@ -82,7 +82,7 @@ describe('ActionItemList', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ActionItemList actionItems={[]} slug="test-slug" participants={participants} />)
@@ -96,7 +96,7 @@ describe('ActionItemList', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ActionItemList actionItems={[]} slug="test-slug" participants={participants} />)
@@ -110,7 +110,7 @@ describe('ActionItemList', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const items = [
@@ -135,7 +135,7 @@ describe('ActionItemList', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ActionItemList actionItems={[]} slug="test-slug" participants={participants} />)
@@ -149,7 +149,7 @@ describe('ActionItemList', () => {
       board: createBoard({ phase: 'CLOSED' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ActionItemList actionItems={[]} slug="test-slug" participants={participants} />)
@@ -163,7 +163,7 @@ describe('ActionItemList', () => {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const items = [

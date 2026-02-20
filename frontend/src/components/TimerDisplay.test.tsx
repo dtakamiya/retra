@@ -26,7 +26,7 @@ describe('TimerDisplay', () => {
       participant: null,
       timer: createTimerState(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(<TimerDisplay />)
@@ -41,7 +41,7 @@ describe('TimerDisplay', () => {
       participant: createParticipant(),
       timer: createTimerState({ totalSeconds: 0, remainingSeconds: 0, isRunning: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<TimerDisplay />)
@@ -56,7 +56,7 @@ describe('TimerDisplay', () => {
       participant: createParticipant(),
       timer: createTimerState({ totalSeconds: 300, remainingSeconds: 300, isRunning: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<TimerDisplay />)
@@ -71,7 +71,7 @@ describe('TimerDisplay', () => {
       participant: createParticipant(),
       timer: createTimerState({ totalSeconds: 300, remainingSeconds: 0, isRunning: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<TimerDisplay />)
@@ -86,7 +86,7 @@ describe('TimerDisplay', () => {
       participant: createParticipant({ isFacilitator: true }),
       timer: createTimerState({ totalSeconds: 0, remainingSeconds: 0, isRunning: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<TimerDisplay />)
@@ -101,7 +101,7 @@ describe('TimerDisplay', () => {
       participant: createParticipant(),
       timer: createTimerState({ totalSeconds: 300, remainingSeconds: 180, isRunning: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<TimerDisplay compact />)
@@ -120,7 +120,7 @@ describe('TimerDisplay', () => {
       participant: createParticipant({ isFacilitator: true }),
       timer: createTimerState({ totalSeconds: 0, remainingSeconds: 0, isRunning: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<TimerDisplay />)
@@ -143,7 +143,7 @@ describe('TimerDisplay', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
       timer: createTimerState({ totalSeconds: 0, remainingSeconds: 0, isRunning: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.controlTimer).mockResolvedValue(createTimerState())
@@ -173,7 +173,7 @@ describe('TimerDisplay', () => {
       participant: createParticipant({ isFacilitator: true }),
       timer: createTimerState({ totalSeconds: 0, remainingSeconds: 0, isRunning: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<TimerDisplay />)
@@ -201,7 +201,7 @@ describe('TimerDisplay', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
       timer: createTimerState({ totalSeconds: 300, remainingSeconds: 180, isRunning: true }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.controlTimer).mockResolvedValue(createTimerState())
@@ -222,7 +222,7 @@ describe('TimerDisplay', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
       timer: createTimerState({ totalSeconds: 300, remainingSeconds: 120, isRunning: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.controlTimer).mockResolvedValue(createTimerState())
@@ -243,7 +243,7 @@ describe('TimerDisplay', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
       timer: createTimerState({ totalSeconds: 300, remainingSeconds: 120, isRunning: false }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.controlTimer).mockResolvedValue(createTimerState())

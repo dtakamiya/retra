@@ -24,7 +24,7 @@ describe('CardForm', () => {
       board: createBoard({ slug: 'test1234' }),
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
   })
 

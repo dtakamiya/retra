@@ -24,7 +24,7 @@ describe('MemoForm', () => {
       board: null,
       participant: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(<MemoForm cardId="card-1" />)
@@ -37,7 +37,7 @@ describe('MemoForm', () => {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<MemoForm cardId="card-1" />)
@@ -52,7 +52,7 @@ describe('MemoForm', () => {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<MemoForm cardId="card-1" />)
@@ -67,7 +67,7 @@ describe('MemoForm', () => {
       board: createBoard({ slug: 'test-slug', phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     vi.mocked(api.createMemo).mockResolvedValue({
       id: 'memo-1', cardId: 'card-1', content: 'メモ内容',
@@ -92,7 +92,7 @@ describe('MemoForm', () => {
       board: createBoard({ slug: 'test-slug', phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<MemoForm cardId="card-1" />)
@@ -113,7 +113,7 @@ describe('MemoForm', () => {
       board: createBoard({ slug: 'test-slug', phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     vi.mocked(api.createMemo).mockResolvedValue({
       id: 'memo-1', cardId: 'card-1', content: 'Enter送信',

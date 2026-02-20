@@ -55,7 +55,7 @@ describe('IcebreakerPanel', () => {
       icebreakerAnswers: overrides.icebreakerAnswers ?? [],
       setIcebreaker: mockSetIcebreaker,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
   }
 
@@ -195,7 +195,7 @@ describe('IcebreakerPanel', () => {
       icebreakerAnswers: [],
       setIcebreaker: mockSetIcebreaker,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     const { container } = render(<IcebreakerPanel />)
     expect(container.firstChild).toBeNull()

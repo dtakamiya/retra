@@ -65,7 +65,7 @@ function mockStoreHandlers() {
   }
   vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
       const s = handlers;
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
   return handlers
 }

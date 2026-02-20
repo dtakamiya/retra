@@ -27,7 +27,7 @@ describe('BoardHeader', () => {
       participant: null,
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(
@@ -44,7 +44,7 @@ describe('BoardHeader', () => {
       participant: createParticipant(),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
@@ -61,7 +61,7 @@ describe('BoardHeader', () => {
       participant: createParticipant(),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
@@ -87,7 +87,7 @@ describe('BoardHeader', () => {
       participant: createParticipant(),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
@@ -123,7 +123,7 @@ describe('BoardHeader', () => {
       participant: createParticipant(),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
@@ -141,7 +141,7 @@ describe('BoardHeader', () => {
       participant: createParticipant(),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
@@ -158,7 +158,7 @@ describe('BoardHeader', () => {
       participant: createParticipant(),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
@@ -175,7 +175,7 @@ describe('BoardHeader', () => {
       participant: createParticipant(),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
@@ -194,7 +194,7 @@ describe('BoardHeader', () => {
       participant: createParticipant(),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
@@ -214,7 +214,7 @@ describe('BoardHeader', () => {
       participant: createParticipant(),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
@@ -232,7 +232,7 @@ describe('BoardHeader', () => {
       participant: createParticipant(),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
@@ -249,7 +249,7 @@ describe('BoardHeader', () => {
       participant: createParticipant(),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
@@ -266,7 +266,7 @@ describe('BoardHeader', () => {
       participant: createParticipant(),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
@@ -284,7 +284,7 @@ describe('BoardHeader', () => {
       participant: createParticipant(),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     renderWithRouter(

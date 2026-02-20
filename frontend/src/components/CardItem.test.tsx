@@ -47,7 +47,7 @@ describe('CardItem', () => {
       participant: null,
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(<CardItem card={defaultCard} columnColor="#22c55e" />)
@@ -62,7 +62,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
@@ -78,7 +78,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const card = createCard({ participantId: 'p-1' })
@@ -94,7 +94,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-2', isFacilitator: true }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const card = createCard({ participantId: 'p-1' })
@@ -110,7 +110,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: createRemainingVotes({ remaining: 5 }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
@@ -125,7 +125,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-2', isFacilitator: false }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const card = createCard({ participantId: 'p-1' })
@@ -141,7 +141,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: createRemainingVotes({ remaining: 5 }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
@@ -158,7 +158,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={cardWithVotes} columnColor="#22c55e" />)
@@ -176,7 +176,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={cardWithVotes} columnColor="#22c55e" />)
@@ -194,7 +194,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={cardWithVotes} columnColor="#22c55e" />)
@@ -210,7 +210,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const card = createCard({ participantId: 'p-1' })
@@ -227,7 +227,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-2', isFacilitator: true }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const card = createCard({ participantId: 'p-1' })
@@ -244,7 +244,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-2', isFacilitator: false }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const card = createCard({ participantId: 'p-1' })
@@ -264,7 +264,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -288,7 +288,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.updateCard).mockResolvedValue(createCard({ content: '新しい内容' }))
@@ -316,7 +316,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.updateCard).mockResolvedValue(createCard({ content: 'Enter保存テスト' }))
@@ -341,7 +341,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -366,7 +366,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -392,7 +392,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: createRemainingVotes({ remaining: 3 }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.addVote).mockResolvedValue(createVote({ cardId: 'card-1', participantId: 'p-1' }))
@@ -414,7 +414,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: createRemainingVotes({ remaining: 3 }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.removeVote).mockResolvedValue(undefined)
@@ -436,7 +436,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.deleteCard).mockResolvedValue(undefined)
@@ -455,7 +455,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(<CardItem card={defaultCard} columnColor="#22c55e" isOverlay />)
@@ -472,7 +472,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
@@ -495,7 +495,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={cardWithReactions} columnColor="#22c55e" />)
@@ -513,7 +513,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.addReaction).mockResolvedValue(createReaction())
@@ -541,7 +541,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.removeReaction).mockResolvedValue(undefined)
@@ -562,7 +562,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
@@ -577,7 +577,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
@@ -592,7 +592,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
@@ -607,7 +607,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: createRemainingVotes({ remaining: 5 }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
@@ -625,7 +625,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.createActionItem).mockResolvedValue(createActionItem())
@@ -646,7 +646,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" columnName="Keep" />)
@@ -666,7 +666,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -687,7 +687,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(<CardItem card={card} columnColor="#22c55e" />)
@@ -705,7 +705,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(<CardItem card={card} columnColor="#22c55e" />)
@@ -723,7 +723,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -742,7 +742,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-2', isFacilitator: false }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -760,7 +760,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -778,7 +778,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     vi.mocked(api.markCardDiscussed).mockResolvedValue(undefined as never)
 
@@ -800,7 +800,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-2' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -818,7 +818,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -838,7 +838,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: createRemainingVotes({ remaining: 0, used: 5 }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -856,7 +856,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: createRemainingVotes({ remaining: 0, used: 5 }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -877,7 +877,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { rerender } = render(<CardItem card={card} columnColor="#22c55e" />)
@@ -889,7 +889,7 @@ describe('CardItem', () => {
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     rerender(<CardItem card={{ ...card }} columnColor="#22c55e" />)

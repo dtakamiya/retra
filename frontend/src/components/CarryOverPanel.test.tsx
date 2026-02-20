@@ -26,7 +26,7 @@ describe('CarryOverPanel', () => {
       carryOverTeamName: '',
       updateCarryOverItemStatus: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(<CarryOverPanel />)
@@ -46,7 +46,7 @@ describe('CarryOverPanel', () => {
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CarryOverPanel />)
@@ -66,7 +66,7 @@ describe('CarryOverPanel', () => {
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CarryOverPanel />)
@@ -85,7 +85,7 @@ describe('CarryOverPanel', () => {
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CarryOverPanel />)
@@ -116,7 +116,7 @@ describe('CarryOverPanel', () => {
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CarryOverPanel />)
@@ -135,7 +135,7 @@ describe('CarryOverPanel', () => {
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CarryOverPanel />)
@@ -161,7 +161,7 @@ describe('CarryOverPanel', () => {
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     // Spy on useToastStore
@@ -199,7 +199,7 @@ describe('CarryOverPanel', () => {
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<CarryOverPanel />)

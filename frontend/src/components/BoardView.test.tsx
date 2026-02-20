@@ -52,7 +52,7 @@ describe('BoardView', () => {
       actionItems: [],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(<BoardView />)
@@ -79,7 +79,7 @@ describe('BoardView', () => {
       actionItems: [],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
@@ -108,7 +108,7 @@ describe('BoardView', () => {
       actionItems: [],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
@@ -135,7 +135,7 @@ describe('BoardView', () => {
       actionItems: [],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
@@ -153,7 +153,7 @@ describe('BoardView', () => {
       actionItems: [],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
@@ -179,7 +179,7 @@ describe('BoardView', () => {
       actionItems: [],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
@@ -211,7 +211,7 @@ describe('BoardView', () => {
       handleCardMoved,
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.moveCard).mockResolvedValue(undefined)
@@ -246,7 +246,7 @@ describe('BoardView', () => {
       handleCardMoved,
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
@@ -279,7 +279,7 @@ describe('BoardView', () => {
       actionItems: [],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.moveCard).mockRejectedValue(new Error('Network error'))
@@ -317,7 +317,7 @@ describe('BoardView', () => {
       actionItems: [],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.moveCard).mockRejectedValue(new Error('Network error'))
@@ -353,7 +353,7 @@ describe('BoardView', () => {
       handleCardMoved,
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.moveCard).mockResolvedValue(undefined)
@@ -391,7 +391,7 @@ describe('BoardView', () => {
       handleCardMoved,
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
@@ -418,7 +418,7 @@ describe('BoardView', () => {
       actionItems: [createActionItem({ content: 'テストアクション' })],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
@@ -442,7 +442,7 @@ describe('BoardView', () => {
       actionItems: [],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
@@ -465,7 +465,7 @@ describe('BoardView', () => {
       actionItems: [],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
@@ -485,7 +485,7 @@ describe('BoardView', () => {
       actionItems: [],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
@@ -508,7 +508,7 @@ describe('BoardView', () => {
       actionItems: [],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)
@@ -533,7 +533,7 @@ describe('BoardView', () => {
       actionItems: [],
       setActionItems: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<BoardView />)

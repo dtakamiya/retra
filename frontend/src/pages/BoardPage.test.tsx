@@ -135,7 +135,7 @@ function mockStoreState(overrides: Partial<ReturnType<typeof useBoardStore>> = {
     ...defaults,
     ...overrides,
   };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 }
 

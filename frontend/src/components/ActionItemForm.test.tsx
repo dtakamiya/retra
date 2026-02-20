@@ -33,7 +33,7 @@ describe('ActionItemForm', () => {
       const s = {
       participant: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(<ActionItemForm slug="test-slug" participants={participants} />)
@@ -45,7 +45,7 @@ describe('ActionItemForm', () => {
       const s = {
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
@@ -61,7 +61,7 @@ describe('ActionItemForm', () => {
       const s = {
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
@@ -74,7 +74,7 @@ describe('ActionItemForm', () => {
       const s = {
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
@@ -91,7 +91,7 @@ describe('ActionItemForm', () => {
       const s = {
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     vi.mocked(api.createActionItem).mockResolvedValue(createActionItem())
 
@@ -119,7 +119,7 @@ describe('ActionItemForm', () => {
       const s = {
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     vi.mocked(api.createActionItem).mockResolvedValue(createActionItem())
 
@@ -150,7 +150,7 @@ describe('ActionItemForm', () => {
       const s = {
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
@@ -173,7 +173,7 @@ describe('ActionItemForm', () => {
       const s = {
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     vi.mocked(api.createActionItem).mockResolvedValue(createActionItem())
 
@@ -200,7 +200,7 @@ describe('ActionItemForm', () => {
       const s = {
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
     vi.mocked(api.createActionItem).mockResolvedValue(createActionItem())
 
@@ -226,7 +226,7 @@ describe('ActionItemForm', () => {
       const s = {
       participant: createParticipant({ id: 'p-1' }),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ActionItemForm slug="test-slug" participants={participants} initialContent="初期内容" />)

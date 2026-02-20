@@ -24,7 +24,7 @@ describe('PhaseControl', () => {
       participant: null,
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     const { container } = render(<PhaseControl />)
@@ -39,7 +39,7 @@ describe('PhaseControl', () => {
       participant: createParticipant({ isFacilitator: false }),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
@@ -55,7 +55,7 @@ describe('PhaseControl', () => {
       participant: createParticipant({ isFacilitator: true }),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
@@ -70,7 +70,7 @@ describe('PhaseControl', () => {
       participant: createParticipant({ isFacilitator: false }),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
@@ -85,7 +85,7 @@ describe('PhaseControl', () => {
       participant: createParticipant({ isFacilitator: true }),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
@@ -100,7 +100,7 @@ describe('PhaseControl', () => {
       participant: createParticipant({ isFacilitator: true }),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
@@ -118,7 +118,7 @@ describe('PhaseControl', () => {
       participant: createParticipant({ isFacilitator: true }),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
@@ -146,7 +146,7 @@ describe('PhaseControl', () => {
       participant: createParticipant({ isFacilitator: true }),
       setBoard,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
@@ -177,7 +177,7 @@ describe('PhaseControl', () => {
       participant: createParticipant({ isFacilitator: true }),
       setBoard: vi.fn(),
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)

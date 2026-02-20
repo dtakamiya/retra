@@ -47,7 +47,7 @@ describe('ColumnView', () => {
       participant: createParticipant(),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
@@ -65,7 +65,7 @@ describe('ColumnView', () => {
       participant: createParticipant(),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
@@ -85,7 +85,7 @@ describe('ColumnView', () => {
       participant: createParticipant(),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
@@ -102,7 +102,7 @@ describe('ColumnView', () => {
       participant: createParticipant(),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
@@ -124,7 +124,7 @@ describe('ColumnView', () => {
       participant: createParticipant(),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
@@ -148,7 +148,7 @@ describe('ColumnView', () => {
       participant: createParticipant(),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
@@ -175,7 +175,7 @@ describe('ColumnView', () => {
       participant: createParticipant(),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
@@ -202,7 +202,7 @@ describe('ColumnView', () => {
       participant: createParticipant(),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
@@ -229,7 +229,7 @@ describe('ColumnView', () => {
       participant: createParticipant(),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
@@ -256,7 +256,7 @@ describe('ColumnView', () => {
       participant: createParticipant(),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
@@ -276,7 +276,7 @@ describe('ColumnView', () => {
       participant: createParticipant(),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
@@ -297,7 +297,7 @@ describe('ColumnView', () => {
       participant: createParticipant(),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
@@ -318,7 +318,7 @@ describe('ColumnView', () => {
       participant: createParticipant(),
       remainingVotes: null,
     };
-      return typeof selector === 'function' ? (selector as (s: typeof s) => unknown)(s) : s;
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
