@@ -11,6 +11,8 @@ import org.springframework.validation.MapBindingResult
 import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class GlobalExceptionHandlerTest {
 
@@ -54,10 +56,18 @@ class GlobalExceptionHandlerTest {
 
     @Test
     fun `ErrorResponse のプロパティが正しく設定される`() {
-        val errorResponse = ErrorResponse(status = 500, error = "Internal", message = "Something went wrong")
+        val errorResponse = ErrorResponse(
+            status = 500,
+            error = "Internal",
+            message = "Something went wrong",
+            errorCode = "INTERNAL_ERROR",
+            errorId = "test-uuid"
+        )
         assertEquals(500, errorResponse.status)
         assertEquals("Internal", errorResponse.error)
         assertEquals("Something went wrong", errorResponse.message)
+        assertEquals("INTERNAL_ERROR", errorResponse.errorCode)
+        assertEquals("test-uuid", errorResponse.errorId)
     }
 
     @Test
@@ -91,6 +101,84 @@ class GlobalExceptionHandlerTest {
         assertEquals("test", response.body?.message)
     }
 
+    // --- ErrorCode テスト ---
+
+    @Test
+    fun `NotFoundException のレスポンスにデフォルトerrorCodeが含まれる`() {
+        val response = handler.handleNotFound(NotFoundException("not found"))
+        assertEquals("RESOURCE_NOT_FOUND", response.body?.errorCode)
+    }
+
+    @Test
+    fun `NotFoundException にカスタムerrorCodeを設定できる`() {
+        val response = handler.handleNotFound(NotFoundException("not found", ErrorCode.BOARD_NOT_FOUND))
+        assertEquals("BOARD_NOT_FOUND", response.body?.errorCode)
+    }
+
+    @Test
+    fun `BadRequestException のレスポンスにデフォルトerrorCodeが含まれる`() {
+        val response = handler.handleBadRequest(BadRequestException("bad"))
+        assertEquals("BAD_REQUEST", response.body?.errorCode)
+    }
+
+    @Test
+    fun `BadRequestException にカスタムerrorCodeを設定できる`() {
+        val response = handler.handleBadRequest(BadRequestException("limit", ErrorCode.VOTE_LIMIT_REACHED))
+        assertEquals("VOTE_LIMIT_REACHED", response.body?.errorCode)
+    }
+
+    @Test
+    fun `ForbiddenException のレスポンスにデフォルトerrorCodeが含まれる`() {
+        val response = handler.handleForbidden(ForbiddenException("no"))
+        assertEquals("FORBIDDEN", response.body?.errorCode)
+    }
+
+    @Test
+    fun `ForbiddenException にカスタムerrorCodeを設定できる`() {
+        val response = handler.handleForbidden(ForbiddenException("no", ErrorCode.NOT_FACILITATOR))
+        assertEquals("NOT_FACILITATOR", response.body?.errorCode)
+    }
+
+    @Test
+    fun `ConflictException のレスポンスにデフォルトerrorCodeが含まれる`() {
+        val response = handler.handleConflict(ConflictException("dup"))
+        assertEquals("CONFLICT", response.body?.errorCode)
+    }
+
+    @Test
+    fun `ConflictException にカスタムerrorCodeを設定できる`() {
+        val response = handler.handleConflict(ConflictException("dup", ErrorCode.DUPLICATE_VOTE))
+        assertEquals("DUPLICATE_VOTE", response.body?.errorCode)
+    }
+
+    @Test
+    fun `InvalidPhaseTransitionException のレスポンスにerrorCodeが含まれる`() {
+        val response = handler.handleInvalidPhaseTransition(InvalidPhaseTransitionException("invalid"))
+        assertEquals("INVALID_PHASE_TRANSITION", response.body?.errorCode)
+    }
+
+    // --- ErrorId テスト ---
+
+    @Test
+    fun `未知の例外のレスポンスにerrorIdが含まれる`() {
+        val response = handler.handleGenericException(RuntimeException("unexpected"))
+        assertNotNull(response.body?.errorId)
+        assertTrue(response.body!!.errorId!!.isNotBlank())
+    }
+
+    @Test
+    fun `未知の例外のerrorCodeはINTERNAL_ERROR`() {
+        val response = handler.handleGenericException(RuntimeException("unexpected"))
+        assertEquals("INTERNAL_ERROR", response.body?.errorCode)
+    }
+
+    @Test
+    fun `ドメイン例外のレスポンスにもerrorIdが含まれない（nullである）`() {
+        val response = handler.handleNotFound(NotFoundException("not found"))
+        // ドメイン例外は想定済みのエラーなのでerrorIdは不要
+        assertEquals(null, response.body?.errorId)
+    }
+
     @Suppress("unused")
     fun dummyMethod(param: String) {}
 
@@ -108,6 +196,7 @@ class GlobalExceptionHandlerTest {
         assertEquals(400, response.body?.status)
         assertEquals("Validation Error", response.body?.error)
         assertEquals("content: must not be blank", response.body?.message)
+        assertEquals("VALIDATION_ERROR", response.body?.errorCode)
     }
 
     @Test
@@ -146,6 +235,7 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
         assertEquals(400, response.body?.status)
         assertEquals("Invalid request body", response.body?.message)
+        assertEquals("INVALID_REQUEST_BODY", response.body?.errorCode)
     }
 
     @Test
@@ -154,6 +244,7 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
         assertEquals(400, response.body?.status)
         assertEquals("invalid arg", response.body?.message)
+        assertEquals("INVALID_ARGUMENT", response.body?.errorCode)
     }
 
     @Test
@@ -163,6 +254,15 @@ class GlobalExceptionHandlerTest {
         )
         assertEquals(HttpStatus.METHOD_NOT_ALLOWED, response.statusCode)
         assertEquals(405, response.body?.status)
+        assertEquals("METHOD_NOT_ALLOWED", response.body?.errorCode)
+    }
+
+    @Test
+    fun `MissingServletRequestParameterException は errorCode MISSING_PARAMETER を持つ`() {
+        val ex = org.springframework.web.bind.MissingServletRequestParameterException("participantId", "String")
+        val response = handler.handleMissingParam(ex)
+        assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals("MISSING_PARAMETER", response.body?.errorCode)
     }
 
     @Test
