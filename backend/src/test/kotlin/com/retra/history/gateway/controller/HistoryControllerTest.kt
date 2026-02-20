@@ -172,16 +172,26 @@ class HistoryControllerTest {
     fun `DELETE history snapshotId スナップショット削除 204`() {
         mockMvc.perform(
             delete("/api/v1/history/snap-1")
+                .param("teamName", "Team Alpha")
         )
             .andExpect(status().isNoContent)
     }
 
     @Test
+    fun `DELETE history snapshotId teamNameなしで 400`() {
+        mockMvc.perform(
+            delete("/api/v1/history/snap-1")
+        )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
     fun `DELETE history snapshotId 存在しない場合 404`() {
-        whenever(deleteSnapshotUseCase.execute(eq("nonexistent"))).thenThrow(NotFoundException("スナップショットが見つかりません"))
+        whenever(deleteSnapshotUseCase.execute(eq("nonexistent"), eq("Team Alpha"))).thenThrow(NotFoundException("Snapshot not found"))
 
         mockMvc.perform(
             delete("/api/v1/history/nonexistent")
+                .param("teamName", "Team Alpha")
         )
             .andExpect(status().isNotFound)
     }

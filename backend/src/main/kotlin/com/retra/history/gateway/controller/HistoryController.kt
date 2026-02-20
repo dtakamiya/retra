@@ -44,7 +44,10 @@ class HistoryController(
 
     @DeleteMapping("/{snapshotId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deleteSnapshot(@PathVariable snapshotId: String) {
-        deleteSnapshotUseCase.execute(snapshotId)
+    fun deleteSnapshot(
+        @PathVariable snapshotId: String,
+        @RequestParam teamName: String
+    ) {
+        deleteSnapshotUseCase.execute(snapshotId, teamName)
     }
 }

@@ -256,7 +256,7 @@ describe('TeamDashboardPage', () => {
     await user.click(screen.getByText('削除'))
 
     await waitFor(() => {
-      expect(api.deleteSnapshot).toHaveBeenCalledWith('snap-1')
+      expect(api.deleteSnapshot).toHaveBeenCalledWith('snap-1', 'Team Alpha')
     })
   })
 

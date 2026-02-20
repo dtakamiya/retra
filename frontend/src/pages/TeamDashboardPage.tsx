@@ -74,9 +74,12 @@ export function TeamDashboardPage() {
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
+    const history = pagedHistory?.content ?? [];
+    const targetSnapshot = history.find((s) => s.id === deleteTarget);
+    if (!targetSnapshot) return;
     setDeleting(true);
     try {
-      await api.deleteSnapshot(deleteTarget);
+      await api.deleteSnapshot(deleteTarget, targetSnapshot.teamName);
       addToast('success', 'スナップショットを削除しました');
       setDeleteTarget(null);
       loadData();

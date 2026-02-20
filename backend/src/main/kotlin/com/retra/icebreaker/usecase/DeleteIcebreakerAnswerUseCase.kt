@@ -3,6 +3,7 @@ package com.retra.icebreaker.usecase
 import com.retra.board.domain.BoardRepository
 import com.retra.icebreaker.domain.IcebreakerAnswerRepository
 import com.retra.icebreaker.domain.IcebreakerEvent
+import com.retra.shared.domain.BadRequestException
 import com.retra.shared.domain.ForbiddenException
 import com.retra.shared.domain.NotFoundException
 import com.retra.shared.gateway.event.SpringDomainEventPublisher
@@ -19,6 +20,9 @@ class DeleteIcebreakerAnswerUseCase(
     fun execute(slug: String, answerId: String, participantId: String) {
         val board = boardRepository.findBySlug(slug)
             ?: throw NotFoundException("Board not found")
+        if (!board.phase.canAnswerIcebreaker()) {
+            throw BadRequestException("Can only delete answer during ICEBREAK phase")
+        }
         val participant = board.findParticipantById(participantId)
         val answer = answerRepository.findById(answerId)
             ?: throw NotFoundException("Answer not found")

@@ -18,7 +18,9 @@ export function IcebreakerPanel() {
 
   useEffect(() => {
     if (!board) return;
-    api.getIcebreaker(board.slug).then(setIcebreaker).catch(() => {});
+    api.getIcebreaker(board.slug).then(setIcebreaker).catch((err) => {
+      console.error('Failed to load icebreaker:', err);
+    });
   }, [board, setIcebreaker]);
 
   if (!board || !participant) return null;
