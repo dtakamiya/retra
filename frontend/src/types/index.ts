@@ -2,6 +2,14 @@ export type Framework = 'KPT' | 'FUN_DONE_LEARN' | 'FOUR_LS' | 'START_STOP_CONTI
 
 export type Phase = 'ICEBREAK' | 'WRITING' | 'VOTING' | 'DISCUSSION' | 'ACTION_ITEMS' | 'CLOSED';
 
+export function isDiscussionLikePhase(phase: Phase | undefined): boolean {
+  return phase === 'DISCUSSION' || phase === 'ACTION_ITEMS';
+}
+
+export function isPostVotingPhase(phase: Phase | undefined): boolean {
+  return phase === 'DISCUSSION' || phase === 'ACTION_ITEMS' || phase === 'CLOSED';
+}
+
 export interface Board {
   id: string;
   slug: string;

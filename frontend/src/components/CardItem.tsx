@@ -13,6 +13,7 @@ import { VoteProgressBar } from './VoteProgressBar';
 import { CharacterCounter } from './CharacterCounter';
 import { CardDetailModal } from './CardDetailModal';
 import type { Card } from '../types';
+import { isDiscussionLikePhase } from '../types';
 
 const MAX_CONTENT_LENGTH = 2000;
 
@@ -38,7 +39,7 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
   const phase = board?.phase;
   const isVoting = phase === 'VOTING';
   const isWriting = phase === 'WRITING';
-  const isDiscussionLike = phase === 'DISCUSSION' || phase === 'ACTION_ITEMS';
+  const isDiscussionLike = isDiscussionLikePhase(phase);
   const showMemos = isDiscussionLike || phase === 'CLOSED';
 
   // DISCUSSIONフェーズ遷移時にメモありカードのメモセクションを自動展開
@@ -239,7 +240,7 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
             <GripVertical size={14} />
           </button>
         )}
-        {(phase === 'DISCUSSION' || phase === 'ACTION_ITEMS') && (
+        {isDiscussionLike && (
           <button
             onClick={isFacilitator ? handleMarkDiscussed : undefined}
             className={`flex-shrink-0 mt-0.5 transition-colors ${
@@ -331,7 +332,7 @@ export const CardItem = memo(function CardItem({ card, columnColor, columnName, 
 
         <div className="flex items-center gap-1">
           {/* Convert to action item */}
-          {(phase === 'DISCUSSION' || phase === 'ACTION_ITEMS') && (
+          {isDiscussionLike && (
             <button
               onClick={handleConvertToActionItem}
               className="p-2 text-gray-400 hover:text-purple-600 dark:text-slate-500 dark:hover:text-purple-400 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"

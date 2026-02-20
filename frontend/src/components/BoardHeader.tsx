@@ -2,6 +2,7 @@ import { Copy, Check, EyeOff, Home, Heart, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useBoardStore } from '../store/boardStore';
+import { isDiscussionLikePhase } from '../types';
 import { ExportMenu } from './ExportMenu';
 import { PhaseControl } from './PhaseControl';
 import { ThemeToggle } from './ThemeToggle';
@@ -19,7 +20,7 @@ export function BoardHeader({ isKudosOpen, kudosCount, onKudosToggle }: Props) {
 
   if (!board) return null;
 
-  const showDiscussionProgress = board.phase === 'DISCUSSION' || board.phase === 'ACTION_ITEMS';
+  const showDiscussionProgress = isDiscussionLikePhase(board.phase);
 
   const handleCopyLink = async () => {
     const url = window.location.href;

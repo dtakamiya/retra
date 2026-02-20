@@ -1,4 +1,5 @@
 import { useBoardStore } from '../store/boardStore';
+import { isDiscussionLikePhase } from '../types';
 import { MemoForm } from './MemoForm';
 import { MemoItem } from './MemoItem';
 import type { Memo } from '../types';
@@ -13,7 +14,7 @@ export function MemoList({ cardId, memos }: Props) {
 
   if (!board) return null;
 
-  const canAddMemo = board.phase === 'DISCUSSION' || board.phase === 'ACTION_ITEMS';
+  const canAddMemo = isDiscussionLikePhase(board.phase);
 
   return (
     <div className="mt-2 pt-2 border-t border-gray-100 dark:border-slate-700 space-y-1.5">

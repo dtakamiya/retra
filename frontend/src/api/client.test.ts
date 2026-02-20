@@ -607,7 +607,7 @@ describe('api client', () => {
       const result = await api.getTrends('Team Alpha');
 
       expect(result).toEqual(trends);
-      expect(mockFetch).toHaveBeenCalledWith('/api/v1/history/trends?teamName=Team%20Alpha', {
+      expect(mockFetch).toHaveBeenCalledWith('/api/v1/history/trends?teamName=Team+Alpha', {
         headers: { 'Content-Type': 'application/json' },
       });
     });
