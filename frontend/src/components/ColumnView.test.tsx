@@ -50,7 +50,7 @@ describe('ColumnView', () => {
       return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
-    render(<ColumnView column={column} />)
+    render(<ColumnView column={column} maxVoteCount={0} />)
 
     expect(screen.getByText('Keep')).toBeInTheDocument()
     expect(screen.getByText('2')).toBeInTheDocument()
@@ -68,7 +68,7 @@ describe('ColumnView', () => {
       return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
-    render(<ColumnView column={column} />)
+    render(<ColumnView column={column} maxVoteCount={0} />)
 
     expect(screen.getByText('続けたいこと・うまくいっていること')).toBeInTheDocument()
   })
@@ -88,7 +88,7 @@ describe('ColumnView', () => {
       return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
-    render(<ColumnView column={column} />)
+    render(<ColumnView column={column} maxVoteCount={0} />)
 
     expect(screen.getByTitle('カードを追加')).toBeInTheDocument()
   })
@@ -105,7 +105,7 @@ describe('ColumnView', () => {
       return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
-    render(<ColumnView column={column} />)
+    render(<ColumnView column={column} maxVoteCount={0} />)
 
     // Empty state shows "カードを追加" text inside the button
     const addButtons = screen.getAllByText('カードを追加')
@@ -127,7 +127,7 @@ describe('ColumnView', () => {
       return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
-    render(<ColumnView column={column} />)
+    render(<ColumnView column={column} maxVoteCount={0} />)
 
     expect(screen.queryByTitle('カードを追加')).not.toBeInTheDocument()
   })
@@ -151,7 +151,7 @@ describe('ColumnView', () => {
       return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
-    render(<ColumnView column={column} />)
+    render(<ColumnView column={column} maxVoteCount={0} />)
 
     const cardContents = screen.getAllByText(/card/)
     expect(cardContents[0]).toHaveTextContent('First card')
@@ -178,7 +178,7 @@ describe('ColumnView', () => {
       return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
-    render(<ColumnView column={column} />)
+    render(<ColumnView column={column} maxVoteCount={0} />)
 
     const cardContents = screen.getAllByText(/votes/)
     expect(cardContents[0]).toHaveTextContent('High votes')
@@ -205,7 +205,7 @@ describe('ColumnView', () => {
       return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
-    render(<ColumnView column={column} />)
+    render(<ColumnView column={column} maxVoteCount={0} />)
 
     const cardContents = screen.getAllByText(/tied|Top/)
     expect(cardContents[0]).toHaveTextContent('Top card')
@@ -232,7 +232,7 @@ describe('ColumnView', () => {
       return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
-    render(<ColumnView column={column} />)
+    render(<ColumnView column={column} maxVoteCount={0} />)
 
     const cardContents = screen.getAllByText(/iscussed/)
     // Undiscussed cards first (sorted by voteCount desc), then discussed cards
@@ -259,7 +259,7 @@ describe('ColumnView', () => {
       return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
-    render(<ColumnView column={column} />)
+    render(<ColumnView column={column} maxVoteCount={0} />)
 
     expect(screen.getByLabelText('議論進捗 1/2')).toBeInTheDocument()
   })
@@ -279,7 +279,7 @@ describe('ColumnView', () => {
       return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
-    render(<ColumnView column={column} />)
+    render(<ColumnView column={column} maxVoteCount={0} />)
 
     expect(screen.queryByLabelText(/議論進捗/)).not.toBeInTheDocument()
   })
@@ -300,7 +300,7 @@ describe('ColumnView', () => {
       return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
-    render(<ColumnView column={column} />)
+    render(<ColumnView column={column} maxVoteCount={0} />)
 
     expect(screen.getByText('+3件非表示')).toBeInTheDocument()
   })
@@ -321,7 +321,7 @@ describe('ColumnView', () => {
       return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
     }) as unknown as typeof useBoardStore)
 
-    render(<ColumnView column={column} />)
+    render(<ColumnView column={column} maxVoteCount={0} />)
 
     expect(screen.queryByText(/件非表示/)).not.toBeInTheDocument()
   })
