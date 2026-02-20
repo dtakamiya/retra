@@ -4,6 +4,7 @@ import { api } from '../api/client';
 import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 import { useToastStore } from '../store/toastStore';
+import { isDiscussionLikePhase } from '../types';
 import type { Memo } from '../types';
 
 interface Props {
@@ -22,8 +23,8 @@ export function MemoItem({ memo, cardId }: Props) {
 
   const isAuthor = memo.participantId === participant.id;
   const isFacilitator = participant.isFacilitator;
-  const canEdit = isAuthor && (board.phase === 'DISCUSSION' || board.phase === 'ACTION_ITEMS');
-  const canDelete = (isAuthor || isFacilitator) && (board.phase === 'DISCUSSION' || board.phase === 'ACTION_ITEMS');
+  const canEdit = isAuthor && isDiscussionLikePhase(board.phase);
+  const canDelete = (isAuthor || isFacilitator) && isDiscussionLikePhase(board.phase);
 
   const handleUpdate = async () => {
     if (!editContent.trim()) return;

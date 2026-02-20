@@ -211,9 +211,7 @@ export function BoardView() {
 
   const isDndEnabled =
     !hasActiveFilter &&
-    (board.phase === 'WRITING' ||
-    board.phase === 'DISCUSSION' ||
-    board.phase === 'ACTION_ITEMS');
+    (board.phase === 'WRITING' || isDiscussionLikePhase(board.phase));
 
   const columnsContent = (
     <div className="flex gap-3 p-3 pb-20 lg:pb-3 flex-1 overflow-x-auto">
