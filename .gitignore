@@ -66,5 +66,8 @@ docs/plans/
 # Everything Claude Code (external tool)
 everything-claude-code/
 
+# Agents
+.agents/
+
 # Git worktrees
 .worktrees/
