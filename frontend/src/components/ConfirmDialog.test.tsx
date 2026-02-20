@@ -92,4 +92,14 @@ describe('ConfirmDialog', () => {
     const dialog = screen.getByRole('dialog')
     expect(dialog).toHaveAttribute('aria-modal', 'true')
   })
+
+  it('バックドロップクリックでonCancelが呼ばれる', () => {
+    const onCancel = vi.fn()
+    render(<ConfirmDialog {...defaultProps} onCancel={onCancel} />)
+
+    const backdrop = screen.getByRole('dialog')
+    fireEvent.click(backdrop)
+
+    expect(onCancel).toHaveBeenCalledTimes(1)
+  })
 })

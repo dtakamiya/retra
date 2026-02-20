@@ -893,4 +893,39 @@ describe('boardStore', () => {
 
     expect(useBoardStore.getState().board).toBeNull();
   });
+
+  // --- handleIcebreakerAnswerUpdated ---
+
+  it('handleIcebreakerAnswerUpdated updates matching answer text', () => {
+    useBoardStore.setState({
+      icebreakerAnswers: [
+        { id: 'ans-1', participantId: 'p-1', participantNickname: 'Alice', answerText: '元の回答', createdAt: '2024-01-01T00:00:00Z' },
+        { id: 'ans-2', participantId: 'p-2', participantNickname: 'Bob', answerText: 'Bobの回答', createdAt: '2024-01-01T00:00:00Z' },
+      ],
+    });
+
+    useBoardStore.getState().handleIcebreakerAnswerUpdated({ id: 'ans-1', answerText: '更新された回答' } as { id: string; answerText: string });
+
+    const state = useBoardStore.getState();
+    expect(state.icebreakerAnswers).toHaveLength(2);
+    expect(state.icebreakerAnswers[0].answerText).toBe('更新された回答');
+    expect(state.icebreakerAnswers[1].answerText).toBe('Bobの回答');
+  });
+
+  // --- handleIcebreakerAnswerDeleted ---
+
+  it('handleIcebreakerAnswerDeleted removes matching answer', () => {
+    useBoardStore.setState({
+      icebreakerAnswers: [
+        { id: 'ans-1', participantId: 'p-1', participantNickname: 'Alice', answerText: '回答1', createdAt: '2024-01-01T00:00:00Z' },
+        { id: 'ans-2', participantId: 'p-2', participantNickname: 'Bob', answerText: '回答2', createdAt: '2024-01-01T00:00:00Z' },
+      ],
+    });
+
+    useBoardStore.getState().handleIcebreakerAnswerDeleted({ answerId: 'ans-1' });
+
+    const state = useBoardStore.getState();
+    expect(state.icebreakerAnswers).toHaveLength(1);
+    expect(state.icebreakerAnswers[0].id).toBe('ans-2');
+  });
 });
