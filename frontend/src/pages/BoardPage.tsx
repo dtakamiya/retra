@@ -180,7 +180,7 @@ export function BoardPage() {
         </div>
 
         {/* Desktop: Icon bar (always visible on lg+) */}
-        <div className="hidden lg:flex flex-col items-center gap-1 py-3 px-1.5 border-l border-gray-200/60 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50">
+        <div className="hidden lg:flex flex-col items-center gap-1 py-3 px-1.5 border-l border-gray-200/60 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 relative z-50">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className={`p-2 rounded-lg transition-colors cursor-pointer ${
