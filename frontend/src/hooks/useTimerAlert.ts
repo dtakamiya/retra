@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useBoardStore } from '../store/boardStore';
 
 export function useTimerAlert() {
-  const { timer } = useBoardStore();
+  const timer = useBoardStore((s) => s.timer);
   const prevRemainingRef = useRef(timer.remainingSeconds);
 
   useEffect(() => {

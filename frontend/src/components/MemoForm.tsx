@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Send } from 'lucide-react';
 import { api } from '../api/client';
+import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 import { useToastStore } from '../store/toastStore';
 
@@ -9,7 +10,7 @@ interface Props {
 }
 
 export function MemoForm({ cardId }: Props) {
-  const { board, participant } = useBoardStore();
+  const { board, participant } = useBoardStore(useShallow((s) => ({ board: s.board, participant: s.participant })));
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);

@@ -13,7 +13,7 @@ interface Props {
 }
 
 export function ActionItemForm({ slug, participants, cardId, initialContent = '' }: Props) {
-  const { participant } = useBoardStore();
+  const participant = useBoardStore((s) => s.participant);
   const [content, setContent] = useState(initialContent);
   const [assigneeId, setAssigneeId] = useState<string>('');
   const [dueDate, setDueDate] = useState('');

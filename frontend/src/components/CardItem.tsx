@@ -3,6 +3,7 @@ import { ThumbsUp, Pencil, Trash2, GripVertical, MessageSquare, ListTodo, CheckC
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { api } from '../api/client';
+import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 import { useToastStore } from '../store/toastStore';
 import { MemoList } from './MemoList';
@@ -24,7 +25,7 @@ interface Props {
 }
 
 export const CardItem = memo(function CardItem({ card, columnColor, columnName, isOverlay, maxVoteCount }: Props) {
-  const { board, participant, remainingVotes, handleCardUpdated } = useBoardStore();
+  const { board, participant, remainingVotes, handleCardUpdated } = useBoardStore(useShallow((s) => ({ board: s.board, participant: s.participant, remainingVotes: s.remainingVotes, handleCardUpdated: s.handleCardUpdated })));
   const addToast = useToastStore((s) => s.addToast);
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(card.content);

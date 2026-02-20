@@ -41,11 +41,14 @@ describe('CardItem', () => {
   })
 
   it('returns null when board or participant is null', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: null,
       participant: null,
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { container } = render(<CardItem card={defaultCard} columnColor="#22c55e" />)
 
@@ -53,11 +56,14 @@ describe('CardItem', () => {
   })
 
   it('renders card content and author nickname', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
 
@@ -66,11 +72,14 @@ describe('CardItem', () => {
   })
 
   it('shows drag handle for author in WRITING phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const card = createCard({ participantId: 'p-1' })
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -79,11 +88,14 @@ describe('CardItem', () => {
   })
 
   it('shows drag handle for facilitator in DISCUSSION phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-2', isFacilitator: true }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const card = createCard({ participantId: 'p-1' })
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -92,11 +104,14 @@ describe('CardItem', () => {
   })
 
   it('does NOT show drag handle in VOTING phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'VOTING' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: createRemainingVotes({ remaining: 5 }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
 
@@ -104,11 +119,14 @@ describe('CardItem', () => {
   })
 
   it('does NOT show drag handle for non-author in WRITING phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-2', isFacilitator: false }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const card = createCard({ participantId: 'p-1' })
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -117,11 +135,14 @@ describe('CardItem', () => {
   })
 
   it('shows vote button in VOTING phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'VOTING' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: createRemainingVotes({ remaining: 5 }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
 
@@ -131,11 +152,14 @@ describe('CardItem', () => {
   it('shows vote count when > 0 in non-voting phase', () => {
     const cardWithVotes = createCard({ voteCount: 3 })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={cardWithVotes} columnColor="#22c55e" />)
 
@@ -146,11 +170,14 @@ describe('CardItem', () => {
   it('shows larger vote badge in DISCUSSION phase', () => {
     const cardWithVotes = createCard({ voteCount: 5 })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={cardWithVotes} columnColor="#22c55e" />)
 
@@ -161,11 +188,14 @@ describe('CardItem', () => {
   it('shows larger vote badge in CLOSED phase', () => {
     const cardWithVotes = createCard({ voteCount: 2 })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'CLOSED' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={cardWithVotes} columnColor="#22c55e" />)
 
@@ -174,11 +204,14 @@ describe('CardItem', () => {
   })
 
   it('shows edit/delete buttons for author in WRITING phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const card = createCard({ participantId: 'p-1' })
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -188,11 +221,14 @@ describe('CardItem', () => {
   })
 
   it('shows delete (not edit) button for facilitator who is not author in WRITING phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-2', isFacilitator: true }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const card = createCard({ participantId: 'p-1' })
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -202,11 +238,14 @@ describe('CardItem', () => {
   })
 
   it('does NOT show edit/delete buttons for non-author non-facilitator', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-2', isFacilitator: false }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const card = createCard({ participantId: 'p-1' })
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -219,11 +258,14 @@ describe('CardItem', () => {
     const user = userEvent.setup()
     const card = createCard({ content: '編集テスト', participantId: 'p-1' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
@@ -240,11 +282,14 @@ describe('CardItem', () => {
     const user = userEvent.setup()
     const card = createCard({ content: '元の内容', participantId: 'p-1' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'test-slug', phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.updateCard).mockResolvedValue(createCard({ content: '新しい内容' }))
 
@@ -265,11 +310,14 @@ describe('CardItem', () => {
     const user = userEvent.setup()
     const card = createCard({ content: 'Enter保存テスト', participantId: 'p-1' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'test-slug', phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.updateCard).mockResolvedValue(createCard({ content: 'Enter保存テスト' }))
 
@@ -287,11 +335,14 @@ describe('CardItem', () => {
     const user = userEvent.setup()
     const card = createCard({ content: 'Escキャンセルテスト', participantId: 'p-1' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
@@ -309,11 +360,14 @@ describe('CardItem', () => {
     const user = userEvent.setup()
     const card = createCard({ content: 'キャンセルテスト', participantId: 'p-1' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
@@ -332,11 +386,14 @@ describe('CardItem', () => {
     const user = userEvent.setup()
     const card = createCard({ voteCount: 0, participantId: 'p-1' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'vote-slug', phase: 'VOTING' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: createRemainingVotes({ remaining: 3 }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.addVote).mockResolvedValue(createVote({ cardId: 'card-1', participantId: 'p-1' }))
 
@@ -351,11 +408,14 @@ describe('CardItem', () => {
     const user = userEvent.setup()
     const card = createCard({ voteCount: 2, votedParticipantIds: ['p-1', 'p-2'], participantId: 'p-1' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'vote-slug', phase: 'VOTING' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: createRemainingVotes({ remaining: 3 }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.removeVote).mockResolvedValue(undefined)
 
@@ -370,11 +430,14 @@ describe('CardItem', () => {
     const user = userEvent.setup()
     const card = createCard({ participantId: 'p-1' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'del-slug', phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.deleteCard).mockResolvedValue(undefined)
 
@@ -386,11 +449,14 @@ describe('CardItem', () => {
   })
 
   it('renders with isOverlay style', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { container } = render(<CardItem card={defaultCard} columnColor="#22c55e" isOverlay />)
 
@@ -400,11 +466,14 @@ describe('CardItem', () => {
   })
 
   it('shows reaction picker button', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
 
@@ -420,11 +489,14 @@ describe('CardItem', () => {
       ],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={cardWithReactions} columnColor="#22c55e" />)
 
@@ -435,11 +507,14 @@ describe('CardItem', () => {
   it('clicking reaction picker opens emoji selector and calls api.addReaction', async () => {
     const user = userEvent.setup()
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'react-slug', phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.addReaction).mockResolvedValue(createReaction())
 
@@ -460,11 +535,14 @@ describe('CardItem', () => {
       reactions: [createReaction({ emoji: '👍', participantId: 'p-1' })],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'react-slug', phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.removeReaction).mockResolvedValue(undefined)
 
@@ -478,11 +556,14 @@ describe('CardItem', () => {
   })
 
   it('shows convert to action item button in DISCUSSION phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
 
@@ -490,11 +571,14 @@ describe('CardItem', () => {
   })
 
   it('shows convert to action item button in ACTION_ITEMS phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
 
@@ -502,11 +586,14 @@ describe('CardItem', () => {
   })
 
   it('does NOT show convert to action item button in WRITING phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
 
@@ -514,11 +601,14 @@ describe('CardItem', () => {
   })
 
   it('does NOT show convert to action item button in VOTING phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'VOTING' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: createRemainingVotes({ remaining: 5 }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" />)
 
@@ -529,11 +619,14 @@ describe('CardItem', () => {
     const user = userEvent.setup()
     const card = createCard({ id: 'card-1', content: '変換テスト', participantId: 'p-1' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'convert-slug', phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     vi.mocked(api.createActionItem).mockResolvedValue(createActionItem())
 
@@ -547,11 +640,14 @@ describe('CardItem', () => {
   it('clicking card text opens detail modal', async () => {
     const user = userEvent.setup()
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={defaultCard} columnColor="#22c55e" columnName="Keep" />)
 
@@ -564,11 +660,14 @@ describe('CardItem', () => {
     const user = userEvent.setup()
     const card = createCard({ content: 'テスト', participantId: 'p-1' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
@@ -582,11 +681,14 @@ describe('CardItem', () => {
   it('applies opacity-50 style when card is discussed', () => {
     const card = createCard({ participantId: 'p-1', isDiscussed: true })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { container } = render(<CardItem card={card} columnColor="#22c55e" />)
 
@@ -597,11 +699,14 @@ describe('CardItem', () => {
   it('does NOT apply opacity-50 when card is not discussed', () => {
     const card = createCard({ participantId: 'p-1', isDiscussed: false })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { container } = render(<CardItem card={card} columnColor="#22c55e" />)
 
@@ -612,11 +717,14 @@ describe('CardItem', () => {
   it('shows discussion mark button for facilitator in DISCUSSION phase', () => {
     const card = createCard({ participantId: 'p-1', isDiscussed: false })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
@@ -628,11 +736,14 @@ describe('CardItem', () => {
   it('shows discussion mark button as disabled for non-facilitator in DISCUSSION phase', () => {
     const card = createCard({ participantId: 'p-2', isDiscussed: false })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-2', isFacilitator: false }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
@@ -643,11 +754,14 @@ describe('CardItem', () => {
   it('does NOT show discussion mark button in WRITING phase', () => {
     const card = createCard({ participantId: 'p-1' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
@@ -658,11 +772,14 @@ describe('CardItem', () => {
     const user = userEvent.setup()
     const card = createCard({ participantId: 'p-1', isDiscussed: false })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
     vi.mocked(api.markCardDiscussed).mockResolvedValue(undefined as never)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
@@ -677,11 +794,14 @@ describe('CardItem', () => {
   it('shows "匿名" label instead of author name when board is anonymous and authorNickname is null', () => {
     const card = createCard({ participantId: 'p-2', authorNickname: null as unknown as string })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ isAnonymous: true }),
       participant: createParticipant({ id: 'p-2' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
@@ -692,11 +812,14 @@ describe('CardItem', () => {
   it('shows author name when board is not anonymous', () => {
     const card = createCard({ participantId: 'p-1', authorNickname: 'TestUser' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ isAnonymous: false }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
@@ -709,11 +832,14 @@ describe('CardItem', () => {
   it('disables vote button when remainingVotes is 0 and user has not voted', () => {
     const card = createCard({ participantId: 'p-2', voteCount: 0, votedParticipantIds: [] })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'VOTING' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: createRemainingVotes({ remaining: 0, used: 5 }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
@@ -724,11 +850,14 @@ describe('CardItem', () => {
   it('allows unvote even when remainingVotes is 0 (already voted)', () => {
     const card = createCard({ participantId: 'p-2', voteCount: 1, votedParticipantIds: ['p-1'] })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'VOTING' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
       remainingVotes: createRemainingVotes({ remaining: 0, used: 5 }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CardItem card={card} columnColor="#22c55e" />)
 
@@ -742,20 +871,26 @@ describe('CardItem', () => {
       memos: [createMemo()],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { rerender } = render(<CardItem card={card} columnColor="#22c55e" />)
 
     // Transition to DISCUSSION phase
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     rerender(<CardItem card={{ ...card }} columnColor="#22c55e" />)
 

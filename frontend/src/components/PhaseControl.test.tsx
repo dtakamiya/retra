@@ -18,11 +18,14 @@ describe('PhaseControl', () => {
   })
 
   it('returns null when board or participant is null', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: null,
       participant: null,
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { container } = render(<PhaseControl />)
 
@@ -30,11 +33,14 @@ describe('PhaseControl', () => {
   })
 
   it('renders current phase label', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ isFacilitator: false }),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
 
@@ -43,11 +49,14 @@ describe('PhaseControl', () => {
   })
 
   it('shows advance button for facilitator', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ isFacilitator: true }),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
 
@@ -55,11 +64,14 @@ describe('PhaseControl', () => {
   })
 
   it('does NOT show advance button for non-facilitator', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ isFacilitator: false }),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
 
@@ -67,11 +79,14 @@ describe('PhaseControl', () => {
   })
 
   it('does NOT show advance button when phase is CLOSED', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'CLOSED' }),
       participant: createParticipant({ isFacilitator: true }),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
 
@@ -79,11 +94,14 @@ describe('PhaseControl', () => {
   })
 
   it('opens confirmation dialog when advance button is clicked', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ isFacilitator: true }),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
 
@@ -94,11 +112,14 @@ describe('PhaseControl', () => {
   })
 
   it('closes dialog when cancel is clicked', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant({ isFacilitator: true }),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
 
@@ -114,7 +135,8 @@ describe('PhaseControl', () => {
     const updatedBoard = createBoard({ phase: 'VOTING' })
     vi.mocked(api.changePhase).mockResolvedValue(updatedBoard)
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({
         phase: 'WRITING',
         columns: [
@@ -123,7 +145,9 @@ describe('PhaseControl', () => {
       }),
       participant: createParticipant({ isFacilitator: true }),
       setBoard,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
 
@@ -140,7 +164,8 @@ describe('PhaseControl', () => {
   })
 
   it('shows board stats in the confirmation dialog', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({
         phase: 'WRITING',
         columns: [
@@ -151,7 +176,9 @@ describe('PhaseControl', () => {
       }),
       participant: createParticipant({ isFacilitator: true }),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<PhaseControl />)
 

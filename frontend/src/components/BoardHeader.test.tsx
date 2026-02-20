@@ -21,11 +21,14 @@ describe('BoardHeader', () => {
   })
 
   it('returns null when board is null', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: null,
       participant: null,
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { container } = render(
       <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
@@ -35,11 +38,14 @@ describe('BoardHeader', () => {
   })
 
   it('renders board title', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ title: 'スプリント10 ふりかえり' }),
       participant: createParticipant(),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
       <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
@@ -49,11 +55,14 @@ describe('BoardHeader', () => {
   })
 
   it('renders framework badge', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ framework: 'FUN_DONE_LEARN' }),
       participant: createParticipant(),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
       <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
@@ -72,11 +81,14 @@ describe('BoardHeader', () => {
       configurable: true,
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ title: 'テストボード' }),
       participant: createParticipant(),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
       <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
@@ -94,7 +106,8 @@ describe('BoardHeader', () => {
   })
 
   it('shows overall discussion progress in DISCUSSION phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({
         phase: 'DISCUSSION',
         columns: [
@@ -109,7 +122,9 @@ describe('BoardHeader', () => {
       }),
       participant: createParticipant(),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
       <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
@@ -120,11 +135,14 @@ describe('BoardHeader', () => {
   })
 
   it('does NOT show discussion progress in WRITING phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant(),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
       <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
@@ -134,11 +152,14 @@ describe('BoardHeader', () => {
   })
 
   it('Kudosボタンが表示される', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ title: 'テストボード' }),
       participant: createParticipant(),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
       <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
@@ -148,11 +169,14 @@ describe('BoardHeader', () => {
   })
 
   it('Kudosカウントが0の場合バッジが表示されない', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ title: 'テストボード' }),
       participant: createParticipant(),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
       <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
@@ -164,11 +188,14 @@ describe('BoardHeader', () => {
   })
 
   it('Kudosカウントが1以上の場合バッジが表示される', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ title: 'テストボード' }),
       participant: createParticipant(),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
       <BoardHeader isKudosOpen={false} kudosCount={5} onKudosToggle={vi.fn()} />
@@ -181,11 +208,14 @@ describe('BoardHeader', () => {
     const user = userEvent.setup()
     const onKudosToggle = vi.fn()
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ title: 'テストボード' }),
       participant: createParticipant(),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
       <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={onKudosToggle} />
@@ -196,11 +226,14 @@ describe('BoardHeader', () => {
   })
 
   it('privateWriting=true のボードでプライベートバッジが表示される', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ title: 'テストボード', privateWriting: true }),
       participant: createParticipant(),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
       <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
@@ -210,11 +243,14 @@ describe('BoardHeader', () => {
   })
 
   it('privateWriting=false のボードではプライベートバッジが表示されない', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ title: 'テストボード', privateWriting: false }),
       participant: createParticipant(),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
       <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
@@ -224,11 +260,14 @@ describe('BoardHeader', () => {
   })
 
   it('privateWriting=true かつ WRITINGフェーズ中はバッジがハイライトされる', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ title: 'テストボード', privateWriting: true, phase: 'WRITING' }),
       participant: createParticipant(),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
       <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />
@@ -239,11 +278,14 @@ describe('BoardHeader', () => {
   })
 
   it('privateWriting=true かつ VOTINGフェーズ中はバッジがグレー表示される', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ title: 'テストボード', privateWriting: true, phase: 'VOTING' }),
       participant: createParticipant(),
       setBoard: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     renderWithRouter(
       <BoardHeader isKudosOpen={false} kudosCount={0} onKudosToggle={vi.fn()} />

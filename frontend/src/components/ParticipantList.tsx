@@ -1,4 +1,5 @@
 import { Users, Crown } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 
 interface Props {
@@ -25,7 +26,7 @@ function getAvatarColor(name: string): string {
 }
 
 export function ParticipantList({ compact = false }: Props) {
-  const { board, remainingVotes } = useBoardStore();
+  const { board, remainingVotes } = useBoardStore(useShallow((s) => ({ board: s.board, remainingVotes: s.remainingVotes })));
 
   if (!board) return null;
 

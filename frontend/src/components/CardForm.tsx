@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { api } from '../api/client';
+import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 import { useToastStore } from '../store/toastStore';
 import { CharacterCounter } from './CharacterCounter';
@@ -12,7 +13,7 @@ interface Props {
 }
 
 export function CardForm({ columnId, onClose }: Props) {
-  const { board, participant, handleCardCreated } = useBoardStore();
+  const { board, participant, handleCardCreated } = useBoardStore(useShallow((s) => ({ board: s.board, participant: s.participant, handleCardCreated: s.handleCardCreated })));
   const addToast = useToastStore((s) => s.addToast);
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);

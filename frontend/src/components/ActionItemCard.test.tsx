@@ -26,10 +26,13 @@ describe('ActionItemCard', () => {
   })
 
   it('returns null when board or participant is null', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: null,
       participant: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const item = createActionItem()
     const { container } = render(<ActionItemCard actionItem={item} />)
@@ -37,10 +40,13 @@ describe('ActionItemCard', () => {
   })
 
   it('renders action item content and status badge', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ content: 'テストアクション', status: 'OPEN' })
     render(<ActionItemCard actionItem={item} />)
@@ -51,10 +57,13 @@ describe('ActionItemCard', () => {
   })
 
   it('renders assignee nickname when set', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ assigneeNickname: 'Alice' })
     render(<ActionItemCard actionItem={item} />)
@@ -63,10 +72,13 @@ describe('ActionItemCard', () => {
   })
 
   it('renders due date when set', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ dueDate: '2024-03-15' })
     render(<ActionItemCard actionItem={item} />)
@@ -75,10 +87,13 @@ describe('ActionItemCard', () => {
   })
 
   it('shows status dropdown and edit/delete buttons for facilitator in ACTION_ITEMS phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const item = createActionItem()
     render(<ActionItemCard actionItem={item} />)
@@ -89,10 +104,13 @@ describe('ActionItemCard', () => {
   })
 
   it('shows status dropdown and edit/delete buttons for assignee in ACTION_ITEMS phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: false }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ assigneeId: 'p-1' })
     render(<ActionItemCard actionItem={item} />)
@@ -103,10 +121,13 @@ describe('ActionItemCard', () => {
   })
 
   it('does NOT show edit/delete buttons for non-assignee non-facilitator', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-2', isFacilitator: false }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ assigneeId: 'p-1' })
     render(<ActionItemCard actionItem={item} />)
@@ -117,10 +138,13 @@ describe('ActionItemCard', () => {
   })
 
   it('does NOT show edit/delete buttons in CLOSED phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'CLOSED' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const item = createActionItem()
     render(<ActionItemCard actionItem={item} />)
@@ -132,10 +156,13 @@ describe('ActionItemCard', () => {
 
   it('changing status dropdown calls api.updateActionItemStatus', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'test-slug', phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
     vi.mocked(api.updateActionItemStatus).mockResolvedValue(createActionItem({ status: 'IN_PROGRESS' }))
 
     const item = createActionItem({ id: 'ai-1', status: 'OPEN' })
@@ -148,10 +175,13 @@ describe('ActionItemCard', () => {
 
   it('clicking edit shows textarea with current content', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ content: '編集テスト' })
     render(<ActionItemCard actionItem={item} />)
@@ -164,10 +194,13 @@ describe('ActionItemCard', () => {
 
   it('saving edit calls api.updateActionItem', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'test-slug', phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
     vi.mocked(api.updateActionItem).mockResolvedValue(createActionItem({ content: '更新内容' }))
 
     const item = createActionItem({ id: 'ai-1', content: '元の内容' })
@@ -184,10 +217,13 @@ describe('ActionItemCard', () => {
 
   it('clicking delete calls api.deleteActionItem', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'test-slug', phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
     vi.mocked(api.deleteActionItem).mockResolvedValue(undefined)
 
     const item = createActionItem({ id: 'ai-1' })
@@ -200,10 +236,13 @@ describe('ActionItemCard', () => {
 
   it('pressing Escape cancels editing', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const item = createActionItem({ content: 'Escテスト' })
     render(<ActionItemCard actionItem={item} />)
@@ -217,10 +256,13 @@ describe('ActionItemCard', () => {
 
   it('pressing Enter in textarea saves the edit', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'test-slug', phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
     vi.mocked(api.updateActionItem).mockResolvedValue(createActionItem({ content: 'Enter保存' }))
 
     const item = createActionItem({ id: 'ai-1', content: 'Enter保存' })

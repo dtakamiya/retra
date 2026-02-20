@@ -19,10 +19,13 @@ describe('CardForm', () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'test1234' }),
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
   })
 
   it('renders textarea and buttons', () => {

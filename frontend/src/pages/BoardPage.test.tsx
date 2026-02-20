@@ -130,10 +130,13 @@ function mockStoreState(overrides: Partial<ReturnType<typeof useBoardStore>> = {
     setKudos: vi.fn(),
     clearNeedsRefresh: vi.fn(),
   }
-  vi.mocked(useBoardStore).mockReturnValue({
+  vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
     ...defaults,
     ...overrides,
-  } as unknown as ReturnType<typeof useBoardStore>)
+  };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 }
 
 // --- Tests ---

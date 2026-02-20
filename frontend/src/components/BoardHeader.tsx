@@ -14,7 +14,7 @@ interface Props {
 }
 
 export function BoardHeader({ isKudosOpen, kudosCount, onKudosToggle }: Props) {
-  const { board } = useBoardStore();
+  const board = useBoardStore((s) => s.board);
   const [copied, setCopied] = useState(false);
 
   if (!board) return null;

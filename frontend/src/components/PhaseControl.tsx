@@ -1,6 +1,7 @@
 import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { api } from '../api/client';
+import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 import { useToastStore } from '../store/toastStore';
 import type { Phase } from '../types';
@@ -34,7 +35,7 @@ const NEXT_PHASE: Record<Phase, Phase | null> = {
 };
 
 export function PhaseControl() {
-  const { board, participant, setBoard } = useBoardStore();
+  const { board, participant, setBoard } = useBoardStore(useShallow((s) => ({ board: s.board, participant: s.participant, setBoard: s.setBoard })));
   const addToast = useToastStore((s) => s.addToast);
   const [loading, setLoading] = useState(false);
   const [showDialog, setShowDialog] = useState(false);

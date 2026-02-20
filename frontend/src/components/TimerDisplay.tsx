@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Play, Pause, RotateCcw, Timer } from 'lucide-react';
 import { api } from '../api/client';
+import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 import { useToastStore } from '../store/toastStore';
 
@@ -9,7 +10,7 @@ interface Props {
 }
 
 export function TimerDisplay({ compact = false }: Props) {
-  const { board, participant, timer } = useBoardStore();
+  const { board, participant, timer } = useBoardStore(useShallow((s) => ({ board: s.board, participant: s.participant, timer: s.timer })));
   const addToast = useToastStore((s) => s.addToast);
   const [showDuration, setShowDuration] = useState(false);
   const [duration, setDuration] = useState(5);

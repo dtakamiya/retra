@@ -33,7 +33,7 @@ interface Props {
 }
 
 export function ColumnView({ column }: Props) {
-  const { board } = useBoardStore();
+  const board = useBoardStore((s) => s.board);
   const [showForm, setShowForm] = useState(false);
 
   const isWriting = board?.phase === 'WRITING';

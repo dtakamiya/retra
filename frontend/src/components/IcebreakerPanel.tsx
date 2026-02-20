@@ -1,6 +1,7 @@
 import { Dice5, MessageCircle, Pencil, Send, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from '../api/client';
+import { useShallow } from 'zustand/react/shallow';
 import { useBoardStore } from '../store/boardStore';
 import { useToastStore } from '../store/toastStore';
 import { CharacterCounter } from './CharacterCounter';
@@ -8,7 +9,7 @@ import { CharacterCounter } from './CharacterCounter';
 const MAX_ANSWER_LENGTH = 140;
 
 export function IcebreakerPanel() {
-  const { board, participant, icebreakerQuestion, icebreakerAnswers, setIcebreaker } = useBoardStore();
+  const { board, participant, icebreakerQuestion, icebreakerAnswers, setIcebreaker } = useBoardStore(useShallow((s) => ({ board: s.board, participant: s.participant, icebreakerQuestion: s.icebreakerQuestion, icebreakerAnswers: s.icebreakerAnswers, setIcebreaker: s.setIcebreaker })));
   const addToast = useToastStore((s) => s.addToast);
   const [answerText, setAnswerText] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);

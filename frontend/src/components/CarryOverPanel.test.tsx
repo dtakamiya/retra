@@ -18,13 +18,16 @@ describe('CarryOverPanel', () => {
   })
 
   it('teamName未設定の場合は何も表示しない', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ teamName: null }),
       participant: createParticipant(),
       carryOverItems: [],
       carryOverTeamName: '',
       updateCarryOverItemStatus: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { container } = render(<CarryOverPanel />)
     expect(container.innerHTML).toBe('')
@@ -35,13 +38,16 @@ describe('CarryOverPanel', () => {
       createCarryOverItem({ id: 'co-1' }),
       createCarryOverItem({ id: 'co-2' }),
     ]
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ teamName: 'Team Alpha' }),
       participant: createParticipant(),
       carryOverItems: items,
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CarryOverPanel />)
     expect(screen.getByText('前回のアクションアイテム')).toBeInTheDocument()
@@ -52,13 +58,16 @@ describe('CarryOverPanel', () => {
     const items = [
       createCarryOverItem({ id: 'co-1', content: 'テストアイテム', priority: 'HIGH', assigneeNickname: 'Alice' }),
     ]
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ teamName: 'Team Alpha' }),
       participant: createParticipant(),
       carryOverItems: items,
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CarryOverPanel />)
     expect(screen.getByText('テストアイテム')).toBeInTheDocument()
@@ -68,13 +77,16 @@ describe('CarryOverPanel', () => {
 
   it('折りたたみトグルが動作する', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ teamName: 'Team Alpha' }),
       participant: createParticipant(),
       carryOverItems: [],
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CarryOverPanel />)
 
@@ -96,13 +108,16 @@ describe('CarryOverPanel', () => {
   })
 
   it('0件の場合にメッセージを表示する', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ teamName: 'Team Alpha' }),
       participant: createParticipant(),
       carryOverItems: [],
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CarryOverPanel />)
     expect(screen.getByText('未完了のアクションアイテムはありません')).toBeInTheDocument()
@@ -112,13 +127,16 @@ describe('CarryOverPanel', () => {
     const items = [
       createCarryOverItem({ id: 'co-1', content: 'テストアイテム', status: 'OPEN' }),
     ]
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ teamName: 'Team Alpha' }),
       participant: createParticipant({ isFacilitator: true }),
       carryOverItems: items,
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CarryOverPanel />)
     const select = screen.getByRole('combobox')
@@ -135,13 +153,16 @@ describe('CarryOverPanel', () => {
       createCarryOverItem({ id: 'co-1', content: 'テストアイテム', status: 'OPEN' }),
     ]
     const updateCarryOverItemStatus = vi.fn()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ teamName: 'Team Alpha' }),
       participant: createParticipant({ isFacilitator: true }),
       carryOverItems: items,
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     // Spy on useToastStore
     const { useToastStore } = await import('../store/toastStore')
@@ -170,13 +191,16 @@ describe('CarryOverPanel', () => {
     const items = [
       createCarryOverItem({ id: 'co-1', content: 'テストアイテム', status: 'OPEN' }),
     ]
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ teamName: 'Team Alpha' }),
       participant: createParticipant({ isFacilitator: false }),
       carryOverItems: items,
       carryOverTeamName: 'Team Alpha',
       updateCarryOverItemStatus: vi.fn(),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<CarryOverPanel />)
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument()

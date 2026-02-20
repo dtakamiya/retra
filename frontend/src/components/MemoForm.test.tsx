@@ -19,20 +19,26 @@ describe('MemoForm', () => {
   })
 
   it('returns null when board or participant is null', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: null,
       participant: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { container } = render(<MemoForm cardId="card-1" />)
     expect(container.innerHTML).toBe('')
   })
 
   it('renders textarea and send button', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<MemoForm cardId="card-1" />)
 
@@ -41,10 +47,13 @@ describe('MemoForm', () => {
   })
 
   it('send button is disabled when content is empty', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<MemoForm cardId="card-1" />)
 
@@ -53,10 +62,13 @@ describe('MemoForm', () => {
 
   it('clicking send calls api.createMemo and clears input', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'test-slug', phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
     vi.mocked(api.createMemo).mockResolvedValue({
       id: 'memo-1', cardId: 'card-1', content: 'メモ内容',
       authorNickname: 'TestUser', participantId: 'p-1',
@@ -75,10 +87,13 @@ describe('MemoForm', () => {
 
   it('pressing Escape clears content and blurs textarea', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'test-slug', phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<MemoForm cardId="card-1" />)
 
@@ -93,10 +108,13 @@ describe('MemoForm', () => {
 
   it('pressing Enter submits the memo', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ slug: 'test-slug', phase: 'DISCUSSION' }),
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
     vi.mocked(api.createMemo).mockResolvedValue({
       id: 'memo-1', cardId: 'card-1', content: 'Enter送信',
       authorNickname: 'TestUser', participantId: 'p-1',

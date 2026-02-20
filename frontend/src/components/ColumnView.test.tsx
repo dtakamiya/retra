@@ -41,11 +41,14 @@ describe('ColumnView', () => {
       ],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant(),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
 
@@ -56,11 +59,14 @@ describe('ColumnView', () => {
   it('renders column description', () => {
     const column = createColumn({ name: 'Keep' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant(),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
 
@@ -73,11 +79,14 @@ describe('ColumnView', () => {
       cards: [createCard({ id: 'c-1' })],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant(),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
 
@@ -87,11 +96,14 @@ describe('ColumnView', () => {
   it('shows add button in empty state in WRITING phase when no cards', () => {
     const column = createColumn({ name: 'Keep' })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant(),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
 
@@ -106,11 +118,14 @@ describe('ColumnView', () => {
       cards: [createCard({ id: 'c-1' })],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'VOTING' }),
       participant: createParticipant(),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
 
@@ -127,11 +142,14 @@ describe('ColumnView', () => {
       ],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant(),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
 
@@ -151,11 +169,14 @@ describe('ColumnView', () => {
       ],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant(),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
 
@@ -175,11 +196,14 @@ describe('ColumnView', () => {
       ],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant(),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
 
@@ -199,11 +223,14 @@ describe('ColumnView', () => {
       ],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant(),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
 
@@ -223,11 +250,14 @@ describe('ColumnView', () => {
       ],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'DISCUSSION' }),
       participant: createParticipant(),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
 
@@ -240,11 +270,14 @@ describe('ColumnView', () => {
       cards: [createCard({ id: 'c-1' })],
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant(),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
 
@@ -258,11 +291,14 @@ describe('ColumnView', () => {
       hiddenCardCount: 3,
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant(),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
 
@@ -276,11 +312,14 @@ describe('ColumnView', () => {
       hiddenCardCount: 0,
     })
 
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'WRITING' }),
       participant: createParticipant(),
       remainingVotes: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ColumnView column={column} />)
 

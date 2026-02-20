@@ -47,13 +47,16 @@ describe('IcebreakerPanel', () => {
     icebreakerQuestion?: string | null;
     icebreakerAnswers?: IcebreakerAnswer[];
   } = {}) {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: overrides.board ?? createBoard({ phase: 'ICEBREAK', enableIcebreaker: true }),
       participant: overrides.participant ?? createParticipant({ id: 'p-1' }),
       icebreakerQuestion: overrides.icebreakerQuestion ?? null,
       icebreakerAnswers: overrides.icebreakerAnswers ?? [],
       setIcebreaker: mockSetIcebreaker,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
   }
 
   it('パネルが表示される', () => {
@@ -184,13 +187,16 @@ describe('IcebreakerPanel', () => {
   })
 
   it('boardがnullの場合はnullを返す', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: null,
       participant: null,
       icebreakerQuestion: null,
       icebreakerAnswers: [],
       setIcebreaker: mockSetIcebreaker,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
     const { container } = render(<IcebreakerPanel />)
     expect(container.firstChild).toBeNull()
   })

@@ -29,18 +29,24 @@ describe('ActionItemForm', () => {
   })
 
   it('returns null when participant is null', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       participant: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { container } = render(<ActionItemForm slug="test-slug" participants={participants} />)
     expect(container.innerHTML).toBe('')
   })
 
   it('renders textarea, assignee select, date input, and submit button', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
 
@@ -51,9 +57,12 @@ describe('ActionItemForm', () => {
   })
 
   it('submit button is disabled when content is empty', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
 
@@ -61,9 +70,12 @@ describe('ActionItemForm', () => {
   })
 
   it('renders participant options in the assignee select', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
 
@@ -75,9 +87,12 @@ describe('ActionItemForm', () => {
 
   it('clicking submit calls api.createActionItem and clears fields', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
     vi.mocked(api.createActionItem).mockResolvedValue(createActionItem())
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
@@ -100,9 +115,12 @@ describe('ActionItemForm', () => {
 
   it('clicking submit with assignee and due date passes them to API', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
     vi.mocked(api.createActionItem).mockResolvedValue(createActionItem())
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
@@ -128,9 +146,12 @@ describe('ActionItemForm', () => {
 
   it('pressing Escape clears all fields and blurs textarea', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
 
@@ -148,9 +169,12 @@ describe('ActionItemForm', () => {
 
   it('pressing Enter submits the action item', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
     vi.mocked(api.createActionItem).mockResolvedValue(createActionItem())
 
     render(<ActionItemForm slug="test-slug" participants={participants} />)
@@ -172,9 +196,12 @@ describe('ActionItemForm', () => {
 
   it('passes cardId when provided', async () => {
     const user = userEvent.setup()
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
     vi.mocked(api.createActionItem).mockResolvedValue(createActionItem())
 
     render(<ActionItemForm slug="test-slug" participants={participants} cardId="card-1" />)
@@ -195,9 +222,12 @@ describe('ActionItemForm', () => {
   })
 
   it('shows initialContent when provided', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       participant: createParticipant({ id: 'p-1' }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ActionItemForm slug="test-slug" participants={participants} initialContent="初期内容" />)
 

@@ -30,10 +30,13 @@ describe('ActionItemList', () => {
   })
 
   it('returns null when board is null', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: null,
       participant: null,
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const { container } = render(
       <ActionItemList actionItems={[]} slug="test-slug" participants={participants} />
@@ -42,10 +45,13 @@ describe('ActionItemList', () => {
   })
 
   it('renders heading with ListTodo icon text', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ActionItemList actionItems={[]} slug="test-slug" participants={participants} />)
 
@@ -53,10 +59,13 @@ describe('ActionItemList', () => {
   })
 
   it('shows count when action items exist', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const items = [
       createActionItem({ id: 'ai-1' }),
@@ -68,10 +77,13 @@ describe('ActionItemList', () => {
   })
 
   it('does NOT show count when no action items', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ActionItemList actionItems={[]} slug="test-slug" participants={participants} />)
 
@@ -79,10 +91,13 @@ describe('ActionItemList', () => {
   })
 
   it('shows empty message when no action items', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ActionItemList actionItems={[]} slug="test-slug" participants={participants} />)
 
@@ -90,10 +105,13 @@ describe('ActionItemList', () => {
   })
 
   it('renders action items grouped by status', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const items = [
       createActionItem({ id: 'ai-1', content: 'オープンタスク', status: 'OPEN' }),
@@ -112,10 +130,13 @@ describe('ActionItemList', () => {
   })
 
   it('shows ActionItemForm in ACTION_ITEMS phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ActionItemList actionItems={[]} slug="test-slug" participants={participants} />)
 
@@ -123,10 +144,13 @@ describe('ActionItemList', () => {
   })
 
   it('does NOT show ActionItemForm in CLOSED phase', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'CLOSED' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     render(<ActionItemList actionItems={[]} slug="test-slug" participants={participants} />)
 
@@ -134,10 +158,13 @@ describe('ActionItemList', () => {
   })
 
   it('hides status sections when no items in that status', () => {
-    vi.mocked(useBoardStore).mockReturnValue({
+    vi.mocked(useBoardStore).mockImplementation(((selector?: unknown) => {
+      const s = {
       board: createBoard({ phase: 'ACTION_ITEMS' }),
       participant: createParticipant({ id: 'p-1', isFacilitator: true }),
-    } as unknown as ReturnType<typeof useBoardStore>)
+    };
+      return typeof selector === 'function' ? (selector as (state: unknown) => unknown)(s) : s;
+    }) as unknown as typeof useBoardStore)
 
     const items = [
       createActionItem({ id: 'ai-1', content: 'オープンのみ', status: 'OPEN' }),
