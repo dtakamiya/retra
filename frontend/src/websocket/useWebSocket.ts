@@ -109,13 +109,11 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
       onConnect: () => {
         setConnected(true);
 
-        // Register session
         client.publish({
           destination: `/app/board/${slug}/register`,
           body: JSON.stringify({ participantId }),
         });
 
-        // Subscribe to card events
         client.subscribe(`/topic/board/${slug}/cards`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
           switch (data.type) {
@@ -146,7 +144,6 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
           }
         });
 
-        // Subscribe to vote events
         client.subscribe(`/topic/board/${slug}/votes`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
           switch (data.type) {
@@ -159,7 +156,6 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
           }
         });
 
-        // Subscribe to phase events
         client.subscribe(`/topic/board/${slug}/phase`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
           if (data.type === 'PHASE_CHANGED') {
@@ -167,7 +163,6 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
           }
         });
 
-        // Subscribe to timer events
         client.subscribe(`/topic/board/${slug}/timer`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
           if (data.type === 'TIMER_UPDATE') {
@@ -175,7 +170,6 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
           }
         });
 
-        // Subscribe to memo events
         client.subscribe(`/topic/board/${slug}/memos`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
           switch (data.type) {
@@ -191,7 +185,6 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
           }
         });
 
-        // Subscribe to reaction events
         client.subscribe(`/topic/board/${slug}/reactions`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
           switch (data.type) {
@@ -204,7 +197,6 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
           }
         });
 
-        // Subscribe to participant events
         client.subscribe(`/topic/board/${slug}/participants`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
           switch (data.type) {
@@ -220,7 +212,6 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
           }
         });
 
-        // Subscribe to action item events
         client.subscribe(`/topic/board/${slug}/action-items`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
           switch (data.type) {
@@ -239,7 +230,6 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
           }
         });
 
-        // Subscribe to kudos events
         client.subscribe(`/topic/board/${slug}/kudos`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
           switch (data.type) {
@@ -252,7 +242,6 @@ export function useWebSocket(slug: string | undefined, participantId: string | u
           }
         });
 
-        // Subscribe to icebreaker events
         client.subscribe(`/topic/board/${slug}/icebreaker`, (message) => {
           const data: WebSocketMessage = JSON.parse(message.body);
           switch (data.type) {
