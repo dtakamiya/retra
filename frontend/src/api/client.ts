@@ -240,8 +240,8 @@ export const api = {
     return request<PagedHistory>(`/history${query ? `?${query}` : ''}`);
   },
 
-  deleteSnapshot(snapshotId: string): Promise<void> {
-    return request<void>(`/history/${snapshotId}`, {
+  deleteSnapshot(snapshotId: string, teamName: string): Promise<void> {
+    return request<void>(`/history/${snapshotId}?teamName=${encodeURIComponent(teamName)}`, {
       method: 'DELETE',
     });
   },

@@ -563,13 +563,13 @@ describe('api client', () => {
     });
   });
 
-  it('deleteSnapshot sends DELETE to correct URL', async () => {
+  it('deleteSnapshot sends DELETE with teamName to correct URL', async () => {
     mock204();
 
-    const result = await api.deleteSnapshot('snap-1');
+    const result = await api.deleteSnapshot('snap-1', 'Team Alpha');
 
     expect(result).toBeUndefined();
-    expect(mockFetch).toHaveBeenCalledWith('/api/v1/history/snap-1', {
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/history/snap-1?teamName=Team%20Alpha', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
     });
