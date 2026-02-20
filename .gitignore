@@ -50,6 +50,7 @@ logs/
 # Reports & generated docs
 .reports/
 docs/codemaps/
+docs/plans/
 
 # Screenshots (root level)
 /*.png
