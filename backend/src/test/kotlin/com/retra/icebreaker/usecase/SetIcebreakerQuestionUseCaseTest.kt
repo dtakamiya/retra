@@ -4,6 +4,7 @@ import com.retra.board.domain.*
 import com.retra.icebreaker.domain.IcebreakerQuestions
 import com.retra.shared.domain.BadRequestException
 import com.retra.shared.domain.ForbiddenException
+import com.retra.shared.domain.NotFoundException
 import com.retra.shared.gateway.event.SpringDomainEventPublisher
 import io.mockk.every
 import io.mockk.mockk
@@ -69,6 +70,45 @@ class SetIcebreakerQuestionUseCaseTest {
 
         assertThrows<BadRequestException> {
             useCase.execute("test", SetQuestionRequest(participantId = "p1", type = "RANDOM"))
+        }
+    }
+
+    @Test
+    fun `存在しないボードでNotFoundExceptionがスローされる`() {
+        every { boardRepository.findBySlug("nonexistent") } returns null
+
+        assertThrows<NotFoundException> {
+            useCase.execute("nonexistent", SetQuestionRequest(participantId = "p1", type = "RANDOM"))
+        }
+    }
+
+    @Test
+    fun `存在しない参加者でNotFoundExceptionがスローされる`() {
+        val board = createBoard()
+        every { boardRepository.findBySlug("test") } returns board
+
+        assertThrows<NotFoundException> {
+            useCase.execute("test", SetQuestionRequest(participantId = "unknown", type = "RANDOM"))
+        }
+    }
+
+    @Test
+    fun `CUSTOMタイプでquestionTextがnullの場合BadRequestException`() {
+        val board = createBoard()
+        every { boardRepository.findBySlug("test") } returns board
+
+        assertThrows<BadRequestException> {
+            useCase.execute("test", SetQuestionRequest(participantId = "p1", type = "CUSTOM", questionText = null))
+        }
+    }
+
+    @Test
+    fun `不正なtypeでBadRequestExceptionがスローされる`() {
+        val board = createBoard()
+        every { boardRepository.findBySlug("test") } returns board
+
+        assertThrows<BadRequestException> {
+            useCase.execute("test", SetQuestionRequest(participantId = "p1", type = "INVALID"))
         }
     }
 }
