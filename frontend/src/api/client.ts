@@ -20,6 +20,7 @@ import type {
   TrendData,
   Vote,
 } from '../types';
+import { ApiError } from './errors';
 
 const BASE_URL = '/api/v1';
 
@@ -33,6 +34,14 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: '不明なエラー' }));
+    if (error.errorCode) {
+      throw new ApiError(
+        response.status,
+        error.message || `HTTP ${response.status}`,
+        error.errorCode,
+        error.errorId
+      );
+    }
     throw new Error(error.message || `HTTP ${response.status}`);
   }
 
@@ -265,6 +274,14 @@ export const api = {
     );
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: '不明なエラー' }));
+      if (error.errorCode) {
+        throw new ApiError(
+          response.status,
+          error.message || `HTTP ${response.status}`,
+          error.errorCode,
+          error.errorId
+        );
+      }
       throw new Error(error.message || `HTTP ${response.status}`);
     }
     return response.blob();

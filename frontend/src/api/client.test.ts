@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { api } from '../api/client';
+import { ApiError } from '../api/errors';
 
 describe('api client', () => {
   const mockFetch = vi.fn();
@@ -782,5 +783,70 @@ describe('api client', () => {
 
     const result = await api.updateCarryOverItemStatus('test-slug', 'ai-1', 'DONE', 'p-1');
     expect(result).toBeUndefined();
+  });
+
+  // --- Structured error handling (ApiError) ---
+
+  it('エラーレスポンスにerrorCodeが含まれる場合、ApiErrorをスローする', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+      json: () => Promise.resolve({
+        status: 404,
+        error: 'Not Found',
+        message: 'Board not found',
+        errorCode: 'BOARD_NOT_FOUND',
+      }),
+    });
+
+    try {
+      await api.getBoard('nonexistent');
+      expect.fail('should have thrown');
+    } catch (e) {
+      expect(e).toBeInstanceOf(ApiError);
+      const apiError = e as ApiError;
+      expect(apiError.status).toBe(404);
+      expect(apiError.message).toBe('Board not found');
+      expect(apiError.errorCode).toBe('BOARD_NOT_FOUND');
+      expect(apiError.errorId).toBeUndefined();
+    }
+  });
+
+  it('エラーレスポンスにerrorIdが含まれる場合、ApiErrorに含まれる', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: () => Promise.resolve({
+        status: 500,
+        error: 'Internal Server Error',
+        message: 'An unexpected error occurred',
+        errorCode: 'INTERNAL_ERROR',
+        errorId: 'uuid-123',
+      }),
+    });
+
+    try {
+      await api.getBoard('broken');
+      expect.fail('should have thrown');
+    } catch (e) {
+      expect(e).toBeInstanceOf(ApiError);
+      const apiError = e as ApiError;
+      expect(apiError.status).toBe(500);
+      expect(apiError.errorCode).toBe('INTERNAL_ERROR');
+      expect(apiError.errorId).toBe('uuid-123');
+    }
+  });
+
+  it('エラーレスポンスにerrorCodeがない場合、通常のErrorをスローする', async () => {
+    mockErrorResponse({ message: 'legacy error' }, 400);
+
+    try {
+      await api.getBoard('test');
+      expect.fail('should have thrown');
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect(e).not.toBeInstanceOf(ApiError);
+      expect((e as Error).message).toBe('legacy error');
+    }
   });
 });
