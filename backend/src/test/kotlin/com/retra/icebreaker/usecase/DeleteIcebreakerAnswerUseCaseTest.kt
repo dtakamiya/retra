@@ -5,6 +5,7 @@ import com.retra.icebreaker.domain.IcebreakerAnswer
 import com.retra.icebreaker.domain.IcebreakerAnswerRepository
 import com.retra.shared.domain.BadRequestException
 import com.retra.shared.domain.ForbiddenException
+import com.retra.shared.domain.NotFoundException
 import com.retra.shared.gateway.event.SpringDomainEventPublisher
 import io.mockk.every
 import io.mockk.mockk
@@ -62,6 +63,42 @@ class DeleteIcebreakerAnswerUseCaseTest {
 
         assertThrows<ForbiddenException> {
             useCase.execute("test", "a1", "p2")
+        }
+    }
+
+    @Test
+    fun `存在しないボードでNotFoundExceptionがスローされる`() {
+        every { boardRepository.findBySlug("nonexistent") } returns null
+
+        assertThrows<NotFoundException> {
+            useCase.execute("nonexistent", "a1", "p1")
+        }
+    }
+
+    @Test
+    fun `存在しない参加者でNotFoundExceptionがスローされる`() {
+        val board = Board(id = "b1", slug = "test", phase = Phase.ICEBREAK, enableIcebreaker = true)
+        board.participants.add(
+            Participant(id = "p1", board = board, nickname = "Alice", isFacilitator = false, createdAt = "2026-01-01T00:00:00Z")
+        )
+        every { boardRepository.findBySlug("test") } returns board
+
+        assertThrows<NotFoundException> {
+            useCase.execute("test", "a1", "unknown")
+        }
+    }
+
+    @Test
+    fun `存在しない回答でNotFoundExceptionがスローされる`() {
+        val board = Board(id = "b1", slug = "test", phase = Phase.ICEBREAK, enableIcebreaker = true)
+        board.participants.add(
+            Participant(id = "p1", board = board, nickname = "Alice", isFacilitator = false, createdAt = "2026-01-01T00:00:00Z")
+        )
+        every { boardRepository.findBySlug("test") } returns board
+        every { answerRepository.findById("nonexistent") } returns null
+
+        assertThrows<NotFoundException> {
+            useCase.execute("test", "nonexistent", "p1")
         }
     }
 }
