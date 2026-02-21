@@ -904,7 +904,7 @@ describe('boardStore', () => {
       ],
     });
 
-    useBoardStore.getState().handleIcebreakerAnswerUpdated({ id: 'ans-1', answerText: '更新された回答' } as { id: string; answerText: string });
+    useBoardStore.getState().handleIcebreakerAnswerUpdated({ id: 'ans-1', participantId: 'p-1', participantNickname: 'Alice', answerText: '更新された回答', createdAt: '2024-01-01T00:00:00Z' });
 
     const state = useBoardStore.getState();
     expect(state.icebreakerAnswers).toHaveLength(2);
