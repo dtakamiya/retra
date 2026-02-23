@@ -9,7 +9,7 @@ import { DiscussionProgress } from './DiscussionProgress';
 import type { Column } from '../types';
 import { isDiscussionLikePhase, isPostVotingPhase } from '../types';
 
-const columnDescriptions: Record<string, string> = {
+const COLUMN_DESCRIPTIONS: Record<string, string> = {
   // KPT
   Keep: '続けたいこと・うまくいっていること',
   Problem: '困っていること・課題',
@@ -89,8 +89,8 @@ export function ColumnView({ column, maxVoteCount }: Props) {
               </span>
             )}
           </div>
-          {columnDescriptions[column.name] && (
-            <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5 ml-4">{columnDescriptions[column.name]}</p>
+          {COLUMN_DESCRIPTIONS[column.name] && (
+            <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5 ml-4">{COLUMN_DESCRIPTIONS[column.name]}</p>
           )}
           {isDiscussionLike && (
             <DiscussionProgress cards={column.cards} color={column.color} />
