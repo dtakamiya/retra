@@ -26,7 +26,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.flywaydb:flyway-core")
-    implementation("org.xerial:sqlite-jdbc:3.51.2.0")
+    implementation("org.xerial:sqlite-jdbc:3.51.3.0")
     implementation("org.hibernate.orm:hibernate-community-dialects")
     implementation("org.apache.commons:commons-csv:1.14.1")
 
