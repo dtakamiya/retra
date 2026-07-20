@@ -4,7 +4,7 @@ plugins {
     id("jacoco")
     kotlin("jvm") version "2.4.10"
     kotlin("plugin.spring") version "2.4.0"
-    kotlin("plugin.jpa") version "2.4.0"
+    kotlin("plugin.jpa") version "2.4.10"
 }
 
 group = "com.retra"
